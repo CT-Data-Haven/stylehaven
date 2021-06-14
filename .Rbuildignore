@@ -1,0 +1,6 @@
+^renv$
+^renv\.lock$
+^stylehaven\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^README\.Rmd$

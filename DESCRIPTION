@@ -1,0 +1,26 @@
+Package: stylehaven
+Title: Quick style utilities and guides
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Camille",
+           family = "Seaberry",
+           role = c("aut", "cre"),
+           email = "camille@ctdatahaven.org")
+Description: This is a collection of style utilities mostly revolving around
+  making clean labels for legible plots and (eventually) examples of building
+  common plots.
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+License: MIT + file LICENSE
+Imports: 
+    dplyr,
+    ggplot2,
+    magrittr,
+    purrr,
+    rlang (>= 0.1.2),
+    scales,
+    showtext
+Suggests: 
+    roxygen2
