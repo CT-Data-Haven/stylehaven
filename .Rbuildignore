@@ -4,3 +4,8 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
+^data-raw$
+^vignettes/articles$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

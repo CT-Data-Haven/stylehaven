@@ -15,14 +15,27 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 License: MIT + file LICENSE
 Imports: 
+    colorspace,
+    cwi (>= 0.3.0),
     dplyr,
     ggplot2,
+    janitor,
     magrittr,
     purrr,
     rlang (>= 0.1.2),
     scales,
+    sf,
     showtext
 Suggests: 
-    roxygen2
+    roxygen2,
+    flipbookr,
+    xaringan,
+    knitr,
+    rmarkdown
 URL: https://github.com/camille-s/stylehaven
 BugReports: https://github.com/camille-s/stylehaven/issues
+Depends: 
+    R (>= 4.0.0)
+Remotes: 
+    ct-data-haven/cwi
+VignetteBuilder: knitr
