@@ -2,14 +2,9 @@
 #' @description Sometimes when you add direct labels to a bar chart, it can be annoying to hard-code a value by which to offset the labels to add some padding before the end of the bar, e.g. using `nudge_y`. It's also a problem when you have different scales on different facets, or when batch generating charts where you don't know exactly what the scale will be for all of them.
 #'
 #' `ratio_to_max` finds the maximum value in a vector, and returns some fraction of it that you specify. `offset_lbls` adds columns to your data with parameters for adjusting labels, and uses `ratio_to_max` under the hood. Values are offset proportionate to the maximum value in the dataset. It also handles situations where some bars are too small to fit labels properly inside the bar.
-#' @param x A numeric vector
-#' @param frac Numeric, the desired fraction of the maximum value by which to offset. Default: 0.05
-#' @rdname offset_lbls
-#' @export
-ratio_to_max <- function(x, frac = 0.05) frac * max(x, na.rm = TRUE)
-
 #' @param data A data frame
 #' @param value Bare name of the column to use
+#' @param frac Numeric, the desired fraction of the maximum value by which to offset. Default: 0.05
 #' @param thresh Numeric threshold for the ratio at which values will be considered too small to fit inside bars. Default: 0.15
 #' @param margin Numeric scaling factor for positioning small values above / to the right of bars. Default: 1.5
 #' @param fun A function, used to create value labels. `scales::label_*` functions will be very useful here. If `NULL` (the default), no formatting is done.
@@ -28,9 +23,9 @@ ratio_to_max <- function(x, frac = 0.05) frac * max(x, na.rm = TRUE)
 #' @examples
 #' library(ggplot2)
 #'
-#' chronic %>%
+#' chronic_disease %>%
 #'   dplyr::filter(question == "diabetes", category == "Age") %>%
-#'   offset_lbls(value, fun = scales::label_percent(accuracy = 1)) %>%
+#'   offset_lbls(value, fun = percent100) %>%
 #'   ggplot(aes(x = group, y = value)) +
 #'   geom_col() +
 #'   geom_text(aes(y = y, label = lbl, color = is_small, vjust = just), show.legend = FALSE) +
@@ -56,3 +51,8 @@ offset_lbls <- function(data, value, frac = 0.05, thresh = 0.15, margin = 1.5, f
     dplyr::select(-ratio, -base_off)
   out
 }
+
+#' @param x A numeric vector
+#' @rdname offset_lbls
+#' @export
+ratio_to_max <- function(x, frac = 0.05) frac * max(x, na.rm = TRUE)

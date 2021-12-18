@@ -5,7 +5,11 @@
 ^LICENSE\.md$
 ^README\.Rmd$
 ^data-raw$
-^vignettes/articles$
+^vignettes/articles
+^vignettes/slides
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^doc$
+^Meta$
+^\.github$

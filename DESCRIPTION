@@ -8,34 +8,48 @@ Authors@R:
            email = "camille@ctdatahaven.org")
 Description: This is a collection of style utilities mostly revolving around
   making clean labels for legible plots and (eventually) examples of building
-  common plots.
+  common plots. There's not a whole lot to it, probably never will be, just a
+  collection of utilities, examples, and some best(?) practices.
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 License: MIT + file LICENSE
 Imports: 
+    assertthat,
     colorspace,
     cwi (>= 0.3.0),
     dplyr,
+    forcats,
     ggplot2,
     janitor,
     magrittr,
+    methods,
     purrr,
     rlang (>= 0.1.2),
     scales,
-    sf,
-    showtext
+    showtext,
+    stringr,
+    sysfonts,
+    tidyr,
+    xfun
 Suggests: 
     roxygen2,
+    camiller,
     flipbookr,
     xaringan,
     knitr,
-    rmarkdown
-URL: https://github.com/camille-s/stylehaven
-BugReports: https://github.com/camille-s/stylehaven/issues
+    rmarkdown,
+    testthat (>= 3.0.0),
+    ggrepel,
+    ragg
+URL: https://github.com/CT-Data-Haven/stylehaven,
+    https://ct-data-haven.github.io/stylehaven
+BugReports: https://github.com/CT-Data-Haven/stylehaven/issues
 Depends: 
     R (>= 4.0.0)
 Remotes: 
-    ct-data-haven/cwi
+    ct-data-haven/cwi,
+    camille-s/camiller
 VignetteBuilder: knitr
+Config/testthat/edition: 3

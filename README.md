@@ -1,0 +1,28 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# stylehaven
+
+<!-- badges: start -->
+
+[![pkgdown](https://github.com/CT-Data-Haven/stylehaven/workflows/pkgdown/badge.svg)](https://github.com/CT-Data-Haven/stylehaven/actions)
+<!-- badges: end -->
+
+This is a collection of style utilities mostly revolving around making
+clean labels for legible plots and examples of building common plots,
+intended for in-house use at DataHaven. There’s not a whole lot to it,
+probably never will be, just a collection of utilities, examples, and
+some best(?) practices related to plotting.
+
+This branches out from Nathan Kim’s (@18kimn) work developing our first
+steps at a styleguide as an intern.
+
+## Installation
+
+You can install stylehaven from GitHub:
+
+``` r
+remotes::install_github("CT-Data-Haven/stylehaven")
+```
+
+See vignettes for examples.

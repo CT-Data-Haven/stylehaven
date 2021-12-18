@@ -1,0 +1,647 @@
+---
+title: "Example plot walkthrough"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis-fonts]
+    seal: true
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = TRUE,
+	warning = TRUE,
+	collapse = TRUE,
+	comment = "",
+	fig.showtext = TRUE
+)
+```
+
+# Setup
+
+This is a walkthrough of some of the considerations in making charts, and some of the ways DataHaven's budding code infrastructure can help build and style charts that are simple and easy to read. I'll be using some example datasets that I built into the { stylehaven } package.
+
+```{r libs, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+library(showtext)
+library(stylehaven)
+library(flipbookr)
+
+showtext_auto()
+font_add_google("Barlow Semi Condensed", bold.wt = 600)
+```
+
+---
+
+# Color
+
+I'm using the yellow-green-blue palette from ColorBrewer for sequential data. Sequential palettes are hard to get right—there's a bunch of psychological research that went into the ColorBrewer palettes—so I'll organize other colors around that. For charts with only one color of bars, etc., I'll use one of the medium to dark shades from that palette. For qualitative data I'll try to find a set of colors that work together across multiple hues based around that main color. The function `stylehaven::palx` ports a Javascript library for this.
+
+---
+
+```{r palx1, fig.height=1.5}
+seq_pal <- RColorBrewer::brewer.pal(7, "YlGnBu")
+camiller::color_prev(seq_pal)
+primary <- seq_pal[6]
+```
+
+---
+
+```{r fig.width=7, fig.height=3}
+palx_colors <- palx(primary, n = 9, n_shades = 5, plot = TRUE, labels = TRUE)
+qual_pal <- palx_colors[["shade04"]]
+```
+
+---
+
+These are obviously not finished charts, just an example to see how the colors look pretty nice between the two charts, so it's a good way to find colors that work well within one document or project.
+
+
+.pull-left[
+```{r}
+color1 <- cws_trend %>%
+  filter(category %in% c("Total", "Age"), indicator == "police_approval") %>%
+  ggplot(aes(x = year, y = value, color = group, group = group)) +
+  geom_line(size = 2, alpha = 0.9) +
+  geom_point(size = 4) +
+  scale_x_continuous(breaks = c(2015, 2021), expand = expansion(mult = 0.2)) +
+  scale_color_manual(values = unname(qual_pal[c("gray", "red", "indigo", "orange", "violet")])) +
+  theme_minimal() +
+  theme(legend.justification = c(0, 0),
+        legend.position = c(0, 0))
+
+color2 <- cws_trend %>%
+  filter(category %in% c("Total", "Age"), indicator == "police_approval", year == 2021) %>%
+  ggplot(aes(x = group, y = value)) +
+  geom_col(width = 0.8, fill = primary) +
+  coord_flip() +
+  theme_minimal()
+```
+
+]
+
+.pull-right[
+
+```{r}
+cowplot::plot_grid(color1, color2)
+```
+
+]
+
+---
+
+# A very simple bar chart
+
+Bar charts are really boring. Here are some reasons why that's great: 
+
+* People are familiar with them, and as much as non-data people know how to read a chart, they probably know how to read a bar chart. 
+* They provide a very neat data-to-ink mapping where all you need to read is the length of a bar. 
+* They have natural places to add things like value labels and other annotations.
+* They can be spruced up in lots of ways and still stay legible.
+* They can be enhanced by interactivity, but don't require it.
+
+---
+
+The data I'm using here is `stylehaven::rent_x_income`, which gives the median household income of renting households and the annual median rent for all rented housing units and for 2 bedroom units for every (most?) town in New Haven County. There's also a column I calculated of the income at which that median rent would be affordable under HUD guidelines (where affordable housing costs no more than 30 percent of a household's total income). 
+
+This is from the 2019 ACS 5-year estimates, and is an updated version of data used in the 2019 Community Index. 
+
+```{r rent-data}
+rent_2br <- stylehaven::rent_x_income %>%
+  filter(bedrooms == "2br", renters >= 1500)
+
+head(rent_2br)
+```
+
+---
+
+A super simple but ugly chart of annualized median rents would be like this:
+
+```{r bar-static, fig.width=6, fig.height=4}
+rent_2br %>%
+  ggplot(aes(x = name, y = annual_rent)) +
+  geom_col()
+```
+
+---
+
+I'll build on that in a handful of ways:
+
+* Labels are overlapping---flip to lay bars out horizontally
+* Bar order is arbitrary (alphabetical)---make a factor and reorder by value
+* Bars are a little too thick, and could use a better color
+
+---
+
+`r chunk_reveal("bar-flip")`
+
+```{r bar-flip, include=FALSE}
+rent_2br %>%
+  mutate(name = forcats::as_factor(name) %>%
+           forcats::fct_reorder(annual_rent)) %>%
+  ggplot(aes(x = name, y = annual_rent)) +
+  geom_col(width = 0.8, fill = primary) +
+  coord_flip()
+```
+
+---
+
+Now it's legible and nicer to look at, but there are still some things that are inefficient:
+
+* We can get a rough read of the values, but for a quick takeaway it would be better to just put labels directly on the bars
+  - Labels don't need to be exact---they can (and should) just be rounded off & abbreviated
+  - Labels should be within the bars whenever possible; otherwise, you risk implying larger values than are in the data. Use `stylehaven::offset_lbl` to help deal with offsetting 0 or N/A values
+* [The data-to-ink ratio](https://infovis-wiki.net/wiki/Data-Ink_Ratio) still isn't great. Instead of independent-axis ticks, just remove padding between the town names and bars
+* Once the values are labeled, the dependent-axis becomes redundant, as do the grid lines
+* Once the gridlines are removed, the background fill is unnecessary
+
+---
+
+`r chunk_reveal("bar-txt", break_type = "rotate", widths = c(3, 2), title = "## Direct labeling")`
+
+```{r bar-txt, eval=FALSE, echo=FALSE}
+rent_2br %>%
+  mutate(name = forcats::as_factor(name) %>%
+           forcats::fct_reorder(annual_rent)) %>%
+  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) %>% 
+  ggplot(aes(x = name, y = annual_rent)) +
+  geom_col(width = 0.8, fill = primary) +
+  coord_flip() + 
+  geom_text(aes(label = annual_rent)) + #ROTATE
+  geom_text(aes(label = lbl)) + #ROTATE
+  geom_text(aes(label = lbl), hjust = 1) + #ROTATE
+  geom_text(aes(label = lbl), color = "white", hjust = 1) + #ROTATE
+  geom_text(aes(label = lbl), fontface = "bold", color = "white", hjust = 1) + #ROTATE
+  geom_text(aes(label = lbl), nudge_y = -400, fontface = "bold", color = "white", hjust = 1) #ROTATE
+```
+
+Note the use of `nudge_y` at the end---super handy, although it breaks when used with dodged positions. I'm building up an `offset_frac` function that will do something similar more robustly.
+
+---
+
+`r chunk_reveal("bar-theme", break_type = "user", widths = c(3, 2), title = "## Theme settings")`
+
+```{r bar-theme, eval=FALSE, echo=FALSE}
+rent_2br %>%
+  mutate(name = forcats::as_factor(name) %>%
+           forcats::fct_reorder(annual_rent)) %>%
+  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) %>% 
+  ggplot(aes(x = name, y = annual_rent)) +
+  geom_col(width = 0.8, fill = primary) +
+  geom_text(aes(label = lbl), 
+            nudge_y = -400, hjust = 1,
+            fontface = "bold", color = "white",
+            family = "Barlow Semi Condensed") + 
+  labs(title = "Placeholder title", subtitle = "Placeholder subtitle") +
+  coord_flip() + #BREAK
+  scale_y_continuous(breaks = NULL, expand = expansion(mult = c(0, 0.05))) + #BREAK
+  theme(text = element_text(family = "Barlow Semi Condensed", size = 14)) + #BREAK
+  theme(panel.grid = element_blank()) + #BREAK
+  theme(panel.background = element_blank()) + #BREAK
+  theme(axis.ticks = element_blank()) + #BREAK
+  theme(plot.title.position = "plot") + #BREAK
+  theme(plot.title = element_text(face = "bold")) #BREAK
+```
+
+---
+
+I wouldn't actually add a million `theme` calls like this, it's just for illustration here. In fact, I'll put them into a theme function and just use that from here on out.
+
+```{r make-theme}
+theme_clean <- function(...) {
+  theme_gray(...) +
+    theme(text = element_text(family = "Barlow Semi Condensed", size = 14),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        plot.title.position = "plot",
+        plot.caption.position = "plot",
+        plot.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = NA),
+        legend.key.width = unit(1.2, "lines"),
+        legend.key.height = unit(0.8, "lines"),
+        legend.text = element_text(margin = margin(0, 1.5, 0, -0.4, "lines")))
+}
+```
+
+Lastly, this needs better explanatory labels. In this case, I'll remove the axis labels and put that same information in the subtitle.
+
+---
+
+`r chunk_reveal("bar-labs", break_type = "user", widths = c(3, 2), title = "## Plot labels")`
+
+```{r bar-labs, eval=FALSE, echo=FALSE}
+rent_2br %>%
+  mutate(name = forcats::as_factor(name) %>%
+           forcats::fct_reorder(annual_rent)) %>%
+  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) %>% 
+  ggplot(aes(x = name, y = annual_rent)) +
+  geom_col(width = 0.8, fill = primary) +
+  geom_text(aes(label = lbl), 
+            nudge_y = -400, hjust = 1, 
+            fontface = "bold", color = "white",
+            family = "Barlow Semi Condensed") + 
+  coord_flip() + 
+  scale_y_continuous(breaks = NULL, expand = expansion(mult = c(0, 0.05))) + 
+  theme_clean() + #BREAK
+  labs(subtitle = "Annualized median rent for a 2-bedroom housing unit by town, 2019") + #BREAK
+  labs(x = NULL) + #BREAK
+  labs(y = NULL) + #BREAK
+  labs(title = "Rents vary widely across New Haven County") + #BREAK
+  labs(caption = "Source: US Census Bureau 2019 American Community Survey 5-year estimates") #BREAK
+```
+
+Pretty good!
+
+
+
+---
+
+# A more complicated bar chart
+
+Often we want to show DataHaven Community Wellbeing Survey data across several categories (age, gender, race, etc.). Formatting these is a bit more complicated.
+
+```{r food-data}
+food_insecure <- stylehaven::fin_insecurity %>%
+  mutate(category = forcats::fct_collapse(category, Total = c("Connecticut", "Greater New Haven")),
+         value = round(value, 2)) %>%
+  filter(question == "food_insecurity", category %in% c("Total", "Age", "Race/Ethnicity", "Children in home"))
+
+head(food_insecure)
+```
+
+Instead of using `nudge_y` to pad the labels away from the ends of the bars, I'll subtract a small value from each y placement. I'll build on this to use `stylehaven::offset_lbl` later on.
+
+---
+
+`r chunk_reveal("bar-groups", break_type = "auto", widths = c(3, 2), title = "## Groups, part 1", left_assign = TRUE)`
+
+```{r bar-groups, include=FALSE}
+food_bars <- food_insecure %>%
+  ggplot(aes(x = forcats::fct_rev(group), y = value)) +
+  geom_col(width = 0.8, fill = primary) +
+  coord_flip() +
+  geom_text(aes(label = scales::percent(value, accuracy = 1),
+                y = value - 5e-3),
+            hjust = 1, color = "white", fontface = "bold", 
+            family = "Barlow Semi Condensed") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)), breaks = NULL) +
+  theme_clean() +
+  labs(x = NULL, y = NULL) +
+  labs(subtitle = "Share of adults by Greater New Haven demographic group, 2018") +
+  labs(title = "More than a third of Latino adults experience food insecurity") +
+  labs(caption = "Source: 2018 DataHaven Community Wellbeing Survey")
+```
+
+---
+
+`r chunk_reveal("bar-facet", break_type = "rotate", widths = c(3, 2), title = "## Groups, part 2", omit = "#OMIT")`
+
+
+
+```{r bar-facet, include=FALSE}
+food_bars +
+  facet_grid(rows = vars(category)) + #ROTATE
+  facet_grid(rows = vars(category), scales = "free_y") + #ROTATE
+  facet_grid(rows = vars(category), space = "free", scales = "free_y") + #ROTATE
+  facet_grid(rows = vars(category), switch = "y", space = "free", scales = "free_y") #ROTATE
+```
+
+---
+
+`r chunk_reveal("bar-facet2", break_type = "user", widths = c(3, 2), title = "## Groups, part 2")`
+
+```{r bar-facet2, include=FALSE}
+food_bars +
+  facet_grid(rows = vars(category), switch = "y", space = "free", scales = "free_y") + #BREAK
+  theme(strip.placement = "outside") + #BREAK
+  theme(strip.text.y.left = element_text(angle = 0, hjust = 0, vjust = 1, face = "bold", margin = margin(0.5, 0.4, 0.5, 0.4, "lines"))) + #BREAK
+  theme(strip.background = element_rect(fill = "gray90")) #BREAK
+```
+
+---
+
+I'll add those facet-related theme elements to another theme. (This is inefficient but I wanted to keep `theme_clean` for illustration.)
+
+```{r make-theme2}
+theme_facet <- function(...) {
+  theme_clean(...) +
+    theme(strip.placement = "outside",
+          panel.spacing.x = unit(1, "lines"),
+          strip.text = element_text(face = "bold"),
+          strip.text.y.left = element_text(angle = 0, hjust = 0, vjust = 1, 
+                                           margin = margin(0.5, 0.4, 0.5, 0.4, "lines")),
+          strip.background = element_rect(fill = "gray90"))
+}
+```
+
+---
+
+# Offsetting labels
+
+Sometimes multiple related indicators need to be shown together but with very different scales (think a set of bars of high school graduation rates, and a set of bars of suspensions). For this, use `stylehaven::offset_lbls` to offset labels proportionate to each scale, rather than by a fixed amount.
+
+```{r chronic-data}
+chron_subset <- stylehaven::chronic_disease %>%
+  mutate(category = forcats::fct_collapse(category, Total = c("Connecticut", "Greater New Haven")),
+         value = round(value, 2),
+         question = forcats::fct_relabel(question, camiller::clean_titles)) %>%
+  filter(question %in% c("Diabetes", "Hypertension"), category %in% c("Total", "Age", "Race/Ethnicity"))
+
+head(chron_subset)
+```
+
+
+
+---
+
+`r chunk_reveal("bar-offset1", break_type = "rotate", widths = c(3, 2), title = "## Different scales")`
+
+```{r bar-offset1, include=FALSE}
+chron_subset %>%
+  ggplot(aes(x = forcats::fct_rev(group), y = value)) +
+  geom_col(width = 0.8, fill = primary) + 
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)), breaks = NULL) + 
+  facet_grid(rows = vars(category), cols = vars(question),
+             scales = "free", space = "free_y", switch = "y") +
+  theme_facet() +
+  labs(x = NULL, y = NULL,
+       subtitle = "Share of adults by Greater New Haven demographic group, 2018",
+       title = "Older adults face heavy burdens of chronic disease",
+       caption = "Source: 2018 DataHaven Community Wellbeing Survey") +
+  geom_text(aes(label = scales::percent(value, 1)), hjust = 1, color = "white", fontface = "bold", family = "Barlow Semi Condensed") + #ROTATE
+  geom_text(aes(label = scales::percent(value, 1), y = value - 0.01), hjust = 1, color = "white", fontface = "bold", family = "Barlow Semi Condensed") #ROTATE
+```
+
+---
+
+Offsetting the labels by 1 percentage point made sense for the hypertension data, where the maximum value is around 60%, but not for diabetes, where the max is only about a third of that. If you look closely, the labels for the hypertension bars are almost at the ends of the bars, but the labels for diabetes have a larger gap before the ends of the bars. Small values (e.g. diabetes for ages 18–34) also might get squeezed off.
+
+---
+
+`r chunk_reveal("bar-offset2", break_type = "auto", title = "## offset_lbls", float = "top")`
+
+```{r bar-offset2, include=FALSE}
+chron_subset %>%
+  group_by(question) %>%
+  stylehaven::offset_lbls(value, frac = 0.03, thresh = 0.15, fun = scales::label_percent(accuracy = 1))
+```
+
+---
+
+`r chunk_reveal("bar-offset3", break_type = "rotate", widths = c(3, 2), title = "## offset_lbls", omit = "#BREAK")`
+
+---
+
+`r chunk_reveal("bar-offset3", break_type = "user", widths = c(3, 2), title = "## offset_lbls", omit = "#ROTATE")`
+
+
+```{r bar-offset3, include=FALSE}
+chron_subset %>%
+  group_by(question) %>%
+  offset_lbls(value, frac = 0.05, thresh = 0.15, margin = 0.75,
+              fun = scales::label_percent(accuracy = 1)) %>%
+  ggplot(aes(x = forcats::fct_rev(group), y = value)) +
+  geom_col(width = 0.8, fill = primary) + 
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)), breaks = NULL) + 
+  facet_grid(rows = vars(category), cols = vars(question),
+             scales = "free", space = "free_y", switch = "y") +
+  theme_facet() +
+  labs(x = NULL, y = NULL,
+       subtitle = "Share of adults by Greater New Haven demographic group, 2018",
+       title = "Older adults face heavy burdens of chronic disease",
+       caption = "Source: 2018 DataHaven Community Wellbeing Survey") + 
+  geom_text(aes(label = scales::percent(value, 1), y = value - 0.01), hjust = 1, color = "white", fontface = "bold", family = "Barlow Semi Condensed") + #ROTATE
+  geom_text(aes(label = lbl, y = y, hjust = just, color = is_small), show.legend = FALSE, fontface = "bold", family = "Barlow Semi Condensed") + #ROTATE
+  geom_text(aes(label = lbl, y = y, hjust = just, color = is_small), show.legend = FALSE, fontface = "bold", family = "Barlow Semi Condensed") + #BREAK
+  scale_color_manual(values = c("TRUE" = "gray20", "FALSE" = "white")) #BREAK
+```
+
+---
+
+# Dodging labels
+
+
+A more complicated story to tell with the rent data is how rent compares to income with a subset of towns. For the 2019 Index we calculated the income needed for the median rent to be affordable, based on HUD's guidance that housing costs shouldn't be more than 30 percent of a household's income. Not surprising, most towns have gaps of several thousand dollars between these two numbers. Because they're on the same scale (income vs income) we can compare them side by side.
+
+```{r}
+rent_income_2br <- rent_2br %>%
+  slice_max(renters, n = 7) %>%
+  tidyr::pivot_longer(c(income, income_needed), names_to = "measure") %>%
+  mutate(name = forcats::as_factor(name) %>%
+           forcats::fct_reorder(annual_rent),
+         measure = forcats::as_factor(measure) %>%
+           forcats::fct_recode(median_income = "income") %>%
+           forcats::fct_rev() %>%
+           forcats::fct_relabel(camiller::clean_titles),
+         lbl = scales::dollar(value, accuracy = 1, scale = 1 / 1000, suffix = "k"))
+```
+
+
+---
+
+`r chunk_reveal("dodge1", break_type = "user", widths = c(3, 2), title = "## Dodging labels")`
+
+```{r dodge1, include=FALSE}
+ggplot(rent_income_2br, aes(x = name, y = value, fill = measure, group = measure)) +
+  geom_col(width = 0.8, position = position_dodge2(width = 0.8)) +
+  geom_text(aes(label = lbl, y = value - 1e3), hjust = 1,
+            fontface = "bold", color = "white",
+            family = "Barlow Semi Condensed", 
+            position = position_dodge2(width = 0.8)) + 
+  coord_flip() + 
+  scale_fill_manual(values = seq_pal[c(4, 7)], guide = guide_legend(reverse = TRUE)) +
+  scale_y_continuous(breaks = NULL, expand = expansion(mult = c(0, 0.05))) + 
+  theme_clean() + #BREAK
+  theme(legend.position = "top", legend.box.spacing = unit(0, "lines")) + #BREAK
+  labs(subtitle = stringr::str_wrap("Annualized median rent for a 2-bedroom housing unit and income needed to afford median rent by town, 2019", 80)) + 
+  labs(x = NULL) + 
+  labs(y = NULL) + 
+  labs(fill = NULL) + 
+  labs(title = "Throughout New Haven County, incomes fall short of affording rent") + 
+  labs(caption = "Source: US Census Bureau 2019 American Community Survey 5-year estimates") 
+```
+
+---
+
+That's pretty crowded though. Maybe the story is really the _gap_ more than the two amounts. In that case, a barbell chart (dot + path) could work well.
+
+Also, I'll use a gray color that comes from that `palx` set, so it blends well with the blues in the plot.
+
+---
+
+`r chunk_reveal("dodge2", break_type = "user", widths = c(3, 2), title = "## Dodging labels")`
+
+```{r dodge2, include=FALSE}
+ggplot(rent_income_2br, aes(x = name, y = value, group = name)) +
+  coord_flip() +
+  geom_path(color = qual_pal[["gray"]], size = 3) + #BREAK
+  geom_point(aes(color = measure), size = 9, alpha = 0.8) + #BREAK
+  geom_text(aes(label = lbl), size = 3,
+            fontface = "bold", color = "white",
+            family = "Barlow Semi Condensed") + #BREAK
+  scale_color_manual(values = seq_pal[c(4, 7)], 
+                     guide = guide_legend(reverse = TRUE, override.aes = list(size = 4))) +
+  scale_y_continuous(breaks = NULL, expand = expansion(mult = 0.1)) + #BREAK
+  theme_clean() + #BREAK
+  theme(legend.position = "top", legend.box.spacing = unit(0, "lines")) + #BREAK
+  theme(panel.grid.major.y = element_line(color = "gray90", size = 0.8, linetype = "11")) + #BREAK
+  labs(subtitle = stringr::str_wrap("Annualized median rent for a 2-bedroom housing unit and income needed to afford median rent by town, 2019", 80)) + 
+  labs(x = NULL) + 
+  labs(y = NULL) + 
+  labs(color = NULL) + 
+  labs(title = "Throughout New Haven County, incomes fall short of affording rent") + 
+  labs(caption = "Source: US Census Bureau 2019 American Community Survey 5-year estimates") 
+```
+
+---
+
+One problem is that the values for Wallingford only differ by about $1,000, so the labels overlap. `stylehaven::dodge_lbls` returns a data frame of values that are within some threshold of each other in order to draw their labels separately. 
+
+This is a little awkward—you have one text layer made with an anti-join (don't include the squished labels) and one with a semi-join (include only the squished labels)—but it lets you customize how you treat those labels, probably with `ggrepel`.
+
+---
+
+`r chunk_reveal("dodge3", break_type = "user", widths = c(3, 2), title = "## Dodging labels")`
+
+
+```{r dodge3, include=FALSE}
+rent_income_dodge <- rent_income_2br %>%
+  dodge_lbls(x = name, value = value, group = measure, thresh = 1500)
+rent_income_dodge #BREAK
+
+ggplot(rent_income_2br, aes(x = name, y = value, group = name)) +
+  coord_flip() +
+  geom_path(color = qual_pal[["gray"]], size = 3) +
+  geom_point(aes(color = measure), size = 9, alpha = 0.8) + #BREAK
+  geom_text(aes(label = lbl), size = 3, fontface = "bold", color = "white", family = "Barlow Semi Condensed",
+            data = . %>% anti_join(rent_income_dodge, by = "name")) + #BREAK
+  geom_text_repel(aes(label = lbl, color = measure), size = 3, fontface = "bold", family = "Barlow Semi Condensed",
+                  direction = "x", nudge_x = 0.2, seed = 10, force = 10, box.padding = 0.8,
+                  data = . %>% semi_join(rent_income_dodge, by = "name")) + #BREAK
+  scale_color_manual(values = seq_pal[c(4, 7)], 
+                     guide = guide_legend(reverse = TRUE, override.aes = list(size = 4))) +
+  scale_y_continuous(breaks = NULL, expand = expansion(mult = 0.1)) + 
+  theme_clean() + 
+  theme(legend.position = "top", legend.box.spacing = unit(0, "lines")) + 
+  theme(panel.grid.major.y = element_line(color = "gray90", size = 0.8, linetype = "11")) +
+  labs(subtitle = stringr::str_wrap("Annualized median rent for a 2-bedroom housing unit and income needed to afford median rent by town, 2019", 80)) + 
+  labs(x = NULL) + 
+  labs(y = NULL) + 
+  labs(color = NULL) + 
+  labs(title = "Throughout New Haven County, incomes fall short of affording rent") + 
+  labs(caption = "Source: US Census Bureau 2019 American Community Survey 5-year estimates") 
+```
+
+
+---
+
+# Down with legends
+
+Sometimes it's good to [replace legends with direct labels](https://clauswilke.com/dataviz/redundant-coding.html#designing-figures-without-legends) so your reader doesn't need to track back & forth between the chart and the legend. For this, I'll use DCWS data on self-rated health with stacked bars. This doesn't always work---use your judgment for how it balances reduced work with potential clutter.
+
+---
+
+```{r}
+# I want to reverse group levels now for getting both bars & labels in the right order later
+health <- stylehaven::self_rated_health %>%
+  mutate(category = forcats::fct_collapse(category, Total = c("Connecticut", "Greater New Haven")),
+         across(c(group, response), forcats::fct_rev)) %>%
+  filter(category %in% c("Total", "Income"))
+head(health)
+```
+
+---
+
+`r chunk_reveal("bar-legend1", break_type = "auto", widths = c(2, 2), title = "## Removing legends", left_assign = TRUE)`
+
+
+```{r bar-legend1, warning=FALSE, include=FALSE}
+health_bars <- health %>%
+  ggplot(aes(x = group, y = value, fill = response, group = response)) +
+  geom_col(width = 0.8, position = position_fill()) +
+  geom_text(aes(label = scales::percent(value, accuracy = 1)),
+            color = "white", fontface = "bold", family = "Barlow Semi Condensed",
+            position = position_fill(vjust = 0.5)) +
+  coord_flip() +
+  facet_grid(rows = vars(category), scales = "free_y", space = "free", switch = "y") +
+  scale_fill_manual(values = seq_pal[3:7]) +
+  scale_x_discrete(labels = scales::label_wrap(10)) +
+  scale_y_barcontinuous(breaks = NULL) +
+  labs(x = NULL, y = NULL, fill = NULL,
+       subtitle = "Share of adults by self-rated health by Greater New Haven demographic group, 2018",
+       title = "Higher-income adults more often rate their health as excellent") +
+  theme_facet() + 
+  theme(legend.position = "bottom") + 
+  guides(fill = guide_legend(reverse = TRUE))
+```
+
+This legend is okay now that the boxes match the direction and order of the bars in the chart, and it wouldn't be bad to leave it as is. But I'd rather make a subset of data with the values from the top bar (Connecticut) that I can use to label each group directly. I'm going to align the labels with the left ends of bars, except for the one on the right. I'll also add a numeric variable that I can use for placing labels in the margin of the space normally used for bars.
+
+---
+
+`r chunk_reveal("bar-legend2", break_type = "auto", float = "top", title = "## Labels > legends", left_assign = TRUE, widths = c(1, 0))`
+
+```{r bar-legend2, message=FALSE, warning=FALSE, include=FALSE}
+# numeric versions of response levels: excellent = 5, poor = 1
+health_lbls <- health %>%
+  slice_max(group) %>%
+  mutate(resp_num = as.numeric(response),
+         y_right = cumsum(value),
+         y_left = cumsum(lag(value, default = 0)),
+         y = ifelse(resp_num == min(resp_num), y_right, y_left),
+         just = ifelse(resp_num == min(resp_num), 1, 0))
+health_lbls
+```
+
+That's more verbose than I would normally be for this, but wanted to keep all the intermediary steps for illustration.
+
+For now, ignore the fact that the labels on the smaller bars are kind of squished---I'm working on a function for that too!
+
+---
+
+`r chunk_reveal("bar-legend3", break_type = "rotate", widths = c(3, 2), title = "## Labels > legends", omit = "#BREAK")`
+
+---
+
+`r chunk_reveal("bar-legend3", break_type = "user", widths = c(3, 2), title = "## Labels > legends", omit = "#ROTATE")`
+
+```{r bar-legend3, message=FALSE, warning=FALSE, include=FALSE}
+health_bars +
+  geom_text(aes(label = response), data = health_lbls) + #ROTATE
+  geom_text(aes(y = y, label = response), data = health_lbls) + #ROTATE
+  geom_text(aes(hjust = just, y = y, label = response), data = health_lbls) + #ROTATE
+  geom_text(aes(hjust = just, y = y, label = response), nudge_x = 0.55, data = health_lbls) + #ROTATE
+  geom_text(aes(color = response, hjust = just, y = y, label = response), nudge_x = 0.55, data = health_lbls) + #ROTATE
+  geom_text(aes(color = response, hjust = just, y = y, label = response), size = 3, family = "Barlow Semi Condensed", fontface = "bold", nudge_x = 0.55, data = health_lbls) + #BREAK
+  theme(legend.position = "none") + #BREAK
+  scale_x_discrete(expand = expansion(add = c(0.25, 0.8)), labels = scales::label_wrap(10)) + #BREAK
+  scale_color_manual(values = colorspace::darken(seq_pal[3:7])) #BREAK
+```
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval=TRUE, echo=FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+}
+
+```
