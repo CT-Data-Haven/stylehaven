@@ -43,7 +43,6 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/dcws_example_plots.html">Plot examples from the DCWS launch</a>
-    <a class="dropdown-item" href="../articles/plot_walkthrough.html">Example plot walkthrough</a>
   </div>
 </li>
       </ul>
@@ -308,7 +307,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">out_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; [1] "pdf/government_trend.pdf" "png/government_trend.png"</span></code></pre></div>
 <p>The PNG file this exported:</p>
-<p><img src="../../../../../../tmp/RtmppUSuPC/plots/png/government_trend.png" width="100%"></p>
+<p><img src="../../../../../../tmp/RtmpRI4eeO/plots/png/government_trend.png" width="100%"></p>
 <p>Even better, iterating over the plots and plot params to write all the plots. One thing to note here is to be careful that you’re matching plots and params if they’re in separate lists: you might get messed up if these lists are out of order, even if they’re named. (This once bothered me enough to post a <a href="https://stackoverflow.com/q/55798573/5325862" class="external-link">question on Stack Overflow</a>.) You can map over one list and use its names to pull entries out of the other list.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/imap.html" class="external-link">iwalk</a></span><span class="op">(</span><span class="va">plots</span>, <span class="kw">function</span><span class="op">(</span><span class="va">pl</span>, <span class="va">id</span><span class="op">)</span> <span class="op">{</span>
