@@ -1,0 +1,11 @@
+pandoc: 2.14.2
+pkgdown: 2.0.1
+pkgdown_sha: ~
+articles:
+  dcws_example_plots: dcws_example_plots.html
+  plot_walkthrough: plot_walkthrough.html
+last_built: 2021-12-22T22:05Z
+urls:
+  reference: https://ct-data-haven.github.io/stylehaven/reference
+  article: https://ct-data-haven.github.io/stylehaven/articles
+
