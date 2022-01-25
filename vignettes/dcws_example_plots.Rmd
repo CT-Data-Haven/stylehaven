@@ -228,11 +228,7 @@ write_plot(plots$govt_trend, filename = "government_trend",
 list.files(out_dir, recursive = TRUE)
 ```
 
-The PNG file this exported:
 
-```{r echo=FALSE}
-knitr::include_graphics(file.path(out_dir, "png", "government_trend.png"))
-```
 
 
 
