@@ -56,14 +56,15 @@ palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plo
   shade_list <- make_shades(base_colors, n_shades)
   if (!is.null(row)) shade_list <- shade_list[row]
 
-  if (plot) print(plot_palx(shade_list, labels))
-
   if(as_df){
-    as_tibble.palx(shade_list)
+    result <- as_tibble.palx(shade_list)
   } else {
     class(shade_list) <- c("palx", class(shade_list))
-    shade_list
+    result <- shade_list
   }
+
+  if (plot) print(plot_palx(result, labels))
+  return(result)
 }
 
 hue_keys <- stats::setNames(seq(30, 360, by = 30),
