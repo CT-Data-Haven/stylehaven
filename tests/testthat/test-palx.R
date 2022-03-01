@@ -8,6 +8,8 @@ test_that("palx returns correct classes", {
 
 test_that("as_tibble and plot generics run without error on palx objects", {
   pal <- palx("#9CCC0C")
+  # expect_equal fails because the plots have
+  # attributes in different environments
   expect_true(all.equal(plot_palx(pal), plot(pal)))
   expect_identical(as_tibble(pal), as_tibble.palx(pal))
 })

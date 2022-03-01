@@ -69,6 +69,15 @@ write_plot <- function(plot, filename, width = 7, height = 4.5, add_logo = TRUE,
     height_out <- height
     plot_out <- plot
   }
+
+  font <- plot$theme$text$family
+  if(!(font %in% sysfonts::font_families()) & verbose) {
+    msg <- warning(
+      "You're using the font '", font,
+      "', but don't seem to have it installed. ",
+      "Consider adding it with `font_add_weights` or suppressing this message with `verbose = FALSE`!")
+  }
+
   purrr::iwalk(devs, function(dev, ext) {
     fn <- xfun::with_ext(filename, ext)
     if (separate_dirs) {
@@ -80,7 +89,8 @@ write_plot <- function(plot, filename, width = 7, height = 4.5, add_logo = TRUE,
       dir_out <- file.path(dir)
     }
     file_out <- file.path(dir_out, fn)
-    ggplot2::ggsave(file_out, plot = plot_out, device = dev, width = width, height = height_out, bg = "white", ...)
+
+    suppressWarnings(ggplot2::ggsave(file_out, plot = plot_out, device = dev, width = width, height = height_out, bg = "white", ...))
     if (verbose) {
       message(paste(file_out, "saved"))
     }
