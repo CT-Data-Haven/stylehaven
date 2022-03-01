@@ -70,10 +70,9 @@ write_plot <- function(plot, filename, width = 7, height = 4.5, add_logo = TRUE,
     plot_out <- plot
   }
 
-  font <- plot$theme$text$family
-  if(!(font %in% sysfonts::font_families()) & verbose) {
-    msg <- warning(
-      "You're using the font '", font,
+  font <- plot$theme$text$family 
+  if (!is.null(font) && !(font %in% sysfonts::font_families()) & verbose) {
+    warning("You're using the font '", font,
       "', but don't seem to have it installed. ",
       "Consider adding it with `font_add_weights` or suppressing this message with `verbose = FALSE`!")
   }
