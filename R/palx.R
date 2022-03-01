@@ -1,8 +1,8 @@
 #' @title Make multi-hue, multi-shade qualitative color palettes
 #' @description `palx` is based on the Palx javascript library, basically a port of its core functions using the `colorspace` package. Provided a base color, it pulls a set of hues from across the spectrum with the same lightness and saturation, plus a gray color. It then creates shades of those hues from nearly black to nearly white. You probably don't actually want every hue; it's just a good way to get a bunch of colors to choose from.
 #'
-#' `plot_palx` makes a grid with `ggplot` of hue vs shade tiles. This can also be done with `palx`, setting `plot = TRUE`.
-#' @param hex A string of a color hex code (e.g. `"#6f54d6"`). This should be a single value, as it's the color the palette will be based around, though it's not guaranteed that this exact color will be in the final palette.
+#' You can view a palette graphically by running `plot(my_palx)`, by setting `plot = TRUE`, or by more directly calling `plot_palx`. This creates a grid of hue vs. shade tiles.
+#' @param color A string of a color name (`"red"`) or hex code (`"#6f54d6"`).' This should be a single value, as it's the color the palette will be based around, though it's not guaranteed that this exact color will be in the final palette.
 #' @param n_hues A number between 1 and 12. The number of hues returned will be this + 1, because a gray color will be added.
 #' @param n_shades A number, for the number of shades to return for each hue. Defaults 9; too many more than that will probably become hard to distinguish.
 #' @param row Numeric. If `NULL`, the default, all rows (shades) are returned. Otherwise, only the rows with these indices are returned. Just a shortcut for subsetting the list.
@@ -10,7 +10,7 @@
 #' @param plot Logical, whether to call `plot_palx` before returning. This doesn't change what the function returns, it just prints out a ggplot chart and returns the colors as normal. Defaults `FALSE`.
 #' @param data The output of calling `palx`, as either a list or data frame
 #' @param labels Logical, whether to add labels on each tile giving colors' hex codes. Defaults `FALSE`.
-#' @return If `as_df = TRUE`, a data frame with `n_shades` rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length `n_shades`) of character vectors, where each list item represents one shade.
+#' @return If `as_df = TRUE`, a tibble with `n_shades` rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length `n_shades`) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run `plot(my_palx)` or `as_tibble(my_palx)`.
 #' @details Some notes about color:
 #'
 #' * Hue refers to what would commonly be the general name of a color, e.g. blue or yellow.
@@ -33,15 +33,17 @@
 #' @source \url{https://github.com/jxnblk/palx}
 #' @seealso [colorspace::lighten()]
 #' @export
-palx <- function(hex, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plot = FALSE, labels = FALSE) {
+palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plot = FALSE, labels = FALSE) {
   max_hues <- length(hue_keys)
   if (n_hues > max_hues) {
     warning(sprintf("This function uses a maximum of %s hues. n_hues is being set to %s", max_hues, max_hues))
     n_hues <- max_hues
   }
-  assertthat::assert_that(length(hex) == 1)
+  assertthat::assert_that(length(color) == 1)
   assertthat::assert_that(n_shades >= 1)
   assertthat::assert_that(n_hues >= 1)
+
+  hex <- dplyr::if_else(color %in% colors(), scales::col2hcl(color), color)
 
   crds <- colorspace::coords(methods::as(colorspace::hex2RGB(hex), "HLS"))
   h <- crds[,1]; l <- crds[,2]; s <- crds[,3]
@@ -56,9 +58,10 @@ palx <- function(hex, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plot 
 
   if (plot) print(plot_palx(shade_list, labels))
 
-  if (as_df) {
-    palx_to_df(shade_list)
+  if(as_df){
+    as_tibble.palx(shade_list)
   } else {
+    class(shade_list) <- c("palx", class(shade_list))
     shade_list
   }
 }
@@ -67,9 +70,13 @@ hue_keys <- stats::setNames(seq(30, 360, by = 30),
                      c("orange", "yellow", "lime", "green", "teal",
                        "cyan", "blue", "indigo", "violet", "fuschia", "pink", "red"))
 
-palx_to_df <- function(shd_lst) {
-  dplyr::bind_rows(shd_lst, .id = "shade") %>%
-      dplyr::mutate(shade = as.numeric(regmatches(shade, regexpr("\\d+", shade))))
+#' @export
+as_tibble.palx <- function(shd_lst, ...) {
+  tbl <- dplyr::bind_rows(shd_lst, .id = "shade") %>%
+      dplyr::mutate(shade = as.numeric(regmatches(shade, regexpr("\\d+", shade)))) %>% 
+      tibble:::as_tibble.data.frame(...)
+  class(tbl) <- c("palx", class(tbl))
+  return(tbl)
 }
 
 #' @rdname palx
@@ -78,7 +85,7 @@ plot_palx <- function(data, labels = FALSE) {
   if (inherits(data, "data.frame")) {
     df <- data
   } else if (is.list(data)) {
-    df <- palx_to_df(data)
+    df <- as_tibble(data)
   } else {
     stop("data should be the result of calling palx, either as a list or a data frame")
   }
@@ -99,6 +106,9 @@ plot_palx <- function(data, labels = FALSE) {
     p
   }
 }
+
+#' @export
+plot.palx <- plot_palx
 
 make_hues <- function(h, n) {
   step <- 360 / n

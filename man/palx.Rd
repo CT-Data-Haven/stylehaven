@@ -9,7 +9,7 @@
 }
 \usage{
 palx(
-  hex,
+  color,
   n_hues = 8,
   n_shades = 9,
   row = NULL,
@@ -21,7 +21,7 @@ palx(
 plot_palx(data, labels = FALSE)
 }
 \arguments{
-\item{hex}{A string of a color hex code (e.g. \code{"#6f54d6"}). This should be a single value, as it's the color the palette will be based around, though it's not guaranteed that this exact color will be in the final palette.}
+\item{color}{A string of a color name (\code{"red"}) or hex code (\code{"#6f54d6"}).' This should be a single value, as it's the color the palette will be based around, though it's not guaranteed that this exact color will be in the final palette.}
 
 \item{n_hues}{A number between 1 and 12. The number of hues returned will be this + 1, because a gray color will be added.}
 
@@ -38,12 +38,12 @@ plot_palx(data, labels = FALSE)
 \item{data}{The output of calling \code{palx}, as either a list or data frame}
 }
 \value{
-If \code{as_df = TRUE}, a data frame with \code{n_shades} rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length \code{n_shades}) of character vectors, where each list item represents one shade.
+If \code{as_df = TRUE}, a tibble with \code{n_shades} rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length \code{n_shades}) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run \code{plot(my_palx)} or \code{as_tibble(palx)}.
 }
 \description{
 \code{palx} is based on the Palx javascript library, basically a port of its core functions using the \code{colorspace} package. Provided a base color, it pulls a set of hues from across the spectrum with the same lightness and saturation, plus a gray color. It then creates shades of those hues from nearly black to nearly white. You probably don't actually want every hue; it's just a good way to get a bunch of colors to choose from.
 
-\code{plot_palx} makes a grid with \code{ggplot} of hue vs shade tiles. This can also be done with \code{palx}, setting \code{plot = TRUE}.
+You can view a palette graphically by running \code{plot(my_palx)}, by setting \code{plot = TRUE}, or by more directly calling \code{plot_palx}. This creates a grid of hue vs. shade tiles.
 }
 \details{
 Some notes about color:

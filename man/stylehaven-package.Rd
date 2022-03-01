@@ -6,13 +6,14 @@
 \alias{stylehaven-package}
 \title{stylehaven: Quick style utilities and guides}
 \description{
-This is a collection of style utilities mostly revolving around making clean labels for legible plots and (eventually) examples of building common plots.
+This is a collection of style utilities mostly revolving around making clean labels for legible plots and (eventually) examples of building common plots. There's not a whole lot to it, probably never will be, just a collection of utilities, examples, and some best(?) practices.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/camille-s/stylehaven}
-  \item Report bugs at \url{https://github.com/camille-s/stylehaven/issues}
+  \item \url{https://github.com/CT-Data-Haven/stylehaven}
+  \item \url{https://ct-data-haven.github.io/stylehaven}
+  \item Report bugs at \url{https://github.com/CT-Data-Haven/stylehaven/issues}
 }
 
 }
