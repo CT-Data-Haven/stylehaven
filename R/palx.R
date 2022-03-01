@@ -72,9 +72,12 @@ hue_keys <- stats::setNames(seq(30, 360, by = 30),
 
 #' @export
 as_tibble.palx <- function(shd_lst, ...) {
-  tbl <- dplyr::bind_rows(shd_lst, .id = "shade") %>%
-      dplyr::mutate(shade = as.numeric(regmatches(shade, regexpr("\\d+", shade)))) %>% 
-      tibble:::as_tibble.data.frame(...)
+  if(inherits(shd_lst, "tbl_df")) return(shd_lst)
+  tbl <- purrr::map_dfr(1:length(shd_lst), \(i){
+    bind_rows(shd_lst[[i]])
+  }, .id = "shade") %>% 
+    dplyr::mutate(shade = as.numeric(regmatches(shade, regexpr("\\d+", shade)))) %>% 
+    tibble:::as_tibble.data.frame(...)
   class(tbl) <- c("palx", class(tbl))
   return(tbl)
 }
@@ -114,7 +117,10 @@ make_hues <- function(h, n) {
   step <- 360 / n
   band <- 30
   off <- 2
-  hue_vals <- purrr::map_dbl(1:n, ~floor((h + (. * step)) %% 360))
+  hue_vals <- purrr::map_dbl(1:n, \(val){
+    hue <- floor((h + (val * step)) %% 360)
+    dplyr::if_else(hue == 0, 360, hue)
+  })
   hue_names <- names(hue_keys)[ceiling((hue_vals - off) / band)]
   hues <- stats::setNames(hue_vals, hue_names)
   # sort(hues)
