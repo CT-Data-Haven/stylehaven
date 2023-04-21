@@ -34,7 +34,8 @@
 #' @seealso [colorspace::lighten()]
 #' @export
 palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plot = FALSE, labels = FALSE) {
-  max_hues <- length(hue_keys)
+  keys <- hue_keys()
+  max_hues <- length(keys)
   if (n_hues > max_hues) {
     warning(sprintf("This function uses a maximum of %s hues. n_hues is being set to %s", max_hues, max_hues))
     n_hues <- max_hues
@@ -49,7 +50,8 @@ palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plo
   h <- crds[,1]; l <- crds[,2]; s <- crds[,3]
   min_sat <- 1/8
   hues <- make_hues(h, n_hues)
-  base_cols <- colorspace::HLS(hues, l, s,       names(hues))
+  col_names <- gsub("\\d+_", "", names(hues))
+  base_cols <- colorspace::HLS(hues, l, s,       col_names)
   base_gray <- colorspace::HLS(h,    l, min_sat, "gray")
   base_colors <- bind_hls(c(base_cols, base_gray)) # coords
 
@@ -67,17 +69,22 @@ palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plo
   return(result)
 }
 
-hue_keys <- stats::setNames(seq(30, 360, by = 30),
-                     c("orange", "yellow", "lime", "green", "teal",
-                       "cyan", "blue", "indigo", "violet", "fuschia", "pink", "red"))
+hue_keys <- function() {
+  hues <- seq(30, 360, by = 30)
+  lbls <- c("orange", "yellow", "lime", "green", "teal", "cyan", "blue", "indigo", "violet", "fuschia", "pink", "red")
+  nums <- sprintf("%02d", c(4:12, 1:3))
+  names(hues) <- paste(nums, lbls, sep = "_")
+  hues
+}
 
+#' @rdname palx
 #' @export
 as_tibble.palx <- function(shd_lst, ...) {
   if(inherits(shd_lst, "tbl_df")) return(shd_lst)
   tbl <- purrr::map_dfr(1:length(shd_lst), \(i){
     bind_rows(shd_lst[[i]])
-  }, .id = "shade") %>% 
-    dplyr::mutate(shade = as.numeric(regmatches(shade, regexpr("\\d+", shade)))) %>% 
+  }, .id = "shade") %>%
+    dplyr::mutate(shade = as.numeric(regmatches(shade, regexpr("\\d+", shade)))) %>%
     tibble:::as_tibble.data.frame(...)
   class(tbl) <- c("palx", class(tbl))
   return(tbl)
@@ -115,16 +122,20 @@ plot_palx <- function(data, labels = FALSE) {
 plot.palx <- plot_palx
 
 make_hues <- function(h, n) {
+  keys <- hue_keys()
   step <- 360 / n
   band <- 30
   off <- 2
-  hue_vals <- purrr::map_dbl(1:n, \(val){
-    hue <- floor((h + (val * step)) %% 360)
-    dplyr::if_else(hue == 0, 360, hue)
-  })
-  hue_names <- names(hue_keys)[ceiling((hue_vals - off) / band)]
+  # hue_vals <- purrr::map_dbl(1:n, \(val){
+  #   hue <- floor((h + (val * step)) %% 360)
+  #   dplyr::if_else(hue == 0, 360, hue)
+  # })
+  # hue_idx <- ceiling((hue_vals - off) / band) + 1
+  hue_vals <- seq(band, 360, length.out = n)
+  hue_idx <- floor(hue_vals / band)
+  hue_names <- names(keys)[hue_idx]
   hues <- stats::setNames(hue_vals, hue_names)
-  # sort(hues)
+  hues <- hues[sort(names(hues))]
   hues
 }
 
