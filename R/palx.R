@@ -8,7 +8,7 @@
 #' @param row Numeric. If `NULL`, the default, all rows (shades) are returned. Otherwise, only the rows with these indices are returned. Just a shortcut for subsetting the list.
 #' @param as_df Logical, whether to return a data frame (`as_df = TRUE`) or a list of character vectors. Defaults `FALSE`.
 #' @param plot Logical, whether to call `plot_palx` before returning. This doesn't change what the function returns, it just prints out a ggplot chart and returns the colors as normal. Defaults `FALSE`.
-#' @param data The output of calling `palx`, as either a list or data frame
+#' @param x The output of calling `palx`, as either a list or data frame
 #' @param labels Logical, whether to add labels on each tile giving colors' hex codes. Defaults `FALSE`.
 #' @return If `as_df = TRUE`, a tibble with `n_shades` rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length `n_shades`) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run `plot(my_palx)` or `as_tibble(my_palx)`.
 #' @details Some notes about color:
@@ -37,12 +37,13 @@ palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plo
   keys <- hue_keys()
   max_hues <- length(keys)
   if (n_hues > max_hues) {
-    warning(sprintf("This function uses a maximum of %s hues. n_hues is being set to %s", max_hues, max_hues))
+    cli::cli_warn("This function uses a maximum of {max_hues} hues. {.arg n_hues} is being set to {max_hues}.")
     n_hues <- max_hues
   }
-  assertthat::assert_that(length(color) == 1)
-  assertthat::assert_that(n_shades >= 1)
-  assertthat::assert_that(n_hues >= 1)
+
+  if (length(color) > 1) cli::cli_abort("Argument {.arg color} should be of length 1.")
+  if (n_shades < 1) cli::cli_abort("Argument {.arg n_shades} should be at least 1.")
+  if (n_hues < 1) cli::cli_abort("Argument {.arg n_hues} should be at least 1.")
 
   hex <- dplyr::if_else(color %in% colors(), scales::col2hcl(color), color)
 
@@ -79,42 +80,41 @@ hue_keys <- function() {
 
 #' @rdname palx
 #' @export
-as_tibble.palx <- function(shd_lst, ...) {
-  if(inherits(shd_lst, "tbl_df")) return(shd_lst)
-  tbl <- purrr::map_dfr(1:length(shd_lst), \(i){
-    bind_rows(shd_lst[[i]])
-  }, .id = "shade") %>%
-    dplyr::mutate(shade = as.numeric(regmatches(shade, regexpr("\\d+", shade)))) %>%
-    tibble:::as_tibble.data.frame(...)
+as_tibble.palx <- function(x, ...) {
+  if (inherits(x, "tbl_df")) {
+    return(x)
+  }
+  tbl <- purrr::map_dfr(x, dplyr::bind_rows, .id = "shade")
+  tbl$shade <- as.numeric(gsub("[a-z]+", "", tbl$shade))
+  tbl <- tibble:::as_tibble.data.frame(tbl, ...)
   class(tbl) <- c("palx", class(tbl))
   return(tbl)
 }
 
 #' @rdname palx
 #' @export
-plot_palx <- function(data, labels = FALSE) {
-  if (inherits(data, "data.frame")) {
-    df <- data
-  } else if (is.list(data)) {
-    df <- as_tibble(data)
+plot_palx <- function(x, labels = FALSE) {
+  if (inherits(x, "data.frame")) {
+    df <- x
+  } else if (is.list(x)) {
+    df <- as_tibble(x)
   } else {
-    stop("data should be the result of calling palx, either as a list or a data frame")
+    cli::cli_abort("Argument {.arg x} should be the result of calling {.fun palx}, either as a list or a data frame.")
   }
-  p <- df %>%
-    dplyr::mutate(shade = sprintf("%02d", shade)) %>%
-    tidyr::pivot_longer(cols = -shade, names_to = "hue",
-                        names_transform = list(hue = forcats::as_factor)) %>%
-    ggplot2::ggplot(ggplot2::aes(x = hue, y = shade)) +
-    ggplot2::geom_tile(ggplot2::aes(fill = value)) +
-    ggplot2::scale_fill_identity() +
-    ggplot2::scale_x_discrete(expand = ggplot2::expansion(mult = 0), position = "top") +
-    ggplot2::scale_y_discrete(expand = ggplot2::expansion(mult = 0)) +
-    ggplot2::theme(axis.ticks = ggplot2::element_blank())
+  df <- dplyr::mutate(df, shade = sprintf("%02d", shade))
+  df <- tidyr::pivot_longer(df, cols = -shade, names_to = "hue", names_ptypes = list(hue = factor()))
+  gg <- ggplot2::ggplot(df, ggplot2::aes(x = hue, y = shade))
+  gg <- gg + ggplot2::geom_tile(ggplot2::aes(fill = value))
+  gg <- gg + ggplot2::scale_fill_identity()
+  gg <- gg + ggplot2::scale_x_discrete(expand = ggplot2::expansion(), position = "top")
+  gg <- gg + ggplot2::scale_y_discrete(expand = ggplot2::expansion())
+  gg <- gg + ggplot2::theme(axis.ticks = ggplot2::element_blank())
+
   if (labels) {
-    p +
-      ggplot2::geom_label(ggplot2::aes(label = value), size = 2.8, alpha = 0.6, label.size = 0)
+    gg + ggplot2::geom_label(ggplot2::aes(fill = value),
+                             size = 2.8, alpha = 0.6, label.size = 0)
   } else {
-    p
+    gg
   }
 }
 
@@ -147,16 +147,16 @@ make_shades <- function(crds, shds) {
   }
 
   hexes <- colorspace::hex(colorspace::HLS(crds))
-  lum %>%
-    purrr::map(~colorspace::lighten(hexes, amount = ., method = "relative", space = "HLS")) %>%
-    purrr::map(rlang::set_names, rownames(crds)) %>%
-    rlang::set_names(~paste0("shade", sprintf("%02d", seq_along(.))))
+  lum <- purrr::map(lum, function(l) colorspace::lighten(hexes, amount = l, method = "relative", space = "HLS"))
+  lum <- purrr::map(lum, rlang::set_names, rownames(crds))
+  lum <- rlang::set_names(lum, function(x) sprintf("shade%02d", seq_along(x)))
+  lum
 }
 
 bind_hls <- function(x) {
   # x = list of hls objs
-  x %>%
-    purrr::map(colorspace::coords) %>%
-    purrr::reduce(rbind)
+  x <- purrr::map(x, colorspace::coords)
+  x <- purrr::reduce(x, rbind)
+  x
 }
 

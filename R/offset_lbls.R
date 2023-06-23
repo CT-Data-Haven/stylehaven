@@ -34,22 +34,23 @@
 #' @export
 offset_lbls <- function(data, value, frac = 0.05, thresh = 0.15, margin = 1.5, fun = NULL, na = "N/A") {
   if (is.null(fun)) {
-    fun <- I
+    fun <- as.character
   }
-  assertthat::assert_that(inherits(fun, "function"), msg = "`fun` should be a function.")
+  if (!inherits(fun, "function")) {
+    cli::cli_abort("Argument {.arg fun} must be a function, or {.val NULL}.")
+  }
   if (is.null(na)) {
     na <- NA
   }
-  out <- data %>%
-    dplyr::mutate(ratio = {{ value }} / max({{ value }}, na.rm = TRUE),
-                  base_off = ratio_to_max({{ value }}, frac),
-                  is_small = ratio <= thresh | is.na({{ value }}),
-                  off = ifelse(is_small, margin * base_off, -base_off),
-                  y = tidyr::replace_na({{ value }} + off, 0),
-                  just = ifelse(is_small | y == 0, 0, 1),
-                  lbl = tidyr::replace_na(purrr::map_chr({{ value }}, fun), na)) %>%
-    dplyr::select(-ratio, -base_off)
-  out
+  data <- dplyr::mutate(data, ratio = {{ value }} / max({{ value }}, na.rm = TRUE))
+  data <- dplyr::mutate(data, base_off = ratio_to_max({{ value }}, frac))
+  data <- dplyr::mutate(data, is_small = ratio <= thresh | is.na({{ value }}))
+  data <- dplyr::mutate(data, off = ifelse(is_small, margin * base_off, -base_off))
+  data <- dplyr::mutate(data, y = tidyr::replace_na({{ value }} + off, 0))
+  data <- dplyr::mutate(data, just = ifelse(is_small | y == 0, 0, 1))
+  data <- dplyr::mutate(data, lbl = tidyr::replace_na(purrr::map_chr({{ value }}, fun), na))
+  data <- dplyr::select(data, -ratio, -base_off)
+  data
 }
 
 #' @param x A numeric vector

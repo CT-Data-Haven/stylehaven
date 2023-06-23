@@ -27,34 +27,34 @@
 #' @seealso sysfonts::font_add_google
 font_add_weights <- function(name, regular = 400, semibold = 600, bold = 700, black = 900) {
   wts <- stats::setNames(c(regular, semibold, bold, black), c("regular", "semibold", "bold", "black"))
-  defs <- list(regular = 400, semibold = 600, bold = 700, black = 900)
+  defaults <- list(regular = 400, semibold = 600, bold = 700, black = 900)
 
-  avail <- sysfonts::font_info_google(db_cache = FALSE) %>%
-    dplyr::mutate(variants = gsub("regular", "400", variants)) %>%
-    tidyr::separate_rows(variants, sep = ", ") %>%
-    dplyr::filter(family == name,
-                  !grepl("[a-z]", variants)) %>%
-    dplyr::pull(variants) %>%
-    as.numeric()
-  assertthat::assert_that(length(avail) > 0,
-                          msg = sprintf("%s not found in the fonts database. Double check the name & spelling", name))
+  avail <- sysfonts::font_info_google(db_cache = FALSE)
+  avail <- dplyr::mutate(avail, variants = gsub("regular", "400", variants))
+  avail <- tidyr::separate_rows(avail, variants, sep = ", ")
+  avail <- dplyr::filter(avail, family == name)
+  avail <- dplyr::filter(avail, !grepl("[a-z]", variants))
+  avail <- as.numeric(avail$variants)
+
+  if (length(avail) < 1) {
+    cli::cli_abort("{name} not found in the fonts database. Double check the name & spelling.")
+  }
 
   is_unavail <- purrr::map_lgl(wts, function(x) !x %in% avail)
   unavail <- wts[is_unavail]
-  err_msg <- paste(
-    "The following weights are unavailable for this font:",
-    paste(unavail, collapse = ", "),
-    "\n",
-    "This font comes in the weights",
-    paste(avail, collapse = ", "), collapse = " ")
-  assertthat::assert_that(sum(is_unavail) == 0, msg = err_msg)
+  if (sum(is_unavail) > 0) {
+    cli::cli_abort(c(
+      "The following weights are unavailable for this font: {.val unavail}.",
+      "i" = "This font comes in the following weights: {.val avail}."
+    ))
+  }
 
   sb_name <- paste(name, "Semibold")
-  reg_msg <- paste("Registering the following fonts:",
-          paste(name, "with regular weight", regular, "and bold weight", bold),
-          paste(sb_name, "with regular weight", semibold, "and bold weight", black),
-          sep = "\n")
-  message(reg_msg)
+  cli::cli_alert_info("Registering the following fonts:")
+  cli::cli_ul(c(
+    "{.strong {name}} with regular weight {regular} and bold weight {bold}",
+    "{.strong {sb_name}} with semibold weight {semibold} and black weight {black}"
+  ))
 
   sysfonts::font_add_google(name, family = name, regular.wt = regular, bold.wt = bold)
   sysfonts::font_add_google(name, family = sb_name, regular.wt = semibold, bold.wt = black)

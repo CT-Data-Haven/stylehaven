@@ -47,7 +47,21 @@
 #' }
 #' @export
 #' @seealso [cwi::add_logo()], [ggplot2::ggsave()]
-write_plot <- function(plot, filename, width = 7, height = 4.5, add_logo = TRUE, use_abs_logo = TRUE, logo_abs = 0.15, logo_scale = 0.05, logo_img = NULL, logo_pos = "right", place_inside = FALSE, dir = NULL, separate_dirs = TRUE, devs = list(pdf = grDevices::cairo_pdf, png = ragg::agg_png), verbose = TRUE, ...) {
+write_plot <- function(plot,
+                       filename,
+                       width = 7,
+                       height = 4.5,
+                       add_logo = TRUE,
+                       use_abs_logo = TRUE,
+                       logo_abs = 0.15,
+                       logo_scale = 0.05,
+                       logo_img = NULL,
+                       logo_pos = "right",
+                       place_inside = FALSE,
+                       dir = NULL,
+                       separate_dirs = TRUE,
+                       devs = list(pdf = grDevices::cairo_pdf, png = ragg::agg_png),
+                       verbose = TRUE, ...) {
   # test graphics devices--use docker
   if (is.null(dir)) {
     dir <- "."
@@ -70,12 +84,13 @@ write_plot <- function(plot, filename, width = 7, height = 4.5, add_logo = TRUE,
     plot_out <- plot
   }
 
-  font <- plot$theme$text$family 
+  font <- plot$theme$text$family
   if (!is.null(font) && !(font %in% sysfonts::font_families()) & verbose) {
-    warning("You're using the font '", font,
-      "', but don't seem to have it installed. ",
-      "Consider adding it with `font_add_weights` or suppressing this message with `verbose = FALSE`!")
+    cli::cli_warn("You're using the font {font}, but don't seem to have it installed.",
+                  "i" = "Consider adding it with {.fun stylehaven::font_add_weights} or {.fun sysfonts::font_add}.")
   }
+
+  if (verbose) cli::cli_ul()
 
   purrr::iwalk(devs, function(dev, ext) {
     fn <- xfun::with_ext(filename, ext)
@@ -91,8 +106,11 @@ write_plot <- function(plot, filename, width = 7, height = 4.5, add_logo = TRUE,
 
     suppressWarnings(ggplot2::ggsave(file_out, plot = plot_out, device = dev, width = width, height = height_out, bg = "white", ...))
     if (verbose) {
-      message(paste(file_out, "saved"))
+      cli::cli_li("{.file {file_out}} saved")
     }
   })
+
+  if (verbose) cli::cli_end()
+
   invisible(NULL)
 }

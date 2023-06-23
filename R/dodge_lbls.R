@@ -55,16 +55,15 @@
 #' @import dplyr
 dodge_lbls <- function(data, x, value, group, thresh, digits = 2) {
   id_str <- rlang::as_name(enquo(x))
-  dplyr::inner_join(
-    data %>% dplyr::select({{ x }}, x1 = {{ group }}, val1 = {{ value }}),
-    data %>% dplyr::select({{ x }}, x2 = {{ group }}, val2 = {{ value }}),
-    by = id_str
-  ) %>%
-    dplyr::filter(x1 != x2) %>%
-    dplyr::mutate(dplyr::across(dplyr::starts_with("val"), round, digits),
-           diff = abs(val1 - val2)) %>%
-    dplyr::filter(diff <= thresh) %>%
-    dplyr::select({{ x }}, {{ group }} := x1)
+  df_left <-  dplyr::select(data, {{ x }}, x1 = {{ group }}, val1 = {{ value }})
+  df_right <- dplyr::select(data, {{ x }}, x2 = {{ group }}, val2 = {{ value }})
+  joined <- dplyr::inner_join(df_left, df_right, by = id_str)
+  joined <- dplyr::filter(joined, x1 != x2)
+  joined <- dplyr::mutate(joined, dplyr::across(dplyr::matches("^val\\d$"), round, digits))
+  joined <- dplyr::mutate(joined, diff = abs(val1 - val2))
+  joined <- dplyr::filter(joined, diff <= thresh)
+  joined <- dplyr::select(joined, {{ x }}, {{ group }} := x1)
+  joined
 }
 
 

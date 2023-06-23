@@ -2,6 +2,7 @@
 % Please edit documentation in R/palx.R
 \name{palx}
 \alias{palx}
+\alias{as_tibble.palx}
 \alias{plot_palx}
 \title{Make multi-hue, multi-shade qualitative color palettes}
 \source{
@@ -18,7 +19,9 @@ palx(
   labels = FALSE
 )
 
-plot_palx(data, labels = FALSE)
+\method{as_tibble}{palx}(x, ...)
+
+plot_palx(x, labels = FALSE)
 }
 \arguments{
 \item{color}{A string of a color name (\code{"red"}) or hex code (\code{"#6f54d6"}).' This should be a single value, as it's the color the palette will be based around, though it's not guaranteed that this exact color will be in the final palette.}
@@ -35,10 +38,10 @@ plot_palx(data, labels = FALSE)
 
 \item{labels}{Logical, whether to add labels on each tile giving colors' hex codes. Defaults \code{FALSE}.}
 
-\item{data}{The output of calling \code{palx}, as either a list or data frame}
+\item{x}{The output of calling \code{palx}, as either a list or data frame}
 }
 \value{
-If \code{as_df = TRUE}, a tibble with \code{n_shades} rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length \code{n_shades}) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run \code{plot(my_palx)} or \code{as_tibble(palx)}.
+If \code{as_df = TRUE}, a tibble with \code{n_shades} rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length \code{n_shades}) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run \code{plot(my_palx)} or \code{as_tibble(my_palx)}.
 }
 \description{
 \code{palx} is based on the Palx javascript library, basically a port of its core functions using the \code{colorspace} package. Provided a base color, it pulls a set of hues from across the spectrum with the same lightness and saturation, plus a gray color. It then creates shades of those hues from nearly black to nearly white. You probably don't actually want every hue; it's just a good way to get a bunch of colors to choose from.

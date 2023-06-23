@@ -17,7 +17,9 @@
 #' @export
 #' @rdname round_sum100
 round_sum100 <- function(x, digits = 0, verbose = FALSE) {
-  assertthat::assert_that(assertthat::noNA(x))
+  if (any(is.na(x))) cli::cli_warn("{.val NA} values in {.arg x} are being dropped.")
+  x <- stats::na.omit(x)
+
   up <- 10 ^ digits
   x <- x * up
   y <- floor(x)
@@ -26,13 +28,11 @@ round_sum100 <- function(x, digits = 0, verbose = FALSE) {
   out <- y / up
   if (verbose) {
     out_sum <- sum(out)
-    msg <- paste("Sums to", out_sum)
     if (out_sum == 100) {
-      face <- ":-)"
+      cli::cli_alert_success("Sums to {out_sum}.")
     } else {
-      face <- ":-("
+      cli::cli_alert_warning("Sums to {out_sum}, not 100.")
     }
-    message(paste(msg, face))
   }
   out
 }

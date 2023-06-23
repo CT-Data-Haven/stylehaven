@@ -42,32 +42,34 @@
 #' @export
 #' @rdname endpoint_lbls
 endpoint_lbls <- function(data, x, value, group, frac = 0.2, fun = NULL, long_side = c("right", "left", "both")) {
-  long_side <- match.arg(long_side, c("right", "left", "both"))
+  sides <- c("right", "left", "both")
+  if (any(!long_side %in% sides)) {
+    cli::cli_abort("Argument {.arg long_side} should be one of {.val {sides}}.")
+  }
   if (is.null(fun)) {
-    fun <- I
+    fun <- as.character
   }
-  assertthat::assert_that(inherits(fun, "function"), msg = "`fun` should be a function.")
+  if (!inherits(fun, "function")) {
+    cli::cli_abort("Argument {.arg fun} must be a function, or {.val NULL}.")
+  }
   rng <- range(as.numeric(data[[rlang::as_label(enquo(x))]]))
-  out <- data %>%
-    dplyr::mutate({{ x }} := as.numeric({{ x }}),
-                  is_min = {{ x }} == min({{ x }}, na.rm = TRUE),
-                  sign = ifelse(is_min, -1, 1),
-                  off = frac * sign,
-                  x = {{ x }} + off,
-                  just = ifelse(is_min, 1, 0),
-                  short_lbl = purrr::map_chr({{ value }}, fun),
-                  long_lbl = sprintf("%s: %s", {{ group }}, short_lbl))
-  if (long_side == "right") {
-    out <- out %>%
-      dplyr::mutate(lbl = ifelse(is_min, short_lbl, long_lbl))
-  } else if (long_side == "left") {
-    out <- out %>%
-      dplyr::mutate(lbl = ifelse(is_min, long_lbl, short_lbl))
-  } else {
-    out <- out %>%
-      dplyr::mutate(lbl = long_lbl)
-  }
-  out %>%
-    dplyr::select(-is_min, -sign, -off, -short_lbl, -long_lbl)
-}
 
+  out <- data
+  out <- dplyr::mutate(out, {{ x }} := as.numeric({{ x }}))
+  out <- dplyr::mutate(out, is_min = {{ x }} == min({{ x }}, na.rm = TRUE))
+  out <- dplyr::mutate(out, sign = ifelse(is_min, -1, 1))
+  out <- dplyr::mutate(out, off = frac * sign)
+  out <- dplyr::mutate(out, x = {{ x }} + off)
+  out <- dplyr::mutate(out, just = ifelse(is_min, 1, 0))
+  out <- dplyr::mutate(out, short_lbl = purrr::map_chr({{ value }}, fun))
+  out <- dplyr::mutate(out, long_lbl = sprintf("%s: %s", {{ group }}, short_lbl))
+
+  if (long_side == "right") {
+    out <- dplyr::mutate(out, lbl = dplyr::if_else(is_min, short_lbl, long_lbl))
+  } else if (long_side == "left") {
+    out <- dplyr::mutate(out, lbl = dplyr::if_else(is_min, long_lbl, short_lbl))
+  } else {
+    out <- dplyr::mutate(out, lbl = long_lbl)
+  }
+  dplyr::select(out, -is_min, -sign, -off, -short_lbl, -long_lbl)
+}
