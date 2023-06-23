@@ -121,7 +121,7 @@ govt_trend <- cws_trend %>%
                 fun = percent100, long_side = "left"))
 
 ggplot(govt_left, aes(x = year, y = value, color = group, group = group)) +
-  geom_path(size = 3) +
+  geom_path(linewidth = 3) +
   geom_point(size = 4) +
   geom_text(aes(label = lbl, x = x, hjust = just)) +
   scale_x_continuous(expand = expansion(add = c(2, 1)), breaks = c(2015, 2021)) +
@@ -142,7 +142,7 @@ govt_right <- govt_trend %>%
                 fun = percent100, long_side = "right") # this is the default side
 
 plots[["govt_trend"]] <- ggplot(govt_right, aes(x = year, y = value, color = group, group = group)) +
-  geom_path(size = 3) +
+  geom_path(linewidth = 3) +
   geom_point(size = 4) +
   geom_text(aes(label = lbl, x = x, hjust = just)) +
   # in practice I might use ggrepel
