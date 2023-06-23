@@ -16,9 +16,6 @@
     <loc>https://ct-data-haven.github.io/stylehaven/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/articles/makeover.html</loc>
-  </url>
-  <url>
     <loc>https://ct-data-haven.github.io/stylehaven/authors.html</loc>
   </url>
   <url>
@@ -68,6 +65,9 @@
   </url>
   <url>
     <loc>https://ct-data-haven.github.io/stylehaven/reference/self_rated_health.html</loc>
+  </url>
+  <url>
+    <loc>https://ct-data-haven.github.io/stylehaven/reference/stack_lbls.html</loc>
   </url>
   <url>
     <loc>https://ct-data-haven.github.io/stylehaven/reference/stylehaven-package.html</loc>
