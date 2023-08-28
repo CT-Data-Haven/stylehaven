@@ -177,7 +177,7 @@ ggplot(cohesion, aes(x = question, y = value, color = group)) +
   coord_flip() +
   scale_x_discrete(labels = camiller::clean_titles) +
   scale_y_continuous(breaks = NULL) +
-  scale_color_manual(values = pal4),
+  scale_color_manual(values = pal4,
                      guide = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(size = 4))) +
   theme(legend.position = "bottom",
         panel.grid.major.y = element_line(size = 1, linetype = "11", color = "gray90")) +
@@ -203,7 +203,7 @@ plots[["cohesion"]] <- ggplot(cohesion, aes(x = question, y = value, color = gro
   coord_flip() +
   scale_x_discrete(labels = camiller::clean_titles) +
   scale_y_continuous(breaks = NULL) +
-  scale_color_manual(values = pal4),
+  scale_color_manual(values = pal4,
                      guide = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(size = 4))) +
   theme(legend.position = "bottom",
         panel.grid.major.y = element_line(size = 1, linetype = "11", color = "gray90")) +
