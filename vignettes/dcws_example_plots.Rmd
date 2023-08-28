@@ -55,6 +55,8 @@ theme_bar <- function(x, ...) {
 theme_set(theme_bar())
 update_geom_defaults("col", list(fill = base_col))
 update_geom_defaults("text", list(size = 3.5, fontface = "bold", family = "Barlow Semi Condensed", color = tf_pal[["FALSE"]]))
+
+pal4 <- unname(qual_pal[c("gray", "blue", "teal", "red")])
 ```
 
 I'll keep all the plots in one named list, and all their output parameters (width & height, could also include something like logo placement) in another named list. Then I'll map over these to save all the plots as PDF and PNG. Having a list of widths & heights also makes it easier to have the same dimensions within this document (as chunk `fig.width` and `fig.height`) as they have once they're exported. Doing this prints an error when running chunks for some reason but you can ignore it.
@@ -126,7 +128,7 @@ ggplot(govt_left, aes(x = year, y = value, color = group, group = group)) +
   geom_text(aes(label = lbl, x = x, hjust = just)) +
   scale_x_continuous(expand = expansion(add = c(2, 1)), breaks = c(2015, 2021)) +
   scale_y_continuous(breaks = NULL) +
-  scale_color_manual(values = unname(qual_pal[c("pink", "yellow", "lime", "indigo")])) +
+  scale_color_manual(values = pal4) +
   theme(legend.position = "none",
         panel.grid.major.x = element_line(color = "gray90")) +
   labs(x = NULL, y = NULL,
@@ -148,7 +150,7 @@ plots[["govt_trend"]] <- ggplot(govt_right, aes(x = year, y = value, color = gro
   # in practice I might use ggrepel
   scale_x_continuous(expand = expansion(add = c(1, 2)), breaks = c(2015, 2021)) +
   scale_y_continuous(breaks = NULL) +
-  scale_color_manual(values = unname(qual_pal[c("pink", "yellow", "lime", "indigo")])) +
+  scale_color_manual(values = pal4) +
   theme(legend.position = "none",
         panel.grid.major.x = element_line(color = "gray90")) +
   labs(x = NULL, y = NULL,
@@ -175,7 +177,7 @@ ggplot(cohesion, aes(x = question, y = value, color = group)) +
   coord_flip() +
   scale_x_discrete(labels = camiller::clean_titles) +
   scale_y_continuous(breaks = NULL) +
-  scale_color_manual(values = unname(qual_pal[c("gray", "pink", "lime", "indigo")]),
+  scale_color_manual(values = pal4),
                      guide = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(size = 4))) +
   theme(legend.position = "bottom",
         panel.grid.major.y = element_line(size = 1, linetype = "11", color = "gray90")) +
@@ -201,7 +203,7 @@ plots[["cohesion"]] <- ggplot(cohesion, aes(x = question, y = value, color = gro
   coord_flip() +
   scale_x_discrete(labels = camiller::clean_titles) +
   scale_y_continuous(breaks = NULL) +
-  scale_color_manual(values = unname(qual_pal[c("gray", "pink", "lime", "indigo")]),
+  scale_color_manual(values = pal4),
                      guide = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(size = 4))) +
   theme(legend.position = "bottom",
         panel.grid.major.y = element_line(size = 1, linetype = "11", color = "gray90")) +
