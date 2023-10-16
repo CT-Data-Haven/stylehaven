@@ -21,7 +21,7 @@ palx(
 
 \method{as_tibble}{palx}(x, ...)
 
-plot_palx(x, labels = FALSE)
+plot_palx(x, ..., labels = FALSE)
 }
 \arguments{
 \item{color}{A string of a color name (\code{"red"}) or hex code (\code{"#6f54d6"}).' This should be a single value, as it's the color the palette will be based around, though it's not guaranteed that this exact color will be in the final palette.}
@@ -39,6 +39,8 @@ plot_palx(x, labels = FALSE)
 \item{labels}{Logical, whether to add labels on each tile giving colors' hex codes. Defaults \code{FALSE}.}
 
 \item{x}{The output of calling \code{palx}, as either a list or data frame}
+
+\item{...}{Not used}
 }
 \value{
 If \code{as_df = TRUE}, a tibble with \code{n_shades} rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length \code{n_shades}) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run \code{plot(my_palx)} or \code{as_tibble(my_palx)}.

@@ -10,6 +10,7 @@
 #' @param plot Logical, whether to call `plot_palx` before returning. This doesn't change what the function returns, it just prints out a ggplot chart and returns the colors as normal. Defaults `FALSE`.
 #' @param x The output of calling `palx`, as either a list or data frame
 #' @param labels Logical, whether to add labels on each tile giving colors' hex codes. Defaults `FALSE`.
+#' @param ... Not used
 #' @return If `as_df = TRUE`, a tibble with `n_shades` rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length `n_shades`) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run `plot(my_palx)` or `as_tibble(my_palx)`.
 #' @details Some notes about color:
 #'
@@ -84,22 +85,24 @@ as_tibble.palx <- function(x, ...) {
   if (inherits(x, "tbl_df")) {
     return(x)
   }
-  tbl <- purrr::map_dfr(x, dplyr::bind_rows, .id = "shade")
+  tbl <- purrr::map(x, dplyr::bind_rows)
+  tbl <- dplyr::bind_rows(tbl, .id = "shade")
   tbl$shade <- as.numeric(gsub("[a-z]+", "", tbl$shade))
-  tbl <- tibble:::as_tibble.data.frame(tbl, ...)
+  # tbl <- tibble:::as_tibble.data.frame(tbl, ...)
   class(tbl) <- c("palx", class(tbl))
   return(tbl)
 }
 
 #' @rdname palx
 #' @export
-plot_palx <- function(x, labels = FALSE) {
+plot_palx <- function(x, ..., labels = FALSE) {
+  if (!inherits(x, "palx")) {
+    cli::cli_abort("Argument {.arg x} should be the result of calling {.fun palx}, either as a list or a data frame.")
+  }
   if (inherits(x, "data.frame")) {
     df <- x
-  } else if (is.list(x)) {
-    df <- as_tibble(x)
   } else {
-    cli::cli_abort("Argument {.arg x} should be the result of calling {.fun palx}, either as a list or a data frame.")
+    df <- as_tibble.palx(x)
   }
   df <- dplyr::mutate(df, shade = sprintf("%02d", shade))
   df <- tidyr::pivot_longer(df, cols = -shade, names_to = "hue", names_ptypes = list(hue = factor()))

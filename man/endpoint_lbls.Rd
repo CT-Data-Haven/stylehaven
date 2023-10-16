@@ -11,7 +11,7 @@ endpoint_lbls(
   group,
   frac = 0.2,
   fun = NULL,
-  long_side = c("right", "left", "both")
+  long_side = c("right", "left", "both", "none")
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ endpoint_lbls(
 
 \item{fun}{A function, used to create value labels. \verb{scales::label_*} functions will be very useful here. If \code{NULL} (the default), no formatting is done.}
 
-\item{long_side}{Character, either \code{"right"} (the default), \code{"left"}, or \code{"both"}. For \code{"left"} or \code{"right"}, this refers to whether the longer label should be on the right or the left, returning a short label on the opposite side. If \code{"both"}, only the long label is returned. Labels are combined in a new column called \code{lbl}.}
+\item{long_side}{Character, either \code{"right"} (the default), \code{"left"}, \code{"both"}, or \code{"none"}. For \code{"left"} or \code{"right"}, this refers to whether the longer label should be on the right or the left, returning a short label on the opposite side. If \code{"both"}, only long labels are returned; if \code{"none"}, only short labels are returned. Regardless, labels are combined in a new column called \code{lbl}.}
 }
 \value{
 A data frame: the original data frame passed in to \code{data}, with 3 additional columns:

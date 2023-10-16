@@ -6,7 +6,7 @@
 #' @param group Bare column name of the name or grouping variable that should be shown in the labels.
 #' @param frac Numeric; ratio to the `x` variable by which labels should be offset. Default: 0.2
 #' @param fun A function, used to create value labels. `scales::label_*` functions will be very useful here. If `NULL` (the default), no formatting is done.
-#' @param long_side Character, either `"right"` (the default), `"left"`, or `"both"`. For `"left"` or `"right"`, this refers to whether the longer label should be on the right or the left, returning a short label on the opposite side. If `"both"`, only the long label is returned. Labels are combined in a new column called `lbl`.
+#' @param long_side Character, either `"right"` (the default), `"left"`, `"both"`, or `"none"`. For `"left"` or `"right"`, this refers to whether the longer label should be on the right or the left, returning a short label on the opposite side. If `"both"`, only long labels are returned; if `"none"`, only short labels are returned. Regardless, labels are combined in a new column called `lbl`.
 #' @return A data frame: the original data frame passed in to `data`, with 3 additional columns:
 #'
 #' * `x`, the x-values with offsets added
@@ -41,18 +41,15 @@
 #' }
 #' @export
 #' @rdname endpoint_lbls
-endpoint_lbls <- function(data, x, value, group, frac = 0.2, fun = NULL, long_side = c("right", "left", "both")) {
-  sides <- c("right", "left", "both")
-  if (any(!long_side %in% sides)) {
-    cli::cli_abort("Argument {.arg long_side} should be one of {.val {sides}}.")
-  }
+endpoint_lbls <- function(data, x, value, group, frac = 0.2, fun = NULL, long_side = c("right", "left", "both", "none")) {
+  rlang::arg_match(long_side)
   if (is.null(fun)) {
     fun <- as.character
   }
   if (!inherits(fun, "function")) {
     cli::cli_abort("Argument {.arg fun} must be a function, or {.val NULL}.")
   }
-  rng <- range(as.numeric(data[[rlang::as_label(enquo(x))]]))
+  # rng <- range(as.numeric(data[[rlang::as_label(enquo(x))]]))
 
   out <- data
   out <- dplyr::mutate(out, {{ x }} := as.numeric({{ x }}))
@@ -68,8 +65,10 @@ endpoint_lbls <- function(data, x, value, group, frac = 0.2, fun = NULL, long_si
     out <- dplyr::mutate(out, lbl = dplyr::if_else(is_min, short_lbl, long_lbl))
   } else if (long_side == "left") {
     out <- dplyr::mutate(out, lbl = dplyr::if_else(is_min, long_lbl, short_lbl))
-  } else {
+  } else if (long_side == "both") {
     out <- dplyr::mutate(out, lbl = long_lbl)
+  } else if (long_side == "none") {
+    out <- dplyr::mutate(out, lbl = short_lbl)
   }
   dplyr::select(out, -is_min, -sign, -off, -short_lbl, -long_lbl)
 }

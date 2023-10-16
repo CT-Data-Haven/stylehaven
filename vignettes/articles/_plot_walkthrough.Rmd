@@ -11,7 +11,7 @@ output:
       highlightLines: true
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE}
 knitr::opts_chunk$set(
 	echo = TRUE,
 	message = TRUE,
@@ -49,14 +49,14 @@ I'm using the yellow-green-blue palette from ColorBrewer for sequential data. Se
 ```{r palx1, fig.height=1.5}
 seq_pal <- RColorBrewer::brewer.pal(7, "YlGnBu")
 camiller::color_prev(seq_pal)
-primary <- seq_pal[6]
+primary <- seq_pal[5]
 ```
 
 ---
 
 ```{r fig.width=7, fig.height=3}
-palx_colors <- palx(primary, n = 9, n_shades = 5, plot = TRUE, labels = TRUE)
-qual_pal <- palx_colors[["shade04"]]
+palx_colors <- palx(primary, n_hues = 9, n_shades = 7, plot = TRUE)
+qual_pal <- palx_colors[["shade05"]]
 ```
 
 ---
@@ -69,10 +69,10 @@ These are obviously not finished charts, just an example to see how the colors l
 color1 <- cws_trend %>%
   filter(category %in% c("Total", "Age"), indicator == "police_approval") %>%
   ggplot(aes(x = year, y = value, color = group, group = group)) +
-  geom_line(size = 2, alpha = 0.9) +
+  geom_line(linewidth = 2, alpha = 0.9) +
   geom_point(size = 4) +
   scale_x_continuous(breaks = c(2015, 2021), expand = expansion(mult = 0.2)) +
-  scale_color_manual(values = unname(qual_pal[c("gray", "red", "indigo", "orange", "violet")])) +
+  scale_color_manual(values = unname(qual_pal[c("gray", "cyan", "orange", "blue", "violet")])) +
   theme_minimal() +
   theme(legend.justification = c(0, 0),
         legend.position = c(0, 0))
@@ -142,7 +142,7 @@ I'll build on that in a handful of ways:
 
 `r chunk_reveal("bar-flip")`
 
-```{r bar-flip, include=FALSE}
+```{r bar-flip, include=TRUE}
 rent_2br %>%
   mutate(name = forcats::as_factor(name) %>%
            forcats::fct_reorder(annual_rent)) %>%
@@ -283,7 +283,7 @@ Instead of using `nudge_y` to pad the labels away from the ends of the bars, I'l
 
 `r chunk_reveal("bar-groups", break_type = "auto", widths = c(3, 2), title = "## Groups, part 1", left_assign = TRUE)`
 
-```{r bar-groups, include=FALSE}
+```{r bar-groups, include=TRUE}
 food_bars <- food_insecure %>%
   ggplot(aes(x = forcats::fct_rev(group), y = value)) +
   geom_col(width = 0.8, fill = primary) +
@@ -306,7 +306,7 @@ food_bars <- food_insecure %>%
 
 
 
-```{r bar-facet, include=FALSE}
+```{r bar-facet, include=TRUE}
 food_bars +
   facet_grid(rows = vars(category)) + #ROTATE
   facet_grid(rows = vars(category), scales = "free_y") + #ROTATE
@@ -318,7 +318,7 @@ food_bars +
 
 `r chunk_reveal("bar-facet2", break_type = "user", widths = c(3, 2), title = "## Groups, part 2")`
 
-```{r bar-facet2, include=FALSE}
+```{r bar-facet2, include=TRUE}
 food_bars +
   facet_grid(rows = vars(category), switch = "y", space = "free", scales = "free_y") + #BREAK
   theme(strip.placement = "outside") + #BREAK
@@ -364,7 +364,7 @@ head(chron_subset)
 
 `r chunk_reveal("bar-offset1", break_type = "rotate", widths = c(3, 2), title = "## Different scales")`
 
-```{r bar-offset1, include=FALSE}
+```{r bar-offset1, include=TRUE}
 chron_subset %>%
   ggplot(aes(x = forcats::fct_rev(group), y = value)) +
   geom_col(width = 0.8, fill = primary) + 
@@ -389,7 +389,7 @@ Offsetting the labels by 1 percentage point made sense for the hypertension data
 
 `r chunk_reveal("bar-offset2", break_type = "auto", title = "## offset_lbls", float = "top")`
 
-```{r bar-offset2, include=FALSE}
+```{r bar-offset2, include=TRUE}
 chron_subset %>%
   group_by(question) %>%
   stylehaven::offset_lbls(value, frac = 0.03, thresh = 0.15, fun = scales::label_percent(accuracy = 1))
@@ -404,7 +404,7 @@ chron_subset %>%
 `r chunk_reveal("bar-offset3", break_type = "user", widths = c(3, 2), title = "## offset_lbls", omit = "#ROTATE")`
 
 
-```{r bar-offset3, include=FALSE}
+```{r bar-offset3, include=TRUE}
 chron_subset %>%
   group_by(question) %>%
   offset_lbls(value, frac = 0.05, thresh = 0.15, margin = 0.75,
@@ -451,7 +451,7 @@ rent_income_2br <- rent_2br %>%
 
 `r chunk_reveal("dodge1", break_type = "user", widths = c(3, 2), title = "## Dodging labels")`
 
-```{r dodge1, include=FALSE}
+```{r dodge1, include=TRUE}
 ggplot(rent_income_2br, aes(x = name, y = value, fill = measure, group = measure)) +
   geom_col(width = 0.8, position = position_dodge2(width = 0.8)) +
   geom_text(aes(label = lbl, y = value - 1e3), hjust = 1,
@@ -481,10 +481,10 @@ Also, I'll use a gray color that comes from that `palx` set, so it blends well w
 
 `r chunk_reveal("dodge2", break_type = "user", widths = c(3, 2), title = "## Dodging labels")`
 
-```{r dodge2, include=FALSE}
+```{r dodge2, include=TRUE}
 ggplot(rent_income_2br, aes(x = name, y = value, group = name)) +
   coord_flip() +
-  geom_path(color = qual_pal[["gray"]], size = 3) + #BREAK
+  geom_path(color = qual_pal[["gray"]], linewidth = 3) + #BREAK
   geom_point(aes(color = measure), size = 9, alpha = 0.8) + #BREAK
   geom_text(aes(label = lbl), size = 3,
             fontface = "bold", color = "white",
@@ -514,14 +514,14 @@ This is a little awkward—you have one text layer made with an anti-join (don't
 `r chunk_reveal("dodge3", break_type = "user", widths = c(3, 2), title = "## Dodging labels")`
 
 
-```{r dodge3, include=FALSE}
+```{r dodge3, include=TRUE}
 rent_income_dodge <- rent_income_2br %>%
   dodge_lbls(x = name, value = value, group = measure, thresh = 1500)
 rent_income_dodge #BREAK
 
 ggplot(rent_income_2br, aes(x = name, y = value, group = name)) +
   coord_flip() +
-  geom_path(color = qual_pal[["gray"]], size = 3) +
+  geom_path(color = qual_pal[["gray"]], linewidth = 3) +
   geom_point(aes(color = measure), size = 9, alpha = 0.8) + #BREAK
   geom_text(aes(label = lbl), size = 3, fontface = "bold", color = "white", family = "Barlow Semi Condensed",
             data = . %>% anti_join(rent_income_dodge, by = "name")) + #BREAK
@@ -565,7 +565,7 @@ head(health)
 `r chunk_reveal("bar-legend1", break_type = "auto", widths = c(2, 2), title = "## Removing legends", left_assign = TRUE)`
 
 
-```{r bar-legend1, warning=FALSE, include=FALSE}
+```{r bar-legend1, warning=FALSE, include=TRUE}
 health_bars <- health %>%
   ggplot(aes(x = group, y = value, fill = response, group = response)) +
   geom_col(width = 0.8, position = position_fill()) +
@@ -591,7 +591,7 @@ This legend is okay now that the boxes match the direction and order of the bars
 
 `r chunk_reveal("bar-legend2", break_type = "auto", float = "top", title = "## Labels > legends", left_assign = TRUE, widths = c(1, 0))`
 
-```{r bar-legend2, message=FALSE, warning=FALSE, include=FALSE}
+```{r bar-legend2, message=FALSE, warning=FALSE, include=TRUE}
 # numeric versions of response levels: excellent = 5, poor = 1
 health_lbls <- health %>%
   slice_max(group) %>%
@@ -615,7 +615,7 @@ For now, ignore the fact that the labels on the smaller bars are kind of squishe
 
 `r chunk_reveal("bar-legend3", break_type = "user", widths = c(3, 2), title = "## Labels > legends", omit = "#ROTATE")`
 
-```{r bar-legend3, message=FALSE, warning=FALSE, include=FALSE}
+```{r bar-legend3, message=FALSE, warning=FALSE, include=TRUE}
 health_bars +
   geom_text(aes(label = response), data = health_lbls) + #ROTATE
   geom_text(aes(y = y, label = response), data = health_lbls) + #ROTATE
