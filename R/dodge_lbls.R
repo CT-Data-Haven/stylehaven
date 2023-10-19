@@ -53,6 +53,7 @@
 #' @rdname dodge_lbls
 #' @import rlang
 #' @import dplyr
+#' @keywords function
 dodge_lbls <- function(data, x, value, group, thresh, digits = 2) {
   id_str <- rlang::as_name(enquo(x))
   df_left <-  dplyr::select(data, {{ x }}, x1 = {{ group }}, val1 = {{ value }})

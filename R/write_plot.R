@@ -17,6 +17,7 @@
 #' @param verbose Logical, whether to print the path to each file after it's written (defaults `TRUE`).
 #' @param ... Additional arguments to pass on to `ggplot2::ggsave`, which in turn passes them to graphics devices.
 #' @return Returns nothing. If `verbose = TRUE`, sends a message to the console.
+#' @keywords function
 #' @examples
 #' \dontrun{
 #'   library(ggplot2)

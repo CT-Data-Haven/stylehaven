@@ -9,6 +9,7 @@
 #' title_case("Rates are going up in the area") # This result is technically
 #' # incorrect--"up" is used as an adverb here, and under APA should be
 #' # capitalized. Write this one out manually.
+#' @keywords function
 #' @export
 title_case <- function(x, lower = NULL) {
 # using APA style guide

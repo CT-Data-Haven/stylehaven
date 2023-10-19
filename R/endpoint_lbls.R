@@ -25,18 +25,21 @@
 #'      geom_line() +
 #'      geom_point(size = 3) +
 #'      geom_text(aes(label = lbl, hjust = just, x = x)) +
-#'      scale_x_continuous(expand = expansion(add = c(1, 2)))
+#'      scale_x_continuous(expand = expansion(add = c(1, 3)),
+#'                         breaks = c(2015, 2021))
 #'
 #'    cws_trend %>%
 #'      dplyr::filter(indicator == "local_govt_responsive", category == "Age") %>%
 #'      endpoint_lbls(value = value, x = year, group = group, long_side = "both",
-#'                    fun = percent100, add = 0.1, mult = NULL) %>%
+#'                    fun = percent100, add = 0.4, mult = NULL) %>%
 #'      ggplot(aes(x = year, y = value, color = group)) +
 #'      geom_line() +
 #'      geom_point(size = 3) +
 #'      geom_text(aes(label = lbl, hjust = just, x = x)) +
-#'      scale_x_continuous(expand = expansion(add = 2))
+#'      scale_x_continuous(expand = expansion(add = 3),
+#'                         breaks = c(2015, 2021))
 #' @export
+#' @keywords function
 #' @rdname endpoint_lbls
 endpoint_lbls <- function(data, x, value, group, mult = 0.05, add = NULL, fun = NULL, long_side = c("right", "left", "both", "none")) {
   long_side <- rlang::arg_match(long_side)

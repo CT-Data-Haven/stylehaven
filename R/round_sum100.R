@@ -15,6 +15,7 @@
 #' round_sum100(c(0.24, 0.61, 0.15) * 100) # yay
 #' round_sum100(c(0.24, 0.6, 0.15) * 100) # sad
 #' @export
+#' @keywords function
 #' @rdname round_sum100
 round_sum100 <- function(x, digits = 0, verbose = FALSE) {
   if (any(is.na(x))) cli::cli_warn("{.val NA} values in {.arg x} are being dropped.")

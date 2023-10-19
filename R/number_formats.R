@@ -15,6 +15,7 @@
 #'
 #' percent_lt1(c(0.25, 0.251, 0.008)) # outputs "25%", "25%", "<1%"
 #' @rdname number_formats
+#' @keywords function
 #' @export
 percent100 <- function(x, ...) {
   scales::percent(x, accuracy = 1, ...)

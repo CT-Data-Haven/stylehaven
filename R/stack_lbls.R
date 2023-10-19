@@ -55,6 +55,7 @@
 #'   scale_x_discrete(expand = expansion(add = c(0.8, 1.5))) +
 #'   theme(legend.position = "none")
 #' @export
+#' @keywords function
 #' @rdname stack_lbls
 stack_lbls <- function(x, just = 0.5, fill = FALSE) {
   len_x <- length(x); len_j <- length(just)

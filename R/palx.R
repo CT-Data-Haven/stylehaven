@@ -32,6 +32,7 @@
 #' palx("#6c888d") # not too light, but not saturated enough
 #' palx("#0e91a7") # much better--high saturation, middle lightness
 #' @source \url{https://github.com/jxnblk/palx}
+#' @keywords function
 #' @seealso [colorspace::lighten()]
 #' @export
 palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plot = FALSE, labels = FALSE) {

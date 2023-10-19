@@ -9,6 +9,7 @@
 #'   \item{value}{Life expectancy, including `NA` values for 9 tracts without data}
 #' }
 #' @source [CDC's USALEEP project](https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html), current as of Oct. 2021
+#' @keywords dataset
 "life_exp"
 
 #' 2018 DCWS sample indicators
@@ -41,6 +42,7 @@
 #'
 #' @source 2018 DataHaven Community Wellbeing Survey
 #' @name cws2018
+#' @keywords dataset
 NULL
 
 #' @rdname cws2018
@@ -66,6 +68,7 @@ NULL
 #'   \item{value}{Percentage value}
 #' }
 #' @source 2018 DataHaven Community Wellbeing Survey
+#' @keywords dataset
 "self_rated_health"
 
 #' 2015–2018 DCWS sample trends
@@ -80,6 +83,7 @@ NULL
 #'   \item{value}{Percentage value}
 #' }
 #' @source 2015 & 2021 DataHaven Community Wellbeing Survey
+#' @keywords dataset
 "cws_trend"
 
 #' Rent and income data
@@ -95,4 +99,5 @@ NULL
 #'   \item{income_needed}{Income needed for the median rent to make up no more than 30 percent of a household's income, per HUD housing affordability guidelines. Beyond this, a household is considered cost-burdened.}
 #' }
 #' @source US Census Bureau 2019 American Community Survey tables B25119, B25031, and B25042.
+#' @keywords dataset
 "rent_x_income"

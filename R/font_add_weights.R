@@ -24,6 +24,7 @@
 #'         strip.text = element_text(family = "Source Sans Pro Semibold")) # 600
 #' }
 #' @export
+#' @keywords function
 #' @seealso sysfonts::font_add_google
 font_add_weights <- function(name, regular = 400, semibold = 600, bold = 700, black = 900) {
   wts <- stats::setNames(c(regular, semibold, bold, black), c("regular", "semibold", "bold", "black"))
