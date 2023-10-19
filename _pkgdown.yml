@@ -13,7 +13,7 @@ home:
 reference:
   - title: Functions
   - contents:
-      - has_keyword("function")
+      - has_concept("function")
   - title: Sample data
   - contents:
-      - has_keyword("dataset")
+      - has_concept("dataset")
