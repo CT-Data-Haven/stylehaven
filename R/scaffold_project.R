@@ -45,7 +45,7 @@
 #'                  dryrun = TRUE)
 #' 
 #' @export
-#' @keywords function
+
 #' @rdname scaffold_project
 scaffold_project <- function(dir = ".",
                         input_data = TRUE,

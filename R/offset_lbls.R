@@ -31,7 +31,7 @@
 #'   geom_text(aes(y = y, label = lbl, color = is_small, vjust = just), show.legend = FALSE) +
 #'   scale_color_manual(values = c("TRUE" = "gray30", "FALSE" = "white"))
 #' @rdname offset_lbls
-#' @keywords function
+
 #' @export
 offset_lbls <- function(data, value, frac = 0.05, thresh = 0.15, margin = 1.5, fun = NULL, na = "N/A") {
   if (is.null(fun)) {

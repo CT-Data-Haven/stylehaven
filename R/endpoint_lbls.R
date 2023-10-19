@@ -39,7 +39,7 @@
 #'      scale_x_continuous(expand = expansion(add = 3),
 #'                         breaks = c(2015, 2021))
 #' @export
-#' @keywords function
+
 #' @rdname endpoint_lbls
 endpoint_lbls <- function(data, x, value, group, mult = 0.05, add = NULL, fun = NULL, long_side = c("right", "left", "both", "none")) {
   long_side <- rlang::arg_match(long_side)
