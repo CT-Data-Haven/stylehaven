@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">stylehaven</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,9 +59,10 @@
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">value</span>,</span>
 <span>  <span class="va">group</span>,</span>
-<span>  frac <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  mult <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  add <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  fun <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  long_side <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"right"</span>, <span class="st">"left"</span>, <span class="st">"both"</span><span class="op">)</span></span>
+<span>  long_side <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"right"</span>, <span class="st">"left"</span>, <span class="st">"both"</span>, <span class="st">"none"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -83,8 +84,12 @@
 <dd><p>Bare column name of the name or grouping variable that should be shown in the labels.</p></dd>
 
 
-<dt>frac</dt>
-<dd><p>Numeric; ratio to the <code>x</code> variable by which labels should be offset. Default: 0.2</p></dd>
+<dt>mult</dt>
+<dd><p>Numeric; ratio to the <code>x</code> variable by which labels should be offset. Default: 0.05.</p></dd>
+
+
+<dt>add</dt>
+<dd><p>Numeric; single value along the <code>x</code> variable by which labels should be offset. Defaults <code>NULL</code>. If both <code>mult</code> and <code>add</code> are given, <code>mult</code> takes precedence. Previously there was a <code>frac</code> argument which was supposed to act like <code>mult</code> but erroneously acted like <code>add</code>.</p></dd>
 
 
 <dt>fun</dt>
@@ -92,7 +97,7 @@
 
 
 <dt>long_side</dt>
-<dd><p>Character, either <code>"right"</code> (the default), <code>"left"</code>, or <code>"both"</code>. For <code>"left"</code> or <code>"right"</code>, this refers to whether the longer label should be on the right or the left, returning a short label on the opposite side. If <code>"both"</code>, only the long label is returned. Labels are combined in a new column called <code>lbl</code>.</p></dd>
+<dd><p>Character, either <code>"right"</code> (the default), <code>"left"</code>, <code>"both"</code>, or <code>"none"</code>. For <code>"left"</code> or <code>"right"</code>, this refers to whether the longer label should be on the right or the left, returning a short label on the opposite side. If <code>"both"</code>, only long labels are returned; if <code>"none"</code>, only short labels are returned. Regardless, labels are combined in a new column called <code>lbl</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -106,9 +111,7 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
-<span class="r-in"><span>   <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span>   <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>   <span class="co"># note that it will still be up to your judgment to set scale expansion,</span></span></span>
 <span class="r-in"><span>   <span class="co"># since that will depend on things outside the scope of just this function</span></span></span>
 <span class="r-in"><span>   <span class="va">cws_trend</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
@@ -120,18 +123,18 @@
 <span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">lbl</span>, hjust <span class="op">=</span> <span class="va">just</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="endpoint_lbls-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>   <span class="va">cws_trend</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>     <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">indicator</span> <span class="op">==</span> <span class="st">"local_govt_responsive"</span>, <span class="va">category</span> <span class="op">==</span> <span class="st">"Age"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>     <span class="fu">endpoint_lbls</span><span class="op">(</span>value <span class="op">=</span> <span class="va">value</span>, x <span class="op">=</span> <span class="va">year</span>, group <span class="op">=</span> <span class="va">group</span>, long_side <span class="op">=</span> <span class="st">"both"</span>,</span></span>
-<span class="r-in"><span>                   fun <span class="op">=</span> <span class="va">percent100</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>                   fun <span class="op">=</span> <span class="va">percent100</span>, add <span class="op">=</span> <span class="fl">0.1</span>, mult <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">value</span>, color <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">lbl</span>, hjust <span class="op">=</span> <span class="va">just</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>add <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span> <span class="op">}</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-plt img"><img src="endpoint_lbls-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
