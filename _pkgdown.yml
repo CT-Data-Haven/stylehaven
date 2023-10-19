@@ -9,11 +9,3 @@ template:
 home:
   sidebar:
     structure: [links, authors, dev]
-
-reference:
-  - title: Functions
-  - contents:
-      - has_concept("function")
-  - title: Sample data
-  - contents:
-      - has_concept("dataset")
