@@ -22,6 +22,9 @@
     <loc>https://ct-data-haven.github.io/stylehaven/index.html</loc>
   </url>
   <url>
+    <loc>https://ct-data-haven.github.io/stylehaven/reference/age_lbls.html</loc>
+  </url>
+  <url>
     <loc>https://ct-data-haven.github.io/stylehaven/reference/cws2018.html</loc>
   </url>
   <url>
@@ -73,7 +76,7 @@
     <loc>https://ct-data-haven.github.io/stylehaven/reference/stack_lbls.html</loc>
   </url>
   <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/stylehaven-package.html</loc>
+    <loc>https://ct-data-haven.github.io/stylehaven/reference/stdev_brks.html</loc>
   </url>
   <url>
     <loc>https://ct-data-haven.github.io/stylehaven/reference/tidyeval.html</loc>
