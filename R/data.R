@@ -1,4 +1,3 @@
-#' @concept dataset
 #' Life expectancy
 #'
 #' Dataset of life expectancy in years by census tract within New Haven County for 2010 to 2015.

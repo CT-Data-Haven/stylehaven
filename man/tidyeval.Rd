@@ -48,4 +48,3 @@ To learn more about tidy eval and how to use these tools, visit
 \href{https://adv-r.hadley.nz/metaprogramming.html}{Metaprogramming
 section} of \href{https://adv-r.hadley.nz}{Advanced R}.
 }
-\keyword{internal}

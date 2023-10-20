@@ -29,7 +29,8 @@ Imports:
     stringr,
     sysfonts,
     tidyr,
-    xfun
+    xfun,
+    tidyselect
 Suggests: 
     roxygen2,
     forcats,
