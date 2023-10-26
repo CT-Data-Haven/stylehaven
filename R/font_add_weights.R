@@ -11,17 +11,17 @@
 #' @examples
 #' if (interactive()) {
 #' library(ggplot2)
-#' font_add_weights("Source Sans Pro", black = 800)
+#' font_add_weights("Source Sans 3", black = 800)
 #' showtext::showtext_auto()
 #' ggplot(iris, aes(x = Sepal.Width)) +
 #'   geom_histogram(binwidth = 0.25) +
 #'   facet_wrap(vars(Species), nrow = 1) +
 #'   labs(title = "Font weights in use are 400, 600, and 700",
 #'        subtitle = "Sepal width by species") +
-#'   theme_gray(base_family = "Source Sans Pro") +
-#'   theme(plot.title = element_text(family = "Source Sans Pro", face = "bold"), # 700
-#'         plot.subtitle = element_text(family = "Source Sans Pro Semibold"), # 600
-#'         strip.text = element_text(family = "Source Sans Pro Semibold")) # 600
+#'   theme_gray(base_family = "Source Sans 3") +
+#'   theme(plot.title = element_text(family = "Source Sans 3", face = "bold"), # 700
+#'         plot.subtitle = element_text(family = "Source Sans 3 Semibold"), # 600
+#'         strip.text = element_text(family = "Source Sans 3 Semibold")) # 600
 #' }
 #' @export
 
