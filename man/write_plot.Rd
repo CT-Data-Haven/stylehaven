@@ -32,7 +32,7 @@ write_plot(
 
 \item{height}{Numeric, height of saved plot in inches. Doesn't include any additional height for the logo. Default: 4.5}
 
-\item{add_logo}{Logical: if \code{TRUE} (default), a logo will be added to each plot using \code{cwi::add_logo}.}
+\item{add_logo}{Logical: if \code{TRUE} (default), a logo will be added to each plot using \code{add_logo}.}
 
 \item{use_abs_logo}{Logical, whether the logo size is being supplied as absolute (if \code{TRUE}) or relative to the plot height (if \code{FALSE}). If \code{TRUE} (default), the logo will be the height given in \code{logo_abs} in inches; otherwise, the logo will be sized as the ratio to the plot height as given in \code{logo_scale}. For batch writing plots, using an absolute size is probably best so the logo is the same size on all charts, regardless of each chart's height.}
 
@@ -40,11 +40,11 @@ write_plot(
 
 \item{logo_scale}{The ratio of the logo's height to the plot's height. Ignored if \code{use_abs_logo = TRUE}. Default: 0.05}
 
-\item{logo_img}{If \code{NULL} (the default), the logo will be the image saved at \code{system.file("extdata/logo.svg", package = "cwi")}, which is a copy of DataHaven's logo. See \code{\link[cwi:add_logo]{cwi::add_logo}} for other ways to create and supply a logo.}
+\item{logo_img}{If \code{NULL} (the default), the logo will be the image saved at \code{system.file("extdata/logo.svg", package = "stylehaven")}, which is a copy of DataHaven's logo. See \code{\link{add_logo}} for other ways to create and supply a logo.}
 
 \item{logo_pos}{String, which side of the plot the logo should be placed on. Default: 'right'}
 
-\item{place_inside}{Logical, whether the logo should be placed on the inside of the chart or the outside (default). Note that this is the opposite of the default in \code{cwi::add_logo}—often placing the logo inside the chart works well, but for batch writing it's probably safer to either default to outside placement, or use a parameter for this alongside the width & height.}
+\item{place_inside}{Logical, whether the logo should be placed on the inside of the chart or the outside (default). Note that this is the opposite of the default in \code{add_logo}—often placing the logo inside the chart works well, but for batch writing it's probably safer to either default to outside placement, or use a parameter for this alongside the width & height.}
 
 \item{dir}{Directory in which to write files. If \code{NULL}, the default, this will just be the working directory, as is the case with \code{ggplot2::ggsave}.}
 
@@ -60,7 +60,7 @@ write_plot(
 Returns nothing. If \code{verbose = TRUE}, sends a message to the console.
 }
 \description{
-This is a formalized version of a function I often have in utils scripts for different projects. It works well when paired with \code{purrr::map}, taking a list of plots and a list of parameters for each (width, height, filename), and saving each to both PDF (good as a vector format) and PNG (good as a decent resolution bitmap format) files using \code{ggplot2::ggsave}. By default, this will add a logo to the bottom of the plot using \code{cwi::add_logo}—look at the documenation there to see exactly how to pass a logo. Note that some devices might act differently: for example, SVG devices might have some quirks.
+This is a formalized version of a function I often have in utils scripts for different projects. It works well when paired with \code{purrr::map}, taking a list of plots and a list of parameters for each (width, height, filename), and saving each to both PDF (good as a vector format) and PNG (good as a decent resolution bitmap format) files using \code{ggplot2::ggsave}. By default, this will add a logo to the bottom of the plot using \code{\link{add_logo}}—look at the documentation to see exactly how to pass a logo. Note that some devices might act differently: for example, SVG devices might have some quirks.
 }
 \examples{
 \dontrun{
@@ -92,5 +92,5 @@ This is a formalized version of a function I often have in utils scripts for dif
 }
 }
 \seealso{
-\code{\link[cwi:add_logo]{cwi::add_logo()}}, \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}
+\code{\link[=add_logo]{add_logo()}}, \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}
 }

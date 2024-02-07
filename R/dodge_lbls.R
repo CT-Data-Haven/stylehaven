@@ -25,7 +25,7 @@
 #' @examples
 #' if (requireNamespace("ggrepel", quietly = TRUE)) {
 #'   library(ggplot2)
-#'   cohesion_by_race <- community_cohesion %>%
+#'   cohesion_by_race <- community_cohesion |>
 #'     dplyr::filter(category %in% c("Greater New Haven", "Race/Ethnicity"))
 #'
 #'   ggplot(cohesion_by_race, aes(x = question, y = value)) +
@@ -42,10 +42,10 @@
 #'   ggplot(cohesion_by_race, aes(x = question, y = value)) +
 #'     geom_point(aes(color = group), size = 8) +
 #'     geom_text(aes(label = percent100(value)),
-#'               data = . %>% dplyr::anti_join(to_dodge, by = c("question", "group")),
+#'               data = ~dplyr::anti_join(., to_dodge, by = c("question", "group")),
 #'               color = "white", size = 3) +
 #'     ggrepel::geom_text_repel(aes(label = percent100(value), color = group),
-#'                              data = . %>% dplyr::semi_join(to_dodge, by = c("question", "group")),
+#'                              data = ~dplyr::semi_join(., to_dodge, by = c("question", "group")),
 #'                              size = 3, direction = "x", nudge_x = 0.2, seed = 1) +
 #'     coord_flip()
 #' }

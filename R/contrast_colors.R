@@ -162,7 +162,7 @@ mutate_contrast <- function(x, col, pal, dark = "black", light = "white", min_ra
   col_name <- rlang::as_label(rlang::enquo(col))
   
   if (!is.factor(col_vct)) {
-    col_vct <- forcats::as_factor(col_vct)
+    col_vct <- factor(col_vct, levels = col_vct)
   }
   lvls <- levels(col_vct)
   n <- length(lvls)
@@ -180,7 +180,6 @@ mutate_contrast <- function(x, col, pal, dark = "black", light = "white", min_ra
   
   cpal <- contrast_colors(pal, n = n, labels_only = FALSE, plot = FALSE)
   cpal$lvl <- factor(lvls, levels = lvls)
-  # cpal$fill <- forcats::as_factor(cpal$fill)
   cpal <- dplyr::select(cpal, fill, lbl_color, lvl)
   
   join <- stats::setNames("lvl", col_name)
@@ -207,8 +206,10 @@ plot_contrast_colors <- function(x, dark, light) {
   x <- dplyr::select(x, fill, dark, light, max)
   x <- tidyr::pivot_longer(x, cols = dark:light, names_to = "type", values_to = "ratio")
   x$lbl_color <- ifelse(x$type == "dark", dark, light)
-  x$fill <- forcats::as_factor(x$fill)
-  x$lbl_color <- forcats::as_factor(x$lbl_color)
+  # x$fill <- forcats::as_factor(x$fill)
+  # x$lbl_color <- forcats::as_factor(x$lbl_color)
+  x$fill <- factor(x$fill, levels = unique(x$fill))
+  x$lbl_color <- factor(x$lbl_color, levels = unique(x$lbl_color))
   x$star <- ifelse(x$ratio == x$max, " *", "")
   x$lbl <- sprintf("%02.02f%s", x$ratio, x$star)
   

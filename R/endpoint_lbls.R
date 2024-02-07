@@ -17,10 +17,10 @@
 #'    library(ggplot2)
 #'    # note that it will still be up to your judgment to set scale expansion,
 #'    # since that will depend on things outside the scope of just this function
-#'    cws_trend %>%
-#'      dplyr::filter(indicator == "local_govt_responsive", category == "Age") %>%
+#'    cws_trend |>
+#'      dplyr::filter(indicator == "local_govt_responsive", category == "Age") |>
 #'      endpoint_lbls(value = value, x = year, group = group,
-#'                    fun = percent100) %>%
+#'                    fun = percent100) |>
 #'      ggplot(aes(x = year, y = value, color = group)) +
 #'      geom_line() +
 #'      geom_point(size = 3) +
@@ -28,10 +28,10 @@
 #'      scale_x_continuous(expand = expansion(add = c(1, 3)),
 #'                         breaks = c(2015, 2021))
 #'
-#'    cws_trend %>%
-#'      dplyr::filter(indicator == "local_govt_responsive", category == "Age") %>%
+#'    cws_trend |>
+#'      dplyr::filter(indicator == "local_govt_responsive", category == "Age") |>
 #'      endpoint_lbls(value = value, x = year, group = group, long_side = "both",
-#'                    fun = percent100, add = 0.4, mult = NULL) %>%
+#'                    fun = percent100, add = 0.4, mult = NULL) |>
 #'      ggplot(aes(x = year, y = value, color = group)) +
 #'      geom_line() +
 #'      geom_point(size = 3) +

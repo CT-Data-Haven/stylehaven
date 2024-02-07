@@ -50,7 +50,7 @@
 #' ggplot(df_top, aes(x = group, y = value, fill = response)) +
 #'   geom_col(position = position_stack(reverse = TRUE)) +
 #'   geom_text(aes(label = response, color = response, y = top),
-#'             data = . %>% slice_max(group),
+#'             data = ~slice_max(., group),
 #'             hjust = 0, vjust = 1, nudge_x = 0.5) +
 #'   scale_x_discrete(expand = expansion(add = c(0.8, 1.5))) +
 #'   theme(legend.position = "none")

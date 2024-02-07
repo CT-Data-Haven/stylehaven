@@ -59,9 +59,9 @@ The columns in the returned data frame are:
 \examples{
 library(ggplot2)
 
-chronic_disease \%>\%
-  dplyr::filter(question == "diabetes", category == "Age") \%>\%
-  offset_lbls(value, fun = percent100) \%>\%
+chronic_disease |>
+  dplyr::filter(question == "diabetes", category == "Age") |>
+  offset_lbls(value, fun = percent100) |>
   ggplot(aes(x = group, y = value)) +
   geom_col() +
   geom_text(aes(y = y, label = lbl, color = is_small, vjust = just), show.legend = FALSE) +

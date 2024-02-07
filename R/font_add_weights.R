@@ -45,8 +45,8 @@ font_add_weights <- function(name, regular = 400, semibold = 600, bold = 700, bl
   unavail <- wts[is_unavail]
   if (sum(is_unavail) > 0) {
     cli::cli_abort(c(
-      "The following weights are unavailable for this font: {.val unavail}.",
-      "i" = "This font comes in the following weights: {.val avail}."
+      "The following weights are unavailable for this font: {.val {unavail}}.",
+      "i" = "This font comes in the following weights: {.val {avail}}."
     ))
   }
 

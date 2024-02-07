@@ -12,7 +12,7 @@ age_lbls <- function(x) {
   x <- stringr::str_replace(x, "(plus|up)$", "+")
   x <- stringr::str_replace_all(x, "(?<=[A-Za-z])\\B(?=\\d)", " ")
   x <- stringr::str_replace_all(x, "(?<=\\d)\\B(?=[A-Za-z])", " ")
-  x <- stringr::str_remove(x, "(?<=\\b)0(?=[0-9])")
+  x <- stringr::str_remove_all(x, "(?<=\\b)0(?=[0-9])")
   x <- stringr::str_to_sentence(x)
   x
 }

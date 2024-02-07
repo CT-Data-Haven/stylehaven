@@ -1,16 +1,16 @@
 #' @title Batch save plots to multiple formats.
-#' @description This is a formalized version of a function I often have in utils scripts for different projects. It works well when paired with `purrr::map`, taking a list of plots and a list of parameters for each (width, height, filename), and saving each to both PDF (good as a vector format) and PNG (good as a decent resolution bitmap format) files using `ggplot2::ggsave`. By default, this will add a logo to the bottom of the plot using `cwi::add_logo`—look at the documenation there to see exactly how to pass a logo. Note that some devices might act differently: for example, SVG devices might have some quirks.
+#' @description This is a formalized version of a function I often have in utils scripts for different projects. It works well when paired with `purrr::map`, taking a list of plots and a list of parameters for each (width, height, filename), and saving each to both PDF (good as a vector format) and PNG (good as a decent resolution bitmap format) files using `ggplot2::ggsave`. By default, this will add a logo to the bottom of the plot using [`add_logo`]—look at the documentation to see exactly how to pass a logo. Note that some devices might act differently: for example, SVG devices might have some quirks.
 #' @param plot A `ggplot` object to save
 #' @param filename String, the filename without extension, e.g. `"cool_plot"` rather than `"cool_plot.png"`, since extensions will be added based on the `devs` argument.
 #' @param width Numeric, width of saved plot in inches. Default: 7
 #' @param height Numeric, height of saved plot in inches. Doesn't include any additional height for the logo. Default: 4.5
-#' @param add_logo Logical: if `TRUE` (default), a logo will be added to each plot using `cwi::add_logo`.
+#' @param add_logo Logical: if `TRUE` (default), a logo will be added to each plot using `add_logo`.
 #' @param use_abs_logo Logical, whether the logo size is being supplied as absolute (if `TRUE`) or relative to the plot height (if `FALSE`). If `TRUE` (default), the logo will be the height given in `logo_abs` in inches; otherwise, the logo will be sized as the ratio to the plot height as given in `logo_scale`. For batch writing plots, using an absolute size is probably best so the logo is the same size on all charts, regardless of each chart's height.
 #' @param logo_abs The absolute height for the logo, in inches. Ignored if `use_abs_logo = FALSE`. Default: 0.15
 #' @param logo_scale The ratio of the logo's height to the plot's height. Ignored if `use_abs_logo = TRUE`. Default: 0.05
-#' @param logo_img If `NULL` (the default), the logo will be the image saved at `system.file("extdata/logo.svg", package = "cwi")`, which is a copy of DataHaven's logo. See [`cwi::add_logo`] for other ways to create and supply a logo.
+#' @param logo_img If `NULL` (the default), the logo will be the image saved at `system.file("extdata/logo.svg", package = "stylehaven")`, which is a copy of DataHaven's logo. See [`stylehaven::add_logo`] for other ways to create and supply a logo.
 #' @param logo_pos String, which side of the plot the logo should be placed on. Default: 'right'
-#' @param place_inside Logical, whether the logo should be placed on the inside of the chart or the outside (default). Note that this is the opposite of the default in `cwi::add_logo`—often placing the logo inside the chart works well, but for batch writing it's probably safer to either default to outside placement, or use a parameter for this alongside the width & height.
+#' @param place_inside Logical, whether the logo should be placed on the inside of the chart or the outside (default). Note that this is the opposite of the default in `add_logo`—often placing the logo inside the chart works well, but for batch writing it's probably safer to either default to outside placement, or use a parameter for this alongside the width & height.
 #' @param dir Directory in which to write files. If `NULL`, the default, this will just be the working directory, as is the case with `ggplot2::ggsave`.
 #' @param separate_dirs Logical, whether to save files into separate directories based on file type. If `TRUE` (default), the file `"cool_plot.png"` will be written to `"dir/png/cool_plot.png"`; otherwise, the file will be written just in `dir`. If the necessary directories don't already exist, they'll be created.
 #' @param devs A named list, where the names are the extensions to use for output files and the values specify graphics devices to use, either as strings or functions (or a mix). See the `device` argument of [`ggplot2::ggsave()`] for examples. The defaults, `c(pdf = cairo_pdf, png = ragg::agg_png)`, are the ones that I've found to work well for writing out `ggplot`s, particularly high-resolution ones with custom fonts.
@@ -47,7 +47,7 @@
 #'   })
 #' }
 #' @export
-#' @seealso [cwi::add_logo()], [ggplot2::ggsave()]
+#' @seealso [add_logo()], [ggplot2::ggsave()]
 write_plot <- function(plot,
                        filename,
                        width = 7,
@@ -79,7 +79,7 @@ write_plot <- function(plot,
     } else {
       height_out <- height + logo_abs
     }
-    plot_out <- cwi::add_logo(plot, image = logo_img, position = logo_pos, height = logo_scale, place_inside = place_inside)
+    plot_out <- stylehaven::add_logo(plot, image = logo_img, position = logo_pos, height = logo_scale, place_inside = place_inside)
   } else {
     height_out <- height
     plot_out <- plot

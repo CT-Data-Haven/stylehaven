@@ -66,8 +66,8 @@ These are obviously not finished charts, just an example to see how the colors l
 
 .pull-left[
 ```{r}
-color1 <- cws_trend %>%
-  filter(category %in% c("Total", "Age"), indicator == "police_approval") %>%
+color1 <- cws_trend |>
+  filter(category %in% c("Total", "Age"), indicator == "police_approval") |>
   ggplot(aes(x = year, y = value, color = group, group = group)) +
   geom_line(linewidth = 2, alpha = 0.9) +
   geom_point(size = 4) +
@@ -77,8 +77,8 @@ color1 <- cws_trend %>%
   theme(legend.justification = c(0, 0),
         legend.position = c(0, 0))
 
-color2 <- cws_trend %>%
-  filter(category %in% c("Total", "Age"), indicator == "police_approval", year == 2021) %>%
+color2 <- cws_trend |>
+  filter(category %in% c("Total", "Age"), indicator == "police_approval", year == 2021) |>
   ggplot(aes(x = group, y = value)) +
   geom_col(width = 0.8, fill = primary) +
   coord_flip() +
@@ -114,7 +114,7 @@ The data I'm using here is `stylehaven::rent_x_income`, which gives the median h
 This is from the 2019 ACS 5-year estimates, and is an updated version of data used in the 2019 Community Index. 
 
 ```{r rent-data}
-rent_2br <- stylehaven::rent_x_income %>%
+rent_2br <- stylehaven::rent_x_income |>
   filter(bedrooms == "2br", renters >= 1500)
 
 head(rent_2br)
@@ -125,7 +125,7 @@ head(rent_2br)
 A super simple but ugly chart of annualized median rents would be like this:
 
 ```{r bar-static, fig.width=6, fig.height=4}
-rent_2br %>%
+rent_2br |>
   ggplot(aes(x = name, y = annual_rent)) +
   geom_col()
 ```
@@ -143,9 +143,9 @@ I'll build on that in a handful of ways:
 `r chunk_reveal("bar-flip")`
 
 ```{r bar-flip, include=TRUE}
-rent_2br %>%
-  mutate(name = forcats::as_factor(name) %>%
-           forcats::fct_reorder(annual_rent)) %>%
+rent_2br |>
+  mutate(name = forcats::as_factor(name) |>
+           forcats::fct_reorder(annual_rent)) |>
   ggplot(aes(x = name, y = annual_rent)) +
   geom_col(width = 0.8, fill = primary) +
   coord_flip()
@@ -167,10 +167,10 @@ Now it's legible and nicer to look at, but there are still some things that are 
 `r chunk_reveal("bar-txt", break_type = "rotate", widths = c(3, 2), title = "## Direct labeling")`
 
 ```{r bar-txt, eval=FALSE, echo=FALSE}
-rent_2br %>%
-  mutate(name = forcats::as_factor(name) %>%
-           forcats::fct_reorder(annual_rent)) %>%
-  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) %>% 
+rent_2br |>
+  mutate(name = forcats::as_factor(name) |>
+           forcats::fct_reorder(annual_rent)) |>
+  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) |> 
   ggplot(aes(x = name, y = annual_rent)) +
   geom_col(width = 0.8, fill = primary) +
   coord_flip() + 
@@ -189,10 +189,10 @@ Note the use of `nudge_y` at the end---super handy, although it breaks when used
 `r chunk_reveal("bar-theme", break_type = "user", widths = c(3, 2), title = "## Theme settings")`
 
 ```{r bar-theme, eval=FALSE, echo=FALSE}
-rent_2br %>%
-  mutate(name = forcats::as_factor(name) %>%
-           forcats::fct_reorder(annual_rent)) %>%
-  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) %>% 
+rent_2br |>
+  mutate(name = forcats::as_factor(name) |>
+           forcats::fct_reorder(annual_rent)) |>
+  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) |> 
   ggplot(aes(x = name, y = annual_rent)) +
   geom_col(width = 0.8, fill = primary) +
   geom_text(aes(label = lbl), 
@@ -238,10 +238,10 @@ Lastly, this needs better explanatory labels. In this case, I'll remove the axis
 `r chunk_reveal("bar-labs", break_type = "user", widths = c(3, 2), title = "## Plot labels")`
 
 ```{r bar-labs, eval=FALSE, echo=FALSE}
-rent_2br %>%
-  mutate(name = forcats::as_factor(name) %>%
-           forcats::fct_reorder(annual_rent)) %>%
-  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) %>% 
+rent_2br |>
+  mutate(name = forcats::as_factor(name) |>
+           forcats::fct_reorder(annual_rent)) |>
+  mutate(lbl = scales::dollar(annual_rent, accuracy = 1, scale = 1 / 1000, suffix = "k")) |> 
   ggplot(aes(x = name, y = annual_rent)) +
   geom_col(width = 0.8, fill = primary) +
   geom_text(aes(label = lbl), 
@@ -269,9 +269,9 @@ Pretty good!
 Often we want to show DataHaven Community Wellbeing Survey data across several categories (age, gender, race, etc.). Formatting these is a bit more complicated.
 
 ```{r food-data}
-food_insecure <- stylehaven::fin_insecurity %>%
+food_insecure <- stylehaven::fin_insecurity |>
   mutate(category = forcats::fct_collapse(category, Total = c("Connecticut", "Greater New Haven")),
-         value = round(value, 2)) %>%
+         value = round(value, 2)) |>
   filter(question == "food_insecurity", category %in% c("Total", "Age", "Race/Ethnicity", "Children in home"))
 
 head(food_insecure)
@@ -284,7 +284,7 @@ Instead of using `nudge_y` to pad the labels away from the ends of the bars, I'l
 `r chunk_reveal("bar-groups", break_type = "auto", widths = c(3, 2), title = "## Groups, part 1", left_assign = TRUE)`
 
 ```{r bar-groups, include=TRUE}
-food_bars <- food_insecure %>%
+food_bars <- food_insecure |>
   ggplot(aes(x = forcats::fct_rev(group), y = value)) +
   geom_col(width = 0.8, fill = primary) +
   coord_flip() +
@@ -349,10 +349,10 @@ theme_facet <- function(...) {
 Sometimes multiple related indicators need to be shown together but with very different scales (think a set of bars of high school graduation rates, and a set of bars of suspensions). For this, use `stylehaven::offset_lbls` to offset labels proportionate to each scale, rather than by a fixed amount.
 
 ```{r chronic-data}
-chron_subset <- stylehaven::chronic_disease %>%
+chron_subset <- stylehaven::chronic_disease |>
   mutate(category = forcats::fct_collapse(category, Total = c("Connecticut", "Greater New Haven")),
          value = round(value, 2),
-         question = forcats::fct_relabel(question, camiller::clean_titles)) %>%
+         question = forcats::fct_relabel(question, camiller::clean_titles)) |>
   filter(question %in% c("Diabetes", "Hypertension"), category %in% c("Total", "Age", "Race/Ethnicity"))
 
 head(chron_subset)
@@ -365,7 +365,7 @@ head(chron_subset)
 `r chunk_reveal("bar-offset1", break_type = "rotate", widths = c(3, 2), title = "## Different scales")`
 
 ```{r bar-offset1, include=TRUE}
-chron_subset %>%
+chron_subset |>
   ggplot(aes(x = forcats::fct_rev(group), y = value)) +
   geom_col(width = 0.8, fill = primary) + 
   coord_flip() +
@@ -390,8 +390,8 @@ Offsetting the labels by 1 percentage point made sense for the hypertension data
 `r chunk_reveal("bar-offset2", break_type = "auto", title = "## offset_lbls", float = "top")`
 
 ```{r bar-offset2, include=TRUE}
-chron_subset %>%
-  group_by(question) %>%
+chron_subset |>
+  group_by(question) |>
   stylehaven::offset_lbls(value, frac = 0.03, thresh = 0.15, fun = scales::label_percent(accuracy = 1))
 ```
 
@@ -405,10 +405,10 @@ chron_subset %>%
 
 
 ```{r bar-offset3, include=TRUE}
-chron_subset %>%
-  group_by(question) %>%
+chron_subset |>
+  group_by(question) |>
   offset_lbls(value, frac = 0.05, thresh = 0.15, margin = 0.75,
-              fun = scales::label_percent(accuracy = 1)) %>%
+              fun = scales::label_percent(accuracy = 1)) |>
   ggplot(aes(x = forcats::fct_rev(group), y = value)) +
   geom_col(width = 0.8, fill = primary) + 
   coord_flip() +
@@ -434,14 +434,14 @@ chron_subset %>%
 A more complicated story to tell with the rent data is how rent compares to income with a subset of towns. For the 2019 Index we calculated the income needed for the median rent to be affordable, based on HUD's guidance that housing costs shouldn't be more than 30 percent of a household's income. Not surprising, most towns have gaps of several thousand dollars between these two numbers. Because they're on the same scale (income vs income) we can compare them side by side.
 
 ```{r}
-rent_income_2br <- rent_2br %>%
-  slice_max(renters, n = 7) %>%
-  tidyr::pivot_longer(c(income, income_needed), names_to = "measure") %>%
-  mutate(name = forcats::as_factor(name) %>%
+rent_income_2br <- rent_2br |>
+  slice_max(renters, n = 7) |>
+  tidyr::pivot_longer(c(income, income_needed), names_to = "measure") |>
+  mutate(name = forcats::as_factor(name) |>
            forcats::fct_reorder(annual_rent),
-         measure = forcats::as_factor(measure) %>%
-           forcats::fct_recode(median_income = "income") %>%
-           forcats::fct_rev() %>%
+         measure = forcats::as_factor(measure) |>
+           forcats::fct_recode(median_income = "income") |>
+           forcats::fct_rev() |>
            forcats::fct_relabel(camiller::clean_titles),
          lbl = scales::dollar(value, accuracy = 1, scale = 1 / 1000, suffix = "k"))
 ```
@@ -515,7 +515,7 @@ This is a little awkward—you have one text layer made with an anti-join (don't
 
 
 ```{r dodge3, include=TRUE}
-rent_income_dodge <- rent_income_2br %>%
+rent_income_dodge <- rent_income_2br |>
   dodge_lbls(x = name, value = value, group = measure, thresh = 1500)
 rent_income_dodge #BREAK
 
@@ -524,10 +524,10 @@ ggplot(rent_income_2br, aes(x = name, y = value, group = name)) +
   geom_path(color = qual_pal[["gray"]], linewidth = 3) +
   geom_point(aes(color = measure), size = 9, alpha = 0.8) + #BREAK
   geom_text(aes(label = lbl), size = 3, fontface = "bold", color = "white", family = "Barlow Semi Condensed",
-            data = . %>% anti_join(rent_income_dodge, by = "name")) + #BREAK
+            data = . |> anti_join(rent_income_dodge, by = "name")) + #BREAK
   geom_text_repel(aes(label = lbl, color = measure), size = 3, fontface = "bold", family = "Barlow Semi Condensed",
                   direction = "x", nudge_x = 0.2, seed = 10, force = 10, box.padding = 0.8,
-                  data = . %>% semi_join(rent_income_dodge, by = "name")) + #BREAK
+                  data = . |> semi_join(rent_income_dodge, by = "name")) + #BREAK
   scale_color_manual(values = seq_pal[c(4, 7)], 
                      guide = guide_legend(reverse = TRUE, override.aes = list(size = 4))) +
   scale_y_continuous(breaks = NULL, expand = expansion(mult = 0.1)) + 
@@ -553,9 +553,9 @@ Sometimes it's good to [replace legends with direct labels](https://clauswilke.c
 
 ```{r}
 # I want to reverse group levels now for getting both bars & labels in the right order later
-health <- stylehaven::self_rated_health %>%
+health <- stylehaven::self_rated_health |>
   mutate(category = forcats::fct_collapse(category, Total = c("Connecticut", "Greater New Haven")),
-         across(c(group, response), forcats::fct_rev)) %>%
+         across(c(group, response), forcats::fct_rev)) |>
   filter(category %in% c("Total", "Income"))
 head(health)
 ```
@@ -566,7 +566,7 @@ head(health)
 
 
 ```{r bar-legend1, warning=FALSE, include=TRUE}
-health_bars <- health %>%
+health_bars <- health |>
   ggplot(aes(x = group, y = value, fill = response, group = response)) +
   geom_col(width = 0.8, position = position_fill()) +
   geom_text(aes(label = scales::percent(value, accuracy = 1)),
@@ -593,8 +593,8 @@ This legend is okay now that the boxes match the direction and order of the bars
 
 ```{r bar-legend2, message=FALSE, warning=FALSE, include=TRUE}
 # numeric versions of response levels: excellent = 5, poor = 1
-health_lbls <- health %>%
-  slice_max(group) %>%
+health_lbls <- health |>
+  slice_max(group) |>
   mutate(resp_num = as.numeric(response),
          y_right = cumsum(value),
          y_left = cumsum(lag(value, default = 0)),

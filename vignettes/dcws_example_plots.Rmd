@@ -80,10 +80,10 @@ Illustrates:
 * This won't show up when rendered, but I've set `fig.width=plot_params$financial_insecurity$w, fig.height=plot_params$financial_insecurity$h` for this chunk
 
 ```{r financial, fig.width=plot_params$financial_insecurity$w, fig.height=plot_params$financial_insecurity$h}
-financial_to_plot <- fin_insecurity %>%
-  filter(category %in% c("Connecticut", "Greater New Haven", "Age", "Race/Ethnicity")) %>%
-  mutate(category = forcats::fct_collapse(category, Total = c("Connecticut", "Greater New Haven"))) %>%
-  group_by(question) %>%
+financial_to_plot <- fin_insecurity |>
+  filter(category %in% c("Connecticut", "Greater New Haven", "Age", "Race/Ethnicity")) |>
+  mutate(category = forcats::fct_collapse(category, Total = c("Connecticut", "Greater New Haven"))) |>
+  group_by(question) |>
   offset_lbls(value = value, frac = 0.02, thresh = 0.2, fun = percent100)
 financial_to_plot
 
@@ -113,12 +113,12 @@ One thing to deal with here is the margins of the plot: You can set padding with
 
 
 ```{r govt1, fig.width=plot_params$govt_trend$w, fig.height=plot_params$govt_trend$h}
-govt_trend <- cws_trend %>%
+govt_trend <- cws_trend |>
   filter(indicator == "local_govt_responsive",
          year %in% range(year),
          category %in% c("Total", "Race/Ethnicity"))
 
-(govt_left <- govt_trend %>%
+(govt_left <- govt_trend |>
   endpoint_lbls(x = year, value = value, group = group, 
                 fun = percent100, long_side = "left"))
 
@@ -139,7 +139,7 @@ ggplot(govt_left, aes(x = year, y = value, color = group, group = group)) +
 If I want to switch sides for the long label, the only thing I need to change is the padding on the x-axis—everything else is in the data frame.
 
 ```{r govt2, fig.width=plot_params$govt_trend$w, fig.height=plot_params$govt_trend$h}
-govt_right <- govt_trend %>%
+govt_right <- govt_trend |>
   endpoint_lbls(x = year, value = value, group = group, 
                 fun = percent100, long_side = "right") # this is the default side
 
@@ -168,7 +168,7 @@ Dot plots with points directly labeled are great until the values are too close 
 
 
 ```{r dots1, fig.width=plot_params$cohesion$w, fig.height=plot_params$cohesion$h}
-cohesion <- community_cohesion %>%
+cohesion <- community_cohesion |>
   filter(category %in% c("Greater New Haven", "Education"))
 
 ggplot(cohesion, aes(x = question, y = value, color = group)) +
@@ -185,7 +185,7 @@ ggplot(cohesion, aes(x = question, y = value, color = group)) +
 ```
 
 ```{r dots2}
-(to_dodge <- cohesion %>%
+(to_dodge <- cohesion |>
   dodge_lbls(x = question, value = value, group = group, thresh = 0.02))
 ```
 
@@ -193,13 +193,13 @@ ggplot(cohesion, aes(x = question, y = value, color = group)) +
 plots[["cohesion"]] <- ggplot(cohesion, aes(x = question, y = value, color = group)) +
   geom_point(size = 9) +
   geom_text(aes(label = percent100(value)), 
-            data = . %>% anti_join(to_dodge, by = c("question", "group")),
+            data = ~anti_join(., to_dodge, by = c("question", "group")),
             size = 3, color = "white") +
   ggrepel::geom_text_repel(aes(label = percent100(value)),
-            data = . %>% semi_join(to_dodge, by = c("question", "group")),
+            data = ~semi_join(., to_dodge, by = c("question", "group")),
             size = 3, fontface = "bold", family = "Barlow Semi Condensed",
             direction = "x", nudge_x = 0.2, min.segment.length = 2, seed = 1,
-            segment.color = tf_pal[["TRUE"]], box.padding = 0.5) +
+            segment.color = tf_pal[["TRUE"]], box.padding = 0.5, show.legend = FALSE) +
   coord_flip() +
   scale_x_discrete(labels = camiller::clean_titles) +
   scale_y_continuous(breaks = NULL) +
@@ -216,7 +216,7 @@ plots[["cohesion"]]
 
 After exporting about 5,000 plots for the equity reports, I'm excited to codify a way to go from the above lists of plots and plot parameters and not have to think about how to write all those plots out, adding & scaling logos. I didn't have a good way to test out lots of different graphics devices on different platforms, so file a Github issue if any exports don't work. 
 
-By default, this will add a logo (using `cwi::add_logo`) and adjust the height of the plot to fit so that the aspect ratio stays the same even after appending the logo to the bottom of the image.
+By default, this will add a logo (using `stylehaven::add_logo`) and adjust the height of the plot to fit so that the aspect ratio stays the same even after appending the logo to the bottom of the image.
 
 Writing out one plot (by default, both PNG & PDF):
 

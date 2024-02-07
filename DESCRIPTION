@@ -13,32 +13,35 @@ Description: This is a collection of style utilities mostly revolving around
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 License: MIT + file LICENSE
 Imports: 
     colorspace,
-    cwi (>= 0.3.0),
     dplyr,
     ggplot2,
-    magrittr,
     cli,
     methods,
     purrr,
+    rcartocolor,
+    RColorBrewer,
     rlang (>= 0.1.2),
     scales,
     stringr,
     sysfonts,
+    tibble,
     tidyr,
     xfun,
-    tidyselect
+    tidyselect,
+    viridisLite,
+    cowplot,
+    magick
 Suggests: 
+    cwi (>= 0.3.0),
     roxygen2,
     forcats,
     showtext,
     janitor,
     camiller,
-    flipbookr,
-    xaringan,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
@@ -49,7 +52,7 @@ URL: https://github.com/CT-Data-Haven/stylehaven,
     https://ct-data-haven.github.io/stylehaven
 BugReports: https://github.com/CT-Data-Haven/stylehaven/issues
 Depends: 
-    R (>= 4.0.0)
+    R (>= 4.2.0)
 Remotes: 
     ct-data-haven/cwi,
     camille-s/camiller
