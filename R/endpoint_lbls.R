@@ -36,7 +36,7 @@
 #'      geom_line() +
 #'      geom_point(size = 3) +
 #'      geom_text(aes(label = lbl, hjust = just, x = x)) +
-#'      scale_x_continuous(expand = expansion(add = 3),
+#'      scale_x_continuous(expand = expansion(add = 3.5),
 #'                         breaks = c(2015, 2021))
 #' @export
 

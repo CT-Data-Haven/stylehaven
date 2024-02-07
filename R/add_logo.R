@@ -27,7 +27,6 @@
 #' a grob, or to `cowplot::draw_image` otherwise.
 #' @return A `ggplot` object.
 #' @examples
-#' if(interactive()){
 #'   p <- ggplot2::ggplot(iris, ggplot2::aes(x = Sepal.Length)) +
 #'      ggplot2::geom_density() +
 #'        ggplot2::labs(title = "Test chart", caption = "Source: 2019 ACS 5-year estimates")
@@ -48,7 +47,6 @@
 #'        ggplot2::theme_void()
 #'
 #'      add_logo(p, gg_logo, width = 0.2, height = 0.1)
-#'   }
 #' @export
 #' @rdname add_logo
 #' @seealso [magick::image_read()], [cowplot::draw_image()]
