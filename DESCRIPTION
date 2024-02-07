@@ -45,7 +45,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    ggrepel,
+    ggrepel (== 0.9.4),
     ragg,
     withr
 URL: https://github.com/CT-Data-Haven/stylehaven,

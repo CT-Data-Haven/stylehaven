@@ -180,9 +180,11 @@ ggplot(cohesion, aes(x = question, y = value, color = group)) +
   scale_color_manual(values = pal4,
                      guide = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(size = 4))) +
   theme(legend.position = "bottom",
-        panel.grid.major.y = element_line(size = 1, linetype = "11", color = "gray90")) +
+        panel.grid.major.y = element_line(linewidth = 1, linetype = "11", color = "gray90")) +
   labs(x = NULL, y = NULL, color = NULL)
 ```
+
+Fixing those overlapping points, plus adding a logo:
 
 ```{r dots2}
 (to_dodge <- cohesion |>
@@ -190,15 +192,15 @@ ggplot(cohesion, aes(x = question, y = value, color = group)) +
 ```
 
 ```{r dots3, fig.width=plot_params$cohesion$w, fig.height=plot_params$cohesion$h, eval=require("ggrepel")}
-plots[["cohesion"]] <- ggplot(cohesion, aes(x = question, y = value, color = group)) +
+cohesion_dots <- ggplot(cohesion, aes(x = question, y = value, color = group)) +
   geom_point(size = 9) +
-  geom_text(aes(label = percent100(value)), 
+  geom_text(aes(label = percent100(value)),
             data = ~anti_join(., to_dodge, by = c("question", "group")),
             size = 3, color = "white") +
   ggrepel::geom_text_repel(aes(label = percent100(value)),
             data = ~semi_join(., to_dodge, by = c("question", "group")),
             size = 3, fontface = "bold", family = "Barlow Semi Condensed",
-            direction = "x", nudge_x = 0.2, min.segment.length = 2, seed = 1,
+            direction = "x", nudge_x = 0.25, min.segment.length = 2, seed = 1,
             segment.color = tf_pal[["TRUE"]], box.padding = 0.5, show.legend = FALSE) +
   coord_flip() +
   scale_x_discrete(labels = camiller::clean_titles) +
@@ -209,6 +211,7 @@ plots[["cohesion"]] <- ggplot(cohesion, aes(x = question, y = value, color = gro
         panel.grid.major.y = element_line(size = 1, linetype = "11", color = "gray90")) +
   labs(x = NULL, y = NULL, color = NULL)
 
+plots[["cohesion"]] <- suppressWarnings(add_logo(cohesion_dots, place_inside = FALSE))
 plots[["cohesion"]]
 ```
 

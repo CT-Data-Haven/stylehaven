@@ -51,7 +51,6 @@ placement and customization. For more specific needs, the source of this
 function should be easy to build upon.
 }
 \examples{
-if(interactive()){
   p <- ggplot2::ggplot(iris, ggplot2::aes(x = Sepal.Length)) +
      ggplot2::geom_density() +
        ggplot2::labs(title = "Test chart", caption = "Source: 2019 ACS 5-year estimates")
@@ -72,7 +71,6 @@ if(interactive()){
        ggplot2::theme_void()
 
      add_logo(p, gg_logo, width = 0.2, height = 0.1)
-  }
 }
 \seealso{
 \code{\link[magick:editing]{magick::image_read()}}, \code{\link[cowplot:draw_image]{cowplot::draw_image()}}
