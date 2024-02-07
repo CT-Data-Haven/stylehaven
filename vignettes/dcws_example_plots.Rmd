@@ -192,7 +192,7 @@ Fixing those overlapping points, plus adding a logo:
 ```
 
 ```{r dots3, fig.width=plot_params$cohesion$w, fig.height=plot_params$cohesion$h, eval=require("ggrepel")}
-cohesion_dots <- ggplot(cohesion, aes(x = question, y = value, color = group)) +
+cohesion_dots <- ggplot(cohesion, aes(x = value, y = question, color = group)) +
   geom_point(size = 9) +
   geom_text(aes(label = percent100(value)),
             data = ~anti_join(., to_dodge, by = c("question", "group")),
@@ -200,11 +200,11 @@ cohesion_dots <- ggplot(cohesion, aes(x = question, y = value, color = group)) +
   ggrepel::geom_text_repel(aes(label = percent100(value)),
             data = ~semi_join(., to_dodge, by = c("question", "group")),
             size = 3, fontface = "bold", family = "Barlow Semi Condensed",
-            direction = "x", nudge_x = 0.25, min.segment.length = 2, seed = 1,
+            direction = "x", nudge_y = 0.25, min.segment.length = 2, seed = 1,
             segment.color = tf_pal[["TRUE"]], box.padding = 0.5, show.legend = FALSE) +
-  coord_flip() +
-  scale_x_discrete(labels = camiller::clean_titles) +
-  scale_y_continuous(breaks = NULL) +
+  # coord_flip() +
+  scale_y_discrete(labels = camiller::clean_titles) +
+  scale_x_continuous(breaks = NULL) +
   scale_color_manual(values = pal4,
                      guide = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(size = 4))) +
   theme(legend.position = "bottom",
