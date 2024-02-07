@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   dcws_example_plots: dcws_example_plots.html
-last_built: 2024-02-07T16:37Z
+last_built: 2024-02-07T17:18Z
 urls:
   reference: https://ct-data-haven.github.io/stylehaven/reference
   article: https://ct-data-haven.github.io/stylehaven/articles
