@@ -208,7 +208,7 @@ cohesion_dots <- ggplot(cohesion, aes(x = value, y = question, color = group)) +
   scale_color_manual(values = pal4,
                      guide = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(size = 4))) +
   theme(legend.position = "bottom",
-        panel.grid.major.y = element_line(size = 1, linetype = "11", color = "gray90")) +
+        panel.grid.major.y = element_line(linewidth = 1, linetype = "11", color = "gray90")) +
   labs(x = NULL, y = NULL, color = NULL)
 
 plots[["cohesion"]] <- suppressWarnings(add_logo(cohesion_dots, place_inside = FALSE))
