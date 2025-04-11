@@ -57,4 +57,6 @@ offset_lbls <- function(data, value, frac = 0.05, thresh = 0.15, margin = 1.5, f
 #' @param x A numeric vector
 #' @rdname offset_lbls
 #' @export
-ratio_to_max <- function(x, frac = 0.05) frac * max(x, na.rm = TRUE)
+ratio_to_max <- function(x, frac = 0.05) {
+  frac * max(x, na.rm = TRUE)
+}

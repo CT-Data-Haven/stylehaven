@@ -5,7 +5,8 @@ Authors@R:
     person(given = "Camille",
            family = "Seaberry",
            role = c("aut", "cre"),
-           email = "camille@ctdatahaven.org")
+           email = "camille@ctdatahaven.org",
+           comment = c(ORCID = "0000-0002-5102-995X"))
 Description: This is a collection of style utilities mostly revolving around
   making clean labels for legible plots and (eventually) examples of building
   common plots. There's not a whole lot to it, probably never will be, just a
@@ -13,7 +14,7 @@ Description: This is a collection of style utilities mostly revolving around
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 License: MIT + file LICENSE
 Imports: 
     colorspace,
@@ -33,8 +34,10 @@ Imports:
     xfun,
     tidyselect,
     viridisLite,
-    cowplot,
-    magick
+    magick,
+    english,
+    patchwork,
+    here
 Suggests: 
     cwi (>= 0.3.0),
     roxygen2,
@@ -47,7 +50,8 @@ Suggests:
     testthat (>= 3.0.0),
     ggrepel,
     ragg,
-    withr
+    withr,
+    quarto
 URL: https://github.com/CT-Data-Haven/stylehaven,
     https://ct-data-haven.github.io/stylehaven
 BugReports: https://github.com/CT-Data-Haven/stylehaven/issues
@@ -56,5 +60,7 @@ Depends:
 Remotes: 
     ct-data-haven/cwi,
     camille-s/camiller
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr,
+    quarto
 Config/testthat/edition: 3

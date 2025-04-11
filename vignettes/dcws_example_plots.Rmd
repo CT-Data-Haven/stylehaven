@@ -227,7 +227,7 @@ Writing out one plot (by default, both PNG & PDF):
 out_dir <- file.path(tempdir(), "plots")
 if (!dir.exists(out_dir)) dir.create(out_dir)
 
-write_plot(plots$govt_trend, filename = "government_trend", 
+write_plot(plots$govt_trend, filename = "government_trend", add_logo = FALSE, 
            dir = out_dir, width = 5, height = 5, dpi = 150, verbose = FALSE)
 
 list.files(out_dir, recursive = TRUE)
@@ -243,8 +243,8 @@ Even better, iterating over the plots and plot params to write all the plots. On
 ```{r export2, message=TRUE, warning=FALSE}
 purrr::iwalk(plots, function(pl, id) {
   ps <- plot_params[[id]]
-  write_plot(pl, filename = id, dir = out_dir,
-             width = ps$w, height = ps$h, dpi = 150, verbose = FALSE)
+  write_plot(pl, filename = id, add_logo = FALSE,
+             dir = out_dir, width = ps$w, height = ps$h, dpi = 150, verbose = FALSE)
 })
 
 list.files(out_dir, recursive = TRUE)

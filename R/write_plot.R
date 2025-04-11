@@ -8,7 +8,7 @@
 #' @param use_abs_logo Logical, whether the logo size is being supplied as absolute (if `TRUE`) or relative to the plot height (if `FALSE`). If `TRUE` (default), the logo will be the height given in `logo_abs` in inches; otherwise, the logo will be sized as the ratio to the plot height as given in `logo_scale`. For batch writing plots, using an absolute size is probably best so the logo is the same size on all charts, regardless of each chart's height.
 #' @param logo_abs The absolute height for the logo, in inches. Ignored if `use_abs_logo = FALSE`. Default: 0.15
 #' @param logo_scale The ratio of the logo's height to the plot's height. Ignored if `use_abs_logo = TRUE`. Default: 0.05
-#' @param logo_img If `NULL` (the default), the logo will be the image saved at `system.file("extdata/logo.svg", package = "stylehaven")`, which is a copy of DataHaven's logo. See [`stylehaven::add_logo`] for other ways to create and supply a logo.
+#' @param logo_img If `NULL` (the default), the logo will be the image saved at `system.file("extdata/logo.svg", package = "stylehaven")`, which is a copy of DataHaven's logo. See [`stylehaven::add_logo`] for other ways to create and supply a logo, with one exception: this function won't handle `ggplot` objects as logos the way `add_logo` can.
 #' @param logo_pos String, which side of the plot the logo should be placed on. Default: 'right'
 #' @param place_inside Logical, whether the logo should be placed on the inside of the chart or the outside (default). Note that this is the opposite of the default in `add_logo`—often placing the logo inside the chart works well, but for batch writing it's probably safer to either default to outside placement, or use a parameter for this alongside the width & height.
 #' @param dir Directory in which to write files. If `NULL`, the default, this will just be the working directory, as is the case with `ggplot2::ggsave`.
@@ -85,11 +85,12 @@ write_plot <- function(plot,
     plot_out <- plot
   }
 
-  font <- plot$theme$text$family
-  if (!is.null(font) && !(font %in% sysfonts::font_families()) & verbose) {
-    cli::cli_warn("You're using the font {font}, but don't seem to have it installed.",
-                  "i" = "Consider adding it with {.fun stylehaven::font_add_weights} or {.fun sysfonts::font_add}.")
-  }
+  # afaict this actually gets handled before this point by ggplot
+  # font <- plot$theme$text$family
+  # if (!is.null(font) && !(font %in% sysfonts::font_families()) & verbose) {
+  #   cli::cli_warn("You're using the font {font}, but don't seem to have it installed.",
+  #                 "i" = "Consider adding it with {.fun stylehaven::font_add_weights} or {.fun sysfonts::font_add}.")
+  # }
 
   if (verbose) cli::cli_ul()
 

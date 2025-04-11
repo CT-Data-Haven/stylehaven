@@ -58,13 +58,22 @@
 
 #' @rdname stack_lbls
 stack_lbls <- function(x, just = 0.5, fill = FALSE) {
+  if (!is.numeric(x)) {
+    cli::cli_abort("{.arg x} should be a numeric vector.")
+  }
   len_x <- length(x); len_j <- length(just)
   if (!(len_x %% len_j == 0) & !(len_j %% len_x == 0)) {
     if (len_x > len_j) {
-      cli::cli_warn("The length of {.arg x} is not a multiple of the length of {.arg just}.")
+      cli::cli_abort("The length of {.arg x} is not a multiple of the length of {.arg just}.")
     } else {
-      cli::cli_warn("The length of {.arg just} is not a multiple of the length of {.arg x}.")
+      cli::cli_abort("The length of {.arg just} is not a multiple of the length of {.arg x}.")
     }
+  }
+  if (any(is.na(x))) {
+    n_na <- sum(is.na(x))
+    cli::cli_warn(c("{.arg x} contains {.val NA}, which interferes with calculating stacked sizes.",
+                    "!" = "{n_na} {.val NA} value{?s} are being replaced with {.val 0}"))
+    x <- tidyr::replace_na(x, 0)
   }
 
   if (fill) {
@@ -73,5 +82,5 @@ stack_lbls <- function(x, just = 0.5, fill = FALSE) {
   xmin <- cumsum(dplyr::lag(x, default = 0))
   xmax <- cumsum(x)
   # weighted mean to scale between xmin & xmax
-  suppressWarnings((xmin * (1 - just)) + (xmax * just))
+  (xmin * (1 - just)) + (xmax * just)
 }

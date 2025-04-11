@@ -4,6 +4,8 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
+^README\.qmd$
+^TODO\.md$
 ^data-raw$
 ^vignettes/articles
 ^vignettes/slides

@@ -32,7 +32,6 @@
 #' palx("#6c888d") # not too light, but not saturated enough
 #' palx("#0e91a7") # much better--high saturation, middle lightness
 #' @source \url{https://github.com/jxnblk/palx}
-
 #' @seealso [colorspace::lighten()]
 #' @export
 palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plot = FALSE, labels = FALSE) {
@@ -68,7 +67,7 @@ palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plo
     result <- shade_list
   }
 
-  if (plot) print(plot_palx(result, labels))
+  if (plot) print(plot.palx(result, labels))
   return(result)
 }
 
@@ -81,6 +80,7 @@ hue_keys <- function() {
 }
 
 #' @rdname palx
+#' @importFrom tibble as_tibble
 #' @export
 as_tibble.palx <- function(x, ...) {
   if (inherits(x, "tbl_df")) {
@@ -122,6 +122,7 @@ plot_palx <- function(x, ..., labels = FALSE) {
   }
 }
 
+#' @rdname palx
 #' @export
 plot.palx <- plot_palx
 

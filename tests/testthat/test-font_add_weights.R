@@ -1,18 +1,22 @@
 test_that("font_add_weights registers fonts", {
-  # make sure fonts aren't already loaded
+  sysfonts:::clean_fonts()
   fams_before <- sysfonts::font_families()
-  font_add_weights("Noto Sans")
+  # check that not already registered
+  expect_false("Winky Sans" %in% fams_before)
+
+  font_add_weights("Winky Sans")
   fams_after <- sysfonts::font_families()
-  expect_false("Noto Sans" %in% fams_before)
-  expect_true("Noto Sans" %in% fams_after)
-  expect_true("Noto Sans Semibold" %in% fams_after)
+  expect_true("Winky Sans" %in% fams_after)
+  expect_true("Winky Sans Semibold" %in% fams_after)
+
 })
 
 test_that("font_add_weights handles missing or bad calls", {
   expect_error(font_add_weights("XX"))
   
   # originally I thought this was a warning, but error is more appropriate
-  expect_error(font_add_weights("Roboto"), "unavailable for this font: 600")
+  # need to use a font that doesn't have variable weights now that so many do
+  expect_error(font_add_weights("Bytesized"), "unavailable for this font:")
   
   expect_message(font_add_weights("Barlow Semi Condensed"), "regular weight")
   expect_message(font_add_weights("Barlow Semi Condensed"), "semibold weight")

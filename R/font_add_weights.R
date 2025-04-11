@@ -1,4 +1,4 @@
-#' @title Register a set of 4 font weights for use with {showtext}
+#' @title Register a set of 4 font weights for use with `showtext`
 #' @description Sometimes in a longer document with lots of charts, it's good to limit how much text is very bold and instead make use of semibold font faces. `font_add_weights` registers a pair of fonts from Google Fonts. They're from the same family, but one will have a typical set of weights (by default, regular = 400 and bold = 700), and the other will have bolder versions (default regular = 600, bold = 900). If a weight is unavailable, nothing will be registered and a message will print with the weights available for that font family.
 #'
 #' @param name Name of the font to search in Google Fonts. This function will register one family with this name, and another family with that name appended by "Semibold."

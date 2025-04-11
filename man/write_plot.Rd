@@ -40,7 +40,7 @@ write_plot(
 
 \item{logo_scale}{The ratio of the logo's height to the plot's height. Ignored if \code{use_abs_logo = TRUE}. Default: 0.05}
 
-\item{logo_img}{If \code{NULL} (the default), the logo will be the image saved at \code{system.file("extdata/logo.svg", package = "stylehaven")}, which is a copy of DataHaven's logo. See \code{\link{add_logo}} for other ways to create and supply a logo.}
+\item{logo_img}{If \code{NULL} (the default), the logo will be the image saved at \code{system.file("extdata/logo.svg", package = "stylehaven")}, which is a copy of DataHaven's logo. See \code{\link{add_logo}} for other ways to create and supply a logo, with one exception: this function won't handle \code{ggplot} objects as logos the way \code{add_logo} can.}
 
 \item{logo_pos}{String, which side of the plot the logo should be placed on. Default: 'right'}
 

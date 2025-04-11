@@ -1,0 +1,17 @@
+test_that("align_cols checks arguments", {
+    expect_error(align_cols(), "no arguments")
+    expect_error(align_cols(l = 1), "argument.$")
+    expect_silent(dummy <- align_cols(l = 1, r = 3))
+    # l & r take priority over total
+    x1 <- align_cols(l = 1, r = 3, total = 4)
+    x2 <- align_cols(l = 1, r = 3, total = 5)
+    x3 <- align_cols(l = NULL, r = 3, total = 4)
+    x4 <- align_cols(l = 1, r = NULL, total = 4)
+    expect_equal(x1, "lrrr")
+    expect_equal(x2, "lrrr")
+    expect_equal(x3, "lrrr")
+    expect_equal(x4, "lrrr")
+    expect_message(align_cols(l = 1, r = 3, total = 8), "priority")
+})
+
+

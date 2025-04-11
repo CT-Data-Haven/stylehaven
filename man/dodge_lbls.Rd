@@ -4,7 +4,7 @@
 \alias{dodge_lbls}
 \title{Prepare chart labels that should be repelled apart}
 \usage{
-dodge_lbls(data, x, value, group, thresh, digits = 2)
+dodge_lbls(data, x, value, group, thresh, digits = 2, verbose = FALSE)
 }
 \arguments{
 \item{data}{A data frame}
@@ -22,6 +22,8 @@ considered too close, and will be included in the output as points to dodge.}
 
 \item{digits}{Number of digits to round to before calculating differences
 between points. Default: 2}
+
+\item{verbose}{Boolean: if \code{TRUE}, will report the number of observations being dodged. Defaults \code{FALSE}.}
 }
 \value{
 A data frame of too-close points, with columns corresponding to the

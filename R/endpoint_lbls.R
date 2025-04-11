@@ -57,7 +57,7 @@ endpoint_lbls <- function(data, x, value, group, mult = 0.05, add = NULL, fun = 
   if (!is.null(mult)) {
     # if both mult & add given, use mult
     if (!is.null(add)) {
-      cli::cli_alert_info("Both {.arg mult} and {.arg add} were supplied; only {.arg mult} will be used.")
+      cli::cli_inform("Both {.arg mult} and {.arg add} were supplied; only {.arg mult} will be used.")
     }
     base_off <- (rng[2] - rng[1]) * mult
   } else {
@@ -74,14 +74,12 @@ endpoint_lbls <- function(data, x, value, group, mult = 0.05, add = NULL, fun = 
   out <- dplyr::mutate(out, short_lbl = purrr::map_chr({{ value }}, fun))
   out <- dplyr::mutate(out, long_lbl = sprintf("%s: %s", {{ group }}, short_lbl))
 
-  if (long_side == "right") {
-    out <- dplyr::mutate(out, lbl = dplyr::if_else(is_max, long_lbl, short_lbl))
-  } else if (long_side == "left") {
-    out <- dplyr::mutate(out, lbl = dplyr::if_else(is_max, short_lbl, long_lbl))
-  } else if (long_side == "both") {
-    out <- dplyr::mutate(out, lbl = long_lbl)
-  } else if (long_side == "none") {
-    out <- dplyr::mutate(out, lbl = short_lbl)
-  }
+  out <- switch(
+    long_side,
+    right = dplyr::mutate(out, lbl = dplyr::if_else(is_max, long_lbl, short_lbl)),
+    left = dplyr::mutate(out, lbl = dplyr::if_else(is_max, short_lbl, long_lbl)),
+    both = dplyr::mutate(out, lbl = long_lbl),
+    none = dplyr::mutate(out, lbl = short_lbl)
+  )
   dplyr::select(out, -is_max, -sign, -off, -short_lbl, -long_lbl)
 }

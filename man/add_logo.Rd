@@ -9,8 +9,8 @@ add_logo(
   image = NULL,
   position = c("right", "left"),
   height = 0.05,
-  place_inside = TRUE,
-  ...
+  width = NULL,
+  place_inside = TRUE
 )
 }
 \arguments{
@@ -19,8 +19,7 @@ add_logo(
 \item{image}{Either a string giving the path or URL to an image file to be
 read by \code{magick::image_read}; the results of reading a file or manipulating
 an image already with \code{magick::image_read} or other \code{magick} functions;
-a \code{ggplot} object / grob; some other object that can be handled by
-\code{cowplot::draw_image}; or \code{NULL}, the default. If \code{NULL}, the image will
+a \code{ggplot} object / grob; or \code{NULL}, the default. If \code{NULL}, the image will
 come from the file at \code{system.file("extdata/logo.svg", package = "stylehaven")}.
 As built, this is a logo for DataHaven, but that file can be replaced for
 repackaging this library for other organizations or projects.}
@@ -32,23 +31,23 @@ the logo should be aligned. Default: "right"}
 of the image given in \code{plot}. Adjust as necessary based on the dimensions
 of the logo. Default: 0.05}
 
+\item{width}{Numeric: the width of the logo, as a percentage of the image given in \code{plot}. If \code{NULL}, the default, the width will be calculated based on the aspect ratio of the image. Must be given explicitly for \code{ggplot} objects, as they don't inherently have their own dimensions.}
+
 \item{place_inside}{Logical: if \code{TRUE} (default), logo will be drawn within
 the plotting area; otherwise, an additional grob is built below the plot,
 meaning the logo could later be cropped away, which may be undesirable.}
-
-\item{...}{Additional arguments passed to \code{cowplot::draw_grob} if attaching
-a grob, or to \code{cowplot::draw_image} otherwise.}
 }
 \value{
 A \code{ggplot} object.
 }
 \description{
-This function wraps around a few functions from \code{cowplot} and
+This function wraps around a few functions from \code{patchwork} and
 \code{magick} to add a logo (or other annotation) to the bottom of a \code{ggplot} plot,
 an otherwise tedious and easy to forget process. It's meant to be flexible in
 the types of objects it can place; as a result, it's less flexible in their
 placement and customization. For more specific needs, the source of this
-function should be easy to build upon.
+function should be easy to build upon. Previously it used \code{cowplot}, but that
+package is a bit too buggy.
 }
 \examples{
   p <- ggplot2::ggplot(iris, ggplot2::aes(x = Sepal.Length)) +
@@ -56,8 +55,9 @@ function should be easy to build upon.
        ggplot2::labs(title = "Test chart", caption = "Source: 2019 ACS 5-year estimates")
 
      add_logo(p)
-     add_logo(p, magick::image_read(system.file("extdata/25th_logo.png", package = "stylehaven")),
-     height = 0.1)
+     add_logo(p, 
+          magick::image_read(system.file("extdata/25th_logo.png", package = "stylehaven")),
+          height = 0.1)
 
      # This example logo is not all that attractive, but shows how you might
      # attach a ggplot grob as a dynamically-created logo
@@ -73,5 +73,5 @@ function should be easy to build upon.
      add_logo(p, gg_logo, width = 0.2, height = 0.1)
 }
 \seealso{
-\code{\link[magick:editing]{magick::image_read()}}, \code{\link[cowplot:draw_image]{cowplot::draw_image()}}
+\code{\link[magick:editing]{magick::image_read()}}, \code{\link[patchwork:plot_layout]{patchwork::plot_layout()}}
 }

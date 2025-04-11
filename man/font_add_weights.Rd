@@ -2,7 +2,7 @@
 % Please edit documentation in R/font_add_weights.R
 \name{font_add_weights}
 \alias{font_add_weights}
-\title{Register a set of 4 font weights for use with {showtext}}
+\title{Register a set of 4 font weights for use with \code{showtext}}
 \usage{
 font_add_weights(name, regular = 400, semibold = 600, bold = 700, black = 900)
 }

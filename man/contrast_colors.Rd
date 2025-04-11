@@ -3,6 +3,8 @@
 \name{contrast_colors}
 \alias{contrast_colors}
 \alias{mutate_contrast}
+\alias{plot.cc_df}
+\alias{plot.cc_vec}
 \title{Choose label colors based on contrast}
 \source{
 \url{https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html}
@@ -20,7 +22,7 @@ contrast_colors(
 )
 
 mutate_contrast(
-  x,
+  data,
   col,
   pal,
   dark = "black",
@@ -28,6 +30,10 @@ mutate_contrast(
   min_ratio = 4.5,
   verbose = TRUE
 )
+
+\method{plot}{cc_df}(x, ...)
+
+\method{plot}{cc_vec}(x, ...)
 }
 \arguments{
 \item{pal}{String: either a vector of colors (either named R colors or hex codes), or the name of a palette from the \code{RColorBrewer}, \code{rcartocolor}, or \code{viridisLite} packages. If the name of a palette, the respective function will be called to fetch the vector of hex codes.}
@@ -44,21 +50,34 @@ mutate_contrast(
 
 \item{labels_only}{Logical, whether to return only labels, i.e. just a vector of the dark or light values, depending on which had the greatest contrast for each color in \code{pal}, or the full data frame used for calculations, including all ratios. Default: TRUE}
 
-\item{plot}{Logical, whether to print a \code{ggplot} swatch of tiles filled with \code{pal} and labels in both the dark and light label colors. For each fill color, the label color with the highest contrast ratio will be starred, although highest might not be above the minimum required. Doesn't change the return value. Default: FALSE}
+\item{plot}{Logical, whether to print a \code{ggplot} swatch of tiles filled with \code{pal} and labels, using \code{plot} methods for the appropriate class. Doesn't change the return value. Default: FALSE}
 
-\item{x}{A data frame}
+\item{data}{A data frame}
 
 \item{col}{Bare name of a column in \code{x} along which the palette will be mapped. If not already a factor, it will be coerced into one with levels in the same order in which they appear.}
+
+\item{x}{An object returned by \code{contrast_colors}}
+
+\item{...}{Not currently used}
 }
 \value{
-For \code{contrast_colors}: If \code{labels_only}, a named character vector of colors, either the value of \code{dark} or \code{light}, giving the highest contrast ratio for each value of \code{pal}. This will be the same length as \code{pal} (or \code{n}, if you gave \code{pal} as the name of a palette to retrieve), and the names will be the fill colors. Otherwise, a data frame with the same number of rows as colors in \code{pal} and 6 columns of info about them, including fill and label colors (see examples). For \code{mutate_contrast}, the original data frame given as \code{x}, with columns added for fill (according to \code{palette}) and label color.
+\itemize{
+\item For \code{contrast_colors}: If \code{labels_only}, a named character vector of colors, either the value of \code{dark} or \code{light}, giving the highest contrast ratio for each value of \code{pal}. This will be the same length as \code{pal} (or \code{n}, if you gave \code{pal} as the name of a palette to retrieve), and the names will be the fill colors. Otherwise, a data frame with the same number of rows as colors in \code{pal} and 6 columns of info about them, including fill and label colors (see examples).
+\itemize{
+\item If \code{labels_only = FALSE}, will also have the classes \code{contrast_colors} and \code{cc_df}
+\item If \code{labels_only = TRUE}, will also have the classes \code{contrast_colors} and \code{cc_vec}.
+}
+\item For \code{mutate_contrast}, the original data frame given as \code{x}, with columns added for fill (according to \code{palette}) and label color.
+}
 }
 \description{
-This is a pair of utility functions for a situation that I too often gloss over: when making a chart with different fill colors (such as stacked bars with a sequential palette), it can be good to vary the label color to maintain good contrast between the background and foreground. For example, the ColorBrewer palettes often go from such a dark color to such a light color that black or dark gray labels won't be visible over the darkest bar, and white or light gray labels won't be visible over the lightest bar. This helps prepare for that by testing the contrast between a palette (presumably bar fill colors) and a light and dark option (presumably label text on those bars).
+This is a set of utility functions and classes for a situation that I too often gloss over: when making a chart with different fill colors (such as stacked bars with a sequential palette), it can be good to vary the label color to maintain good contrast between the background and foreground. For example, the ColorBrewer palettes often go from such a dark color to such a light color that black or dark gray labels won't be visible over the darkest bar, and white or light gray labels won't be visible over the lightest bar. This helps prepare for that by testing the contrast between a palette (presumably bar fill colors) and a light and dark option (presumably label text on those bars).
 
 A contrast ratio is calculated by \code{colorspace::contrast_ratio} according to the WCAG algorithm, and the minimum ratio defaults to 4.5 based on their accessibility guidelines. If \code{verbose} is true and any combination of palette color and label colors fails to meet this minimum, you'll get a message letting you know. For example, using medium gray colors for both dark and light labels is likely to lead to a situation where neither the dark nor the light label color would have enough contrast over the palette.
 
 \code{mutate_contrast} takes this a step further, working with a data frame to determine label colors from a factor column (or a column that can become a factor).
+
+\code{plot} methods create \code{ggplot} plots as visual references of the fill and label colors. For \code{cc_df} objects, there will be two columns of fill + label combinations with their ratios and a star for the label color with the greatest contrast. For \code{cc_vec} objects, this is a simplified version giving just one column of fills and the label colors with greatest contrast, but no ratio information.
 }
 \examples{
 # using a pre-defined palette

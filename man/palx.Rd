@@ -4,6 +4,7 @@
 \alias{palx}
 \alias{as_tibble.palx}
 \alias{plot_palx}
+\alias{plot.palx}
 \title{Make multi-hue, multi-shade qualitative color palettes}
 \source{
 \url{https://github.com/jxnblk/palx}
@@ -22,6 +23,8 @@ palx(
 \method{as_tibble}{palx}(x, ...)
 
 plot_palx(x, ..., labels = FALSE)
+
+\method{plot}{palx}(x, ..., labels = FALSE)
 }
 \arguments{
 \item{color}{A string of a color name (\code{"red"}) or hex code (\code{"#6f54d6"}).' This should be a single value, as it's the color the palette will be based around, though it's not guaranteed that this exact color will be in the final palette.}

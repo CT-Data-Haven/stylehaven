@@ -20,6 +20,7 @@
 #' considered too close, and will be included in the output as points to dodge.
 #' @param digits Number of digits to round to before calculating differences
 #' between points. Default: 2
+#' @param verbose Boolean: if `TRUE`, will report the number of observations being dodged. Defaults `FALSE`.
 #' @return A data frame of too-close points, with columns corresponding to the
 #' `x` and `group` columns.
 #' @examples
@@ -52,19 +53,36 @@
 #' @export
 #' @rdname dodge_lbls
 #' @import rlang
-#' @import dplyr
 
-dodge_lbls <- function(data, x, value, group, thresh, digits = 2) {
+dodge_lbls <- function(data, x, value, group, thresh, digits = 2, verbose = FALSE) {
+  num_error(thresh)
+  if (thresh < 0) {
+    cli::cli_abort("{.arg thresh} should be a positive number")
+  }
   id_str <- rlang::as_name(enquo(x))
   df_left <-  dplyr::select(data, {{ x }}, x1 = {{ group }}, val1 = {{ value }})
   df_right <- dplyr::select(data, {{ x }}, x2 = {{ group }}, val2 = {{ value }})
-  joined <- dplyr::inner_join(df_left, df_right, by = id_str)
+  joined <- dplyr::inner_join(df_left, df_right, by = id_str, relationship = "many-to-many")
   joined <- dplyr::filter(joined, x1 != x2)
-  joined <- dplyr::mutate(joined, dplyr::across(dplyr::matches("^val\\d$"), round, digits))
-  joined <- dplyr::mutate(joined, diff = abs(val1 - val2))
-  joined <- dplyr::filter(joined, diff <= thresh)
+  # joined$val1 <- round(joined$val1, digits)
+  # joined$val2 <- round(joined$val2, digits)
+  # joined <- dplyr::mutate(joined, diff = abs(val1 - val2))
+  # joined <- dplyr::filter(joined, diff <= thresh)
+  joined <- dplyr::filter(joined, calc_thresh(val1, val2, digits, thresh))
   joined <- dplyr::select(joined, {{ x }}, {{ group }} := x1)
+  joined <- dplyr::distinct(joined, {{ x }}, {{ group }})
+  
+  if (verbose) {
+    n <- nrow(joined)
+    cli::cli_inform("{.fn dodge_lbls} found {n} row{?s} to dodge.")
+  }
   joined
 }
 
-
+calc_thresh <- function(v1, v2, round_digits, thresh) {
+  v1 <- round(v1, round_digits)
+  v2 <- round(v2, round_digits)
+  # round to handle super small floats
+  diff <- round(abs(v1 - v2), 8)
+  diff <= thresh
+}

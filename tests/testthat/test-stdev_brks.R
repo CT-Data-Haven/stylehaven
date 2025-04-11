@@ -35,3 +35,8 @@ test_that("stdev_brks handles filters", {
   expect_error(stdev_brks(df, filters = f_err2))
   expect_error(stdev_brks(df, filters = f_err3))
 })
+
+test_that("stdev_brks checks lengths of breaks, labels", {
+  df <- dplyr::group_by(fin_insecurity, question)
+  expect_error(stdev_brks(df, brks = c(-2, -1, 1, 2), labels = c("1std", "2std")))
+})
