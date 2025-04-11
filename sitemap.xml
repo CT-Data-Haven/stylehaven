@@ -1,93 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/404.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/articles/dcws_example_plots.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/index.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/add_logo.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/age_lbls.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/contrast_colors.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/cws2018.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/cws_trend.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/dodge_lbls.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/endpoint_lbls.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/font_add_weights.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/life_exp.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/number_formats.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/offset_lbls.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/palx.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/rent_x_income.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/round_sum100.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/scaffold_project.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/scale_y_barcontinuous.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/self_rated_health.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/stack_lbls.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/stdev_brks.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/tidyeval.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/title_case.html</loc>
-  </url>
-  <url>
-    <loc>https://ct-data-haven.github.io/stylehaven/reference/write_plot.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://ct-data-haven.github.io/stylehaven/404.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/LICENSE-text.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/LICENSE.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/articles/dcws_example_plots.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/articles/index.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/authors.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/index.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/add_logo.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/age_lbls.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/contrast_colors.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/cws2018.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/cws_trend.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/dodge_lbls.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/endpoint_lbls.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/font_add_weights.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/glue_here.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/index.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/life_exp.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/number_formats.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/number_thresh.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/offset_lbls.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/palx.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/rent_x_income.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/round_sum100.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/scaffold_project.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/scale_barcontinuous.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/self_rated_health.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/stack_lbls.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/stdev_brks.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/title_case.html</loc></url>
+<url><loc>https://ct-data-haven.github.io/stylehaven/reference/write_plot.html</loc></url>
 </urlset>
+
