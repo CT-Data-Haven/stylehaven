@@ -8,3 +8,8 @@ docs
 /doc/
 /Meta/
 *.Rproj
+.cz.toml
+CHANGELOG.md.j2
+TODO.md
+.Renviron
+.env
