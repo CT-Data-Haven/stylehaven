@@ -3,23 +3,27 @@
 \docType{data}
 \name{self_rated_health}
 \alias{self_rated_health}
-\title{2018 DCWS sample indicators: self-rated health}
+\title{2024 DCWS sample: self-rated health}
 \format{
-A data frame with 100 rows and 4 variables:
+A data frame with 20 rows and 4 variables:
 \describe{
 \item{category}{Category: gender, age, etc.}
-\item{group}{Group: male, female, ages 18–34, etc.}
-\item{response}{Response: excellent, very good, good, fair, poor}
+\item{group}{Group: male, female, ages 18-34, etc.}
+\item{response}{Response}
 \item{value}{Percentage value}
 }
 }
 \source{
-2018 DataHaven Community Wellbeing Survey
+2024 DataHaven Community Wellbeing Survey
 }
 \usage{
 self_rated_health
 }
 \description{
-This is a subset of the 2018 DataHaven Community Wellbeing Survey data for Greater New Haven, just including the question on self-rated health. Unlike \link[=cws2018]{other DCWS datasets} in this package, this includes all response options.
+This is the question from the statewide 2024 DataHaven Community Wellbeing Survey data on self-rated health. This includes all response categories (excellent, very good, good, fair, poor) for Connecticut adults by gender.
+}
+\examples{
+head(self_rated_health)
+
 }
 \keyword{datasets}

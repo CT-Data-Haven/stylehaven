@@ -3,24 +3,28 @@
 \docType{data}
 \name{cws_trend}
 \alias{cws_trend}
-\title{2015–2018 DCWS sample trends}
+\title{2015-2024 DCWS sample trends}
 \format{
-A data frame with 48 rows and 5 variables:
+A data frame with 36 rows and 5 variables:
 \describe{
-\item{year}{Year, either 2015 or 2021}
-\item{indicator}{Indicator: satisfied with area, local government is responsive, or police approval}
+\item{question}{Indicator: local government is responsive, police approval, parks in good condition}
+\item{year}{Year, either 2015 or 2024}
 \item{category}{Category: gender, age, etc.}
-\item{group}{Group: male, female, ages 18–34, etc.}
+\item{group}{Group: male, female, ages 18-34, etc.}
 \item{value}{Percentage value}
 }
 }
 \source{
-2015 & 2021 DataHaven Community Wellbeing Survey
+2015 & 2024 DataHaven Community Wellbeing Survey
 }
 \usage{
 cws_trend
 }
 \description{
-This is a subset of 3 questions from both the 2015 & 2021 DataHaven Community Wellbeing Surveys for Connecticut.
+This is a subset of questions from both the 2015 & 2024 DataHaven Community Wellbeing Surveys for Greater New Haven.
+}
+\examples{
+head(cws_trend)
+
 }
 \keyword{datasets}

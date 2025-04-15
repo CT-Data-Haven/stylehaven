@@ -5,11 +5,10 @@
 \alias{life_exp}
 \title{Life expectancy}
 \format{
-A data frame with 189 rows and 3 variables:
+A data frame with 180 rows and 2 variables:
 \describe{
 \item{tract}{Tract FIPS code}
-\item{town}{Town name}
-\item{value}{Life expectancy, including \code{NA} values for 9 tracts without data}
+\item{value}{Life expectancy in years}
 }
 }
 \source{
@@ -20,5 +19,9 @@ life_exp
 }
 \description{
 Dataset of life expectancy in years by census tract within New Haven County for 2010 to 2015.
+}
+\examples{
+head(life_exp)
+
 }
 \keyword{datasets}
