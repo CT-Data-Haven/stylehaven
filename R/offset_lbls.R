@@ -17,46 +17,49 @@
 #' The columns in the returned data frame are:
 #' * `is_small`: Logical: is this value considered small with respect to the maximum value and your threshold. This is useful if you have white labels _inside_ your bars, but need black or gray text for labels that fall _outside_ the bars.
 #' * `off`: Numeric: the number by which y-positions are offset, positive for small values and negative for non-small values
-#' * `y`: Numeric: y-positions at which to place labels. `NA` values are replaced with 0.
+#' * `value_off`: Numeric: value positions at which to place labels. `NA` values are replaced with 0. Used to be called `y`, but I'm changing to match ggplot's move away from `coord_flip`.
 #' * `just`: Numeric, either 0 or 1 to use as horizontal or vertical justification in e.g. `ggplot2::geom_text`.
 #' * `lbl`: Character: values as formatted by the function in `fun`, with `NA` values replaced per the `na` argument.
 #' @examples
 #' library(ggplot2)
-#'
-#' chronic_disease |>
-#'   dplyr::filter(question == "diabetes", category == "Age") |>
-#'   offset_lbls(value, fun = percent100) |>
-#'   ggplot(aes(x = group, y = value)) +
-#'   geom_col() +
-#'   geom_text(aes(y = y, label = lbl, color = is_small, vjust = just), show.legend = FALSE) +
-#'   scale_color_manual(values = c("TRUE" = "gray30", "FALSE" = "white"))
+#' # shares of people rating health as poor is too small for most groups to have
+#' # easily legible label, so offset them to the right of their bars
+#' self_rated_health |>
+#'     offset_lbls(value = value, fun = percent100) |>
+#'     ggplot(aes(x = value, y = forcats::fct_rev(group), fill = response)) +
+#'     geom_col() +
+#'     geom_text(aes(x = value_off, hjust = just, label = lbl, color = is_small)) +
+#'     facet_grid(cols = vars(response)) +
+#'     scale_x_barcontinuous(breaks = NULL) +
+#'     scale_color_manual(values = c("TRUE" = "gray30", "FALSE" = "white")) +
+#'     theme(legend.position = "none")
 #' @rdname offset_lbls
-
+#' @keywords viz-utils
 #' @export
 offset_lbls <- function(data, value, frac = 0.05, thresh = 0.15, margin = 1.5, fun = NULL, na = "N/A") {
-  if (is.null(fun)) {
-    fun <- as.character
-  }
-  if (!inherits(fun, "function")) {
-    cli::cli_abort("Argument {.arg fun} must be a function, or {.val NULL}.")
-  }
-  if (is.null(na)) {
-    na <- NA
-  }
-  data <- dplyr::mutate(data, ratio = {{ value }} / max({{ value }}, na.rm = TRUE))
-  data <- dplyr::mutate(data, base_off = ratio_to_max({{ value }}, frac))
-  data <- dplyr::mutate(data, is_small = ratio <= thresh | is.na({{ value }}))
-  data <- dplyr::mutate(data, off = ifelse(is_small, margin * base_off, -base_off))
-  data <- dplyr::mutate(data, y = tidyr::replace_na({{ value }} + off, 0))
-  data <- dplyr::mutate(data, just = ifelse(is_small | y == 0, 0, 1))
-  data <- dplyr::mutate(data, lbl = tidyr::replace_na(purrr::map_chr({{ value }}, fun), na))
-  data <- dplyr::select(data, -ratio, -base_off)
-  data
+    if (is.null(fun)) {
+        fun <- as.character
+    }
+    if (!inherits(fun, "function")) {
+        cli::cli_abort("Argument {.arg fun} must be a function, or {.val NULL}.")
+    }
+    if (is.null(na)) {
+        na <- NA
+    }
+    data <- dplyr::mutate(data, ratio = {{ value }} / max({{ value }}, na.rm = TRUE))
+    data <- dplyr::mutate(data, base_off = ratio_to_max({{ value }}, frac))
+    data <- dplyr::mutate(data, is_small = ratio <= thresh | is.na({{ value }}))
+    data <- dplyr::mutate(data, off = ifelse(is_small, margin * base_off, -base_off))
+    data <- dplyr::mutate(data, value_off = tidyr::replace_na({{ value }} + off, 0))
+    data <- dplyr::mutate(data, just = ifelse(is_small | value_off == 0, 0, 1))
+    data <- dplyr::mutate(data, lbl = tidyr::replace_na(purrr::map_chr({{ value }}, fun), na))
+    data <- dplyr::select(data, -ratio, -base_off)
+    data
 }
 
 #' @param x A numeric vector
 #' @rdname offset_lbls
 #' @export
 ratio_to_max <- function(x, frac = 0.05) {
-  frac * max(x, na.rm = TRUE)
+    frac * max(x, na.rm = TRUE)
 }

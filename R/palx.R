@@ -33,93 +33,111 @@
 #' palx("#0e91a7") # much better--high saturation, middle lightness
 #' @source \url{https://github.com/jxnblk/palx}
 #' @seealso [colorspace::lighten()]
+#' @keywords viz-utils
+#' @keywords color
 #' @export
 palx <- function(color, n_hues = 8, n_shades = 9, row = NULL, as_df = FALSE, plot = FALSE, labels = FALSE) {
-  keys <- hue_keys()
-  max_hues <- length(keys)
-  if (n_hues > max_hues) {
-    cli::cli_warn("This function uses a maximum of {max_hues} hues. {.arg n_hues} is being set to {max_hues}.")
-    n_hues <- max_hues
-  }
+    keys <- hue_keys()
+    max_hues <- length(keys)
+    if (n_hues > max_hues) {
+        cli::cli_warn("This function uses a maximum of {max_hues} hues. {.arg n_hues} is being set to {max_hues}.")
+        n_hues <- max_hues
+    }
 
-  if (length(color) > 1) cli::cli_abort("Argument {.arg color} should be of length 1.")
-  if (n_shades < 1) cli::cli_abort("Argument {.arg n_shades} should be at least 1.")
-  if (n_hues < 1) cli::cli_abort("Argument {.arg n_hues} should be at least 1.")
+    if (length(color) > 1) cli::cli_abort("Argument {.arg color} should be of length 1.")
+    if (n_shades < 1) cli::cli_abort("Argument {.arg n_shades} should be at least 1.")
+    if (n_hues < 1) cli::cli_abort("Argument {.arg n_hues} should be at least 1.")
 
-  hex <- dplyr::if_else(color %in% colors(), scales::col2hcl(color), color)
+    is_named_color <- color %in% colors()
+    hex <- ifelse(is_named_color, scales::col2hcl(color), check_hex(color))
 
-  crds <- colorspace::coords(methods::as(colorspace::hex2RGB(hex), "HLS"))
-  h <- crds[,1]; l <- crds[,2]; s <- crds[,3]
-  min_sat <- 1/8
-  hues <- make_hues(h, n_hues)
-  col_names <- gsub("\\d+_", "", names(hues))
-  base_cols <- colorspace::HLS(hues, l, s,       col_names)
-  base_gray <- colorspace::HLS(h,    l, min_sat, "gray")
-  base_colors <- bind_hls(c(base_cols, base_gray)) # coords
+    crds <- colorspace::coords(methods::as(colorspace::hex2RGB(hex), "HLS"))
+    h <- crds[, 1]
+    l <- crds[, 2]
+    s <- crds[, 3]
+    min_sat <- 1 / 8
+    hues <- make_hues(h, n_hues)
+    col_names <- gsub("\\d+_", "", names(hues))
+    base_cols <- colorspace::HLS(hues, l, s, col_names)
+    base_gray <- colorspace::HLS(h, l, min_sat, "gray")
+    base_colors <- bind_hls(c(base_cols, base_gray)) # coords
 
-  shade_list <- make_shades(base_colors, n_shades)
-  if (!is.null(row)) shade_list <- shade_list[row]
+    shade_list <- make_shades(base_colors, n_shades)
+    if (!is.null(row)) shade_list <- shade_list[row]
 
-  if(as_df){
-    result <- as_tibble.palx(shade_list)
-  } else {
-    class(shade_list) <- c("palx", class(shade_list))
-    result <- shade_list
-  }
+    if (as_df) {
+        result <- as_tibble.palx(shade_list)
+    } else {
+        class(shade_list) <- c("palx", class(shade_list))
+        result <- shade_list
+    }
 
-  if (plot) print(plot.palx(result, labels))
-  return(result)
+    if (plot) print(plot.palx(result, labels))
+    return(result)
+}
+
+check_hex <- function(color) {
+    if (!(grepl("^\\#[[:xdigit:]]{6}$", color) | grepl("^\\#[[:xdigit:]]{8}$", color))) {
+        cli::cli_abort("{.arg color} should be a valid color name or hex code.",
+            .envir = parent.frame(2L)
+        )
+    } else {
+        color
+    }
 }
 
 hue_keys <- function() {
-  hues <- seq(30, 360, by = 30)
-  lbls <- c("orange", "yellow", "lime", "green", "teal", "cyan", "blue", "indigo", "violet", "fuschia", "pink", "red")
-  nums <- sprintf("%02d", c(4:12, 1:3))
-  names(hues) <- paste(nums, lbls, sep = "_")
-  hues
+    hues <- seq(30, 360, by = 30)
+    lbls <- c("orange", "yellow", "lime", "green", "teal", "cyan", "blue", "indigo", "violet", "fuschia", "pink", "red")
+    nums <- sprintf("%02d", c(4:12, 1:3))
+    names(hues) <- paste(nums, lbls, sep = "_")
+    hues
+}
+
+#' @importFrom tibble as_tibble
+as_tibble_palx <- function(x, ...) {
+    if (inherits(x, "tbl_df")) {
+        return(x)
+    }
+    tbl <- purrr::map(x, dplyr::bind_rows)
+    tbl <- dplyr::bind_rows(tbl, .id = "shade")
+    tbl$shade <- as.numeric(gsub("[a-z]+", "", tbl$shade))
+    # tbl <- tibble:::as_tibble.data.frame(tbl, ...)
+    class(tbl) <- c("palx", class(tbl))
+    return(tbl)
 }
 
 #' @rdname palx
-#' @importFrom tibble as_tibble
 #' @export
-as_tibble.palx <- function(x, ...) {
-  if (inherits(x, "tbl_df")) {
-    return(x)
-  }
-  tbl <- purrr::map(x, dplyr::bind_rows)
-  tbl <- dplyr::bind_rows(tbl, .id = "shade")
-  tbl$shade <- as.numeric(gsub("[a-z]+", "", tbl$shade))
-  # tbl <- tibble:::as_tibble.data.frame(tbl, ...)
-  class(tbl) <- c("palx", class(tbl))
-  return(tbl)
-}
+as_tibble.palx <- as_tibble_palx
 
 #' @rdname palx
 #' @export
 plot_palx <- function(x, ..., labels = FALSE) {
-  if (!inherits(x, "palx")) {
-    cli::cli_abort("Argument {.arg x} should be the result of calling {.fun palx}, either as a list or a data frame.")
-  }
-  if (inherits(x, "data.frame")) {
-    df <- x
-  } else {
-    df <- as_tibble.palx(x)
-  }
-  df <- dplyr::mutate(df, shade = sprintf("%02d", shade))
-  df <- tidyr::pivot_longer(df, cols = -shade, names_to = "hue", names_ptypes = list(hue = factor()))
-  gg <- ggplot2::ggplot(df, ggplot2::aes(x = hue, y = shade))
-  gg <- gg + ggplot2::geom_tile(ggplot2::aes(fill = value))
-  gg <- gg + ggplot2::scale_fill_identity()
-  gg <- gg + ggplot2::scale_x_discrete(expand = ggplot2::expansion(), position = "top")
-  gg <- gg + ggplot2::scale_y_discrete(expand = ggplot2::expansion())
-  gg <- gg + ggplot2::theme(axis.ticks = ggplot2::element_blank())
+    if (!inherits(x, "palx")) {
+        cli::cli_abort("Argument {.arg x} should be the result of calling {.fun palx}, either as a list or a data frame.")
+    }
+    if (inherits(x, "data.frame")) {
+        df <- x
+    } else {
+        df <- as_tibble.palx(x)
+    }
+    df <- dplyr::mutate(df, shade = sprintf("%02d", shade))
+    df <- tidyr::pivot_longer(df, cols = -shade, names_to = "hue", names_ptypes = list(hue = factor()))
+    gg <- ggplot2::ggplot(df, ggplot2::aes(x = hue, y = shade))
+    gg <- gg + ggplot2::geom_tile(ggplot2::aes(fill = value))
+    gg <- gg + ggplot2::scale_fill_identity()
+    gg <- gg + ggplot2::scale_x_discrete(expand = ggplot2::expansion(), position = "top")
+    gg <- gg + ggplot2::scale_y_discrete(expand = ggplot2::expansion())
+    gg <- gg + ggplot2::theme(axis.ticks = ggplot2::element_blank())
 
-  if (labels) {
-    gg + ggplot2::geom_label(ggplot2::aes(fill = value),
-                             size = 2.8, alpha = 0.6, label.size = 0)
-  } else {
-    gg
-  }
+    if (labels) {
+        gg + ggplot2::geom_label(ggplot2::aes(fill = value),
+            size = 2.8, alpha = 0.6, label.size = 0
+        )
+    } else {
+        gg
+    }
 }
 
 #' @rdname palx
@@ -127,41 +145,40 @@ plot_palx <- function(x, ..., labels = FALSE) {
 plot.palx <- plot_palx
 
 make_hues <- function(h, n) {
-  keys <- hue_keys()
-  step <- 360 / n
-  band <- 30
-  off <- 2
-  # hue_vals <- purrr::map_dbl(1:n, \(val){
-  #   hue <- floor((h + (val * step)) %% 360)
-  #   dplyr::if_else(hue == 0, 360, hue)
-  # })
-  # hue_idx <- ceiling((hue_vals - off) / band) + 1
-  hue_vals <- seq(band, 360, length.out = n)
-  hue_idx <- floor(hue_vals / band)
-  hue_names <- names(keys)[hue_idx]
-  hues <- stats::setNames(hue_vals, hue_names)
-  hues <- hues[sort(names(hues))]
-  hues
+    keys <- hue_keys()
+    step <- 360 / n
+    band <- 30
+    off <- 2
+    # hue_vals <- purrr::map_dbl(1:n, \(val){
+    #   hue <- floor((h + (val * step)) %% 360)
+    #   dplyr::if_else(hue == 0, 360, hue)
+    # })
+    # hue_idx <- ceiling((hue_vals - off) / band) + 1
+    hue_vals <- seq(band, 360, length.out = n)
+    hue_idx <- floor(hue_vals / band)
+    hue_names <- names(keys)[hue_idx]
+    hues <- stats::setNames(hue_vals, hue_names)
+    hues <- hues[sort(names(hues))]
+    hues
 }
 
 make_shades <- function(crds, shds) {
-  if (shds == 1) {
-    lum <- 0
-  } else {
-    lum <- seq(-0.8, 0.9, length.out = shds)
-  }
+    if (shds == 1) {
+        lum <- 0
+    } else {
+        lum <- seq(-0.8, 0.9, length.out = shds)
+    }
 
-  hexes <- colorspace::hex(colorspace::HLS(crds))
-  lum <- purrr::map(lum, function(l) colorspace::lighten(hexes, amount = l, method = "relative", space = "HLS"))
-  lum <- purrr::map(lum, rlang::set_names, rownames(crds))
-  lum <- rlang::set_names(lum, function(x) sprintf("shade%02d", seq_along(x)))
-  lum
+    hexes <- colorspace::hex(colorspace::HLS(crds))
+    lum <- purrr::map(lum, function(l) colorspace::lighten(hexes, amount = l, method = "relative", space = "HLS"))
+    lum <- purrr::map(lum, rlang::set_names, rownames(crds))
+    lum <- rlang::set_names(lum, function(x) sprintf("shade%02d", seq_along(x)))
+    lum
 }
 
 bind_hls <- function(x) {
-  # x = list of hls objs
-  x <- purrr::map(x, colorspace::coords)
-  x <- purrr::reduce(x, rbind)
-  x
+    # x = list of hls objs
+    x <- purrr::map(x, colorspace::coords)
+    x <- purrr::reduce(x, rbind)
+    x
 }
-

@@ -23,64 +23,58 @@
 #' library(dplyr)
 #' library(ggplot2)
 #' df <- self_rated_health |>
-#'   filter(category %in% c("Greater New Haven", "Gender")) |>
-#'   group_by(group)
-#'
+#'     arrange(category, group, desc(response)) |>
+#'     group_by(group)
 #' # place labels at centers of bars--should be the same as just using position_stack
 #' df_center <- df |>
-#'   mutate(centered = stack_lbls(value))
-#'
+#'     mutate(centered = stack_lbls(value))
 #' ggplot(df_center, aes(x = group, y = value, fill = response)) +
-#'   geom_col(position = position_stack(reverse = TRUE)) +
-#'   geom_text(aes(label = percent100(value), y = centered))
-#'
-#' # offset very small values for the top bar
-#' df_offset <- df_center |>
-#'   mutate(offset = ifelse(response == last(response) & value < 0.03, 1.01, centered))
-#'
-#' ggplot(df_offset, aes(x = group, y = value, fill = response)) +
-#'   geom_col(position = position_stack(reverse = TRUE)) +
-#'   geom_text(aes(label = percent100(value), y = offset))
+#'     geom_col() +
+#'     geom_text(aes(label = percent100(value), y = centered))
 #'
 #' # replace the legend with direct labels along the last stack of bars
 #' df_top <- df |>
-#'   mutate(top = stack_lbls(value, just = 1)) |>
-#'   ungroup()
-#'
+#'     mutate(top = stack_lbls(value, just = 1)) |>
+#'     ungroup()
 #' ggplot(df_top, aes(x = group, y = value, fill = response)) +
-#'   geom_col(position = position_stack(reverse = TRUE)) +
-#'   geom_text(aes(label = response, color = response, y = top),
-#'             data = ~slice_max(., group),
-#'             hjust = 0, vjust = 1, nudge_x = 0.5) +
-#'   scale_x_discrete(expand = expansion(add = c(0.8, 1.5))) +
-#'   theme(legend.position = "none")
+#'     geom_col() +
+#'     geom_text(aes(label = response, color = response, y = top),
+#'         data = ~ slice_max(., group),
+#'         hjust = 0, vjust = 1, nudge_x = 0.5
+#'     ) +
+#'     scale_x_discrete(expand = expansion(add = c(0.8, 1.5))) +
+#'     theme(legend.position = "none")
+#'
 #' @export
-
+#' @keywords viz-utils
+#' @keywords plot-labels
 #' @rdname stack_lbls
 stack_lbls <- function(x, just = 0.5, fill = FALSE) {
-  if (!is.numeric(x)) {
-    cli::cli_abort("{.arg x} should be a numeric vector.")
-  }
-  len_x <- length(x); len_j <- length(just)
-  if (!(len_x %% len_j == 0) & !(len_j %% len_x == 0)) {
-    if (len_x > len_j) {
-      cli::cli_abort("The length of {.arg x} is not a multiple of the length of {.arg just}.")
-    } else {
-      cli::cli_abort("The length of {.arg just} is not a multiple of the length of {.arg x}.")
+    if (!is.numeric(x)) {
+        cli::cli_abort("{.arg x} should be a numeric vector.")
     }
-  }
-  if (any(is.na(x))) {
-    n_na <- sum(is.na(x))
-    cli::cli_warn(c("{.arg x} contains {.val NA}, which interferes with calculating stacked sizes.",
-                    "!" = "{n_na} {.val NA} value{?s} are being replaced with {.val 0}"))
-    x <- tidyr::replace_na(x, 0)
-  }
+    len_x <- length(x)
+    len_j <- length(just)
+    if (!(len_x %% len_j == 0) & !(len_j %% len_x == 0)) {
+        if (len_x > len_j) {
+            cli::cli_abort("The length of {.arg x} is not a multiple of the length of {.arg just}.")
+        } else {
+            cli::cli_abort("The length of {.arg just} is not a multiple of the length of {.arg x}.")
+        }
+    }
+    if (any(is.na(x))) {
+        n_na <- sum(is.na(x))
+        cli::cli_warn(c("{.arg x} contains {.val NA}, which interferes with calculating stacked sizes.",
+            "!" = "{n_na} {.val NA} value{?s} are being replaced with {.val 0}"
+        ))
+        x <- tidyr::replace_na(x, 0)
+    }
 
-  if (fill) {
-    x <- x / sum(x)
-  }
-  xmin <- cumsum(dplyr::lag(x, default = 0))
-  xmax <- cumsum(x)
-  # weighted mean to scale between xmin & xmax
-  (xmin * (1 - just)) + (xmax * just)
+    if (fill) {
+        x <- x / sum(x)
+    }
+    xmin <- cumsum(dplyr::lag(x, default = 0))
+    xmax <- cumsum(x)
+    # weighted mean to scale between xmin & xmax
+    (xmin * (1 - just)) + (xmax * just)
 }

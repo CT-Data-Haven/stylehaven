@@ -36,89 +36,92 @@
 #' @examples
 #' # create default folders--good for small analysis projects
 #' scaffold_project(dryrun = TRUE)
-#' 
+#'
 #' # create all available folders--good for larger print projects
-#' scaffold_project(prep_scripts = TRUE, 
-#'                  plots = TRUE,
-#'                  format_tables = TRUE,
-#'                  drafts = TRUE,
-#'                  dryrun = TRUE)
-#' 
+#' scaffold_project(
+#'     prep_scripts = TRUE,
+#'     plots = TRUE,
+#'     format_tables = TRUE,
+#'     drafts = TRUE,
+#'     dryrun = TRUE
+#' )
+#'
 #' @export
-
+#' @keywords misc
 #' @rdname scaffold_project
 scaffold_project <- function(dir = ".",
-                        input_data = TRUE,
-                        output_data = TRUE,
-                        fetch_data = TRUE,
-                        analysis = TRUE,
-                        prep_scripts = FALSE,
-                        plots = FALSE,
-                        format_tables = FALSE,
-                        drafts = FALSE,
-                        utils = TRUE,
-                        addl = NULL,
-                        gitblank = TRUE,
-                        dryrun = FALSE) {
-  all_dirs <- list(input_data = input_data, 
-                   output_data = output_data, 
-                   fetch_data = fetch_data, 
-                   analysis = analysis, 
-                   prep_scripts = prep_scripts, 
-                   plots = plots, 
-                   format_tables = format_tables, 
-                   drafts = drafts, 
-                   "_utils" = utils)
-  dirs <- purrr::set_names(c(names(all_dirs[unlist(all_dirs)]), purrr::compact(addl)))
-  dirs <- sort(dirs)
-  # if (utils) names(dirs)[names(dirs) == "utils"] <- "_utils"
-  does_dir_exist <- purrr::map_chr(dirs, ~file.path(dir, .))
-  does_dir_exist <- purrr::map_lgl(does_dir_exist, dir.exists)
-  n_exist <- sum(does_dir_exist)
-  n_create <- sum(!does_dir_exist)
-  
-  if (dryrun) {
-    cli::cli_alert_info("Note that this is just a dry run. You'll see the normal printouts but no files will actually be written.\n")
-  }
-  
-  # don't overwrite
-  if (n_exist > 0) {
-    cli::cli_alert_info("The following directories already exist and will NOT be overwritten:")
-    cli::cli_ul(sprintf("{.file %s}", dirs[does_dir_exist]))
-  }
-  
-  # check that okay to write new dirs
-  if (n_create > 0) {
-    cli::cli_alert_info("The following new directories will be created:")
-    cli::cli_ul(sprintf("{.file %s}", dirs[!does_dir_exist]))
-    
-    cli::cli_rule()
-    
-    if (dryrun || !rlang::is_interactive()) {
-      ok <- 1L
-    } else {
-      ok <- menu(c("Yes, write directories", "No, cancel"), title = "Okay to proceed?")
+                             input_data = TRUE,
+                             output_data = TRUE,
+                             fetch_data = TRUE,
+                             analysis = TRUE,
+                             prep_scripts = FALSE,
+                             plots = FALSE,
+                             format_tables = FALSE,
+                             drafts = FALSE,
+                             utils = TRUE,
+                             addl = NULL,
+                             gitblank = TRUE,
+                             dryrun = FALSE) {
+    all_dirs <- list(
+        input_data = input_data,
+        output_data = output_data,
+        fetch_data = fetch_data,
+        analysis = analysis,
+        prep_scripts = prep_scripts,
+        plots = plots,
+        format_tables = format_tables,
+        drafts = drafts,
+        "_utils" = utils
+    )
+    dirs <- purrr::set_names(c(names(all_dirs[unlist(all_dirs)]), purrr::compact(addl)))
+    dirs <- sort(dirs)
+    # if (utils) names(dirs)[names(dirs) == "utils"] <- "_utils"
+    does_dir_exist <- purrr::map_chr(dirs, ~ file.path(dir, .))
+    does_dir_exist <- purrr::map_lgl(does_dir_exist, dir.exists)
+    n_exist <- sum(does_dir_exist)
+    n_create <- sum(!does_dir_exist)
+
+    if (dryrun) {
+        cli::cli_alert_info("Note that this is just a dry run. You'll see the normal printouts but no files will actually be written.\n")
     }
-    
-    if (ok == 1) {
-      purrr::walk(dirs[!does_dir_exist], function(d) {
-        path <- file.path(dir, d)
-        if (!dryrun) {
-          dir.create(path)
-        }
-        cli::cli_alert("Writing {.file {path}}")
-        if (gitblank) {
-          g_path <- file.path(path, ".gitblank")
-          if (!dryrun) {
-            file.create(g_path)
-          }
-        }
-      })
-    } else {
-      cli::cli_alert_danger("Aborting; nothing new will be written.")
+
+    # don't overwrite
+    if (n_exist > 0) {
+        cli::cli_alert_info("The following directories already exist and will NOT be overwritten:")
+        cli::cli_ul(sprintf("{.file %s}", dirs[does_dir_exist]))
     }
-  } else {
-    cli::cli_alert_info("No new directories need to be written.")
-  }
-  
+
+    # check that okay to write new dirs
+    if (n_create > 0) {
+        cli::cli_alert_info("The following new directories will be created:")
+        cli::cli_ul(sprintf("{.file %s}", dirs[!does_dir_exist]))
+
+        cli::cli_rule()
+
+        if (dryrun || !rlang::is_interactive()) {
+            ok <- 1L
+        } else {
+            ok <- menu(c("Yes, write directories", "No, cancel"), title = "Okay to proceed?")
+        }
+
+        if (ok == 1) {
+            purrr::walk(dirs[!does_dir_exist], function(d) {
+                path <- file.path(dir, d)
+                if (!dryrun) {
+                    dir.create(path)
+                }
+                cli::cli_alert("Writing {.file {path}}")
+                if (gitblank) {
+                    g_path <- file.path(path, ".gitblank")
+                    if (!dryrun) {
+                        file.create(g_path)
+                    }
+                }
+            })
+        } else {
+            cli::cli_alert_danger("Aborting; nothing new will be written.")
+        }
+    } else {
+        cli::cli_alert_info("No new directories need to be written.")
+    }
 }

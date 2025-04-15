@@ -17,34 +17,36 @@
 #' @param verbose Logical, whether to print the path to each file after it's written (defaults `TRUE`).
 #' @param ... Additional arguments to pass on to `ggplot2::ggsave`, which in turn passes them to graphics devices.
 #' @return Returns nothing. If `verbose = TRUE`, sends a message to the console.
-
+#' @keywords exporting
 #' @examples
 #' \dontrun{
-#'   library(ggplot2)
-#'   plot1 <- ggplot(mtcars, aes(x = hp)) +
+#' library(ggplot2)
+#' plot1 <- ggplot(mtcars, aes(x = hp)) +
 #'     geom_density()
-#'   write_plot(plot1, "hp_density")
-#'   write_plot(plot1, "hp_density", devs = list(png = "png", svg = svg))
-#'   ggsave("svg/plot.svg", plot1, device = svglite::svglite)
+#' write_plot(plot1, "hp_density")
+#' write_plot(plot1, "hp_density", devs = list(png = "png", svg = svg))
+#' ggsave("svg/plot.svg", plot1, device = svglite::svglite)
 #'
-#'   # how I usually use this for a whole document of plots
-#'   plots <- list()
-#'   plots[["mpg_histogram"]] <- ggplot(mtcars, aes(x = mpg)) +
+#' # how I usually use this for a whole document of plots
+#' plots <- list()
+#' plots[["mpg_histogram"]] <- ggplot(mtcars, aes(x = mpg)) +
 #'     geom_histogram()
-#'   plots[["hp_vs_mpg"]] <- ggplot(mtcars, aes(x = hp, y = mpg)) +
+#' plots[["hp_vs_mpg"]] <- ggplot(mtcars, aes(x = hp, y = mpg)) +
 #'     geom_point()
-#'   plot_params <- list(
+#' plot_params <- list(
 #'     mpg_histogram = list(w = 7, h = 4),
 #'     hp_vs_mpg = list(w = 5, h = 5)
-#'   )
-#'   purrr::imap(plots, function(plt, id) {
+#' )
+#' purrr::imap(plots, function(plt, id) {
 #'     # using plot ID as the filename
 #'     params <- plot_params[[id]]
-#'     write_plot(plt, filename = id,
-#'                width = params$w,
-#'                height = params$h,
-#'                logo_abs = 0.2)
-#'   })
+#'     write_plot(plt,
+#'         filename = id,
+#'         width = params$w,
+#'         height = params$h,
+#'         logo_abs = 0.2
+#'     )
+#' })
 #' }
 #' @export
 #' @seealso [add_logo()], [ggplot2::ggsave()]
@@ -63,56 +65,56 @@ write_plot <- function(plot,
                        separate_dirs = TRUE,
                        devs = list(pdf = grDevices::cairo_pdf, png = ragg::agg_png),
                        verbose = TRUE, ...) {
-  # test graphics devices--use docker
-  if (is.null(dir)) {
-    dir <- "."
-  }
-  if (add_logo) {
-    # if abs logo, calculate logo scale
-    if (use_abs_logo) {
-      logo_scale <- logo_abs / height
+    # test graphics devices--use docker
+    if (is.null(dir)) {
+        dir <- "."
+    }
+    if (add_logo) {
+        # if abs logo, calculate logo scale
+        if (use_abs_logo) {
+            logo_scale <- logo_abs / height
+        } else {
+            logo_abs <- logo_scale * height
+        }
+        if (place_inside) {
+            height_out <- height
+        } else {
+            height_out <- height + logo_abs
+        }
+        plot_out <- stylehaven::add_logo(plot, image = logo_img, position = logo_pos, height = logo_scale, place_inside = place_inside)
     } else {
-      logo_abs <- logo_scale * height
+        height_out <- height
+        plot_out <- plot
     }
-    if (place_inside) {
-      height_out <- height
-    } else {
-      height_out <- height + logo_abs
-    }
-    plot_out <- stylehaven::add_logo(plot, image = logo_img, position = logo_pos, height = logo_scale, place_inside = place_inside)
-  } else {
-    height_out <- height
-    plot_out <- plot
-  }
 
-  # afaict this actually gets handled before this point by ggplot
-  # font <- plot$theme$text$family
-  # if (!is.null(font) && !(font %in% sysfonts::font_families()) & verbose) {
-  #   cli::cli_warn("You're using the font {font}, but don't seem to have it installed.",
-  #                 "i" = "Consider adding it with {.fun stylehaven::font_add_weights} or {.fun sysfonts::font_add}.")
-  # }
+    # afaict this actually gets handled before this point by ggplot
+    # font <- plot$theme$text$family
+    # if (!is.null(font) && !(font %in% sysfonts::font_families()) & verbose) {
+    #   cli::cli_warn("You're using the font {font}, but don't seem to have it installed.",
+    #                 "i" = "Consider adding it with {.fun stylehaven::font_add_weights} or {.fun sysfonts::font_add}.")
+    # }
 
-  if (verbose) cli::cli_ul()
+    if (verbose) cli::cli_ul()
 
-  purrr::iwalk(devs, function(dev, ext) {
-    fn <- xfun::with_ext(filename, ext)
-    if (separate_dirs) {
-      dir_out <- file.path(dir, ext)
-      if (!dir.exists(dir_out)) {
-        dir.create(dir_out)
-      }
-    } else {
-      dir_out <- file.path(dir)
-    }
-    file_out <- file.path(dir_out, fn)
+    purrr::iwalk(devs, function(dev, ext) {
+        fn <- xfun::with_ext(filename, ext)
+        if (separate_dirs) {
+            dir_out <- file.path(dir, ext)
+            if (!dir.exists(dir_out)) {
+                dir.create(dir_out)
+            }
+        } else {
+            dir_out <- file.path(dir)
+        }
+        file_out <- file.path(dir_out, fn)
 
-    suppressWarnings(ggplot2::ggsave(file_out, plot = plot_out, device = dev, width = width, height = height_out, bg = "white", ...))
-    if (verbose) {
-      cli::cli_li("{.file {file_out}} saved")
-    }
-  })
+        suppressWarnings(ggplot2::ggsave(file_out, plot = plot_out, device = dev, width = width, height = height_out, bg = "white", ...))
+        if (verbose) {
+            cli::cli_li("{.file {file_out}} saved")
+        }
+    })
 
-  if (verbose) cli::cli_end()
+    if (verbose) cli::cli_end()
 
-  invisible(NULL)
+    invisible(NULL)
 }

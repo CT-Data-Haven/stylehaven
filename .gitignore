@@ -13,3 +13,5 @@ CHANGELOG.md.j2
 TODO.md
 .Renviron
 .env
+.flags/
+dag.png

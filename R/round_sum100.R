@@ -15,25 +15,26 @@
 #' round_sum100(c(0.24, 0.61, 0.15) * 100) # yay
 #' round_sum100(c(0.24, 0.6, 0.15) * 100) # sad
 #' @export
-
+#' @keywords misc
+#' @keywords calculations
 #' @rdname round_sum100
 round_sum100 <- function(x, digits = 0, verbose = FALSE) {
-  if (any(is.na(x))) cli::cli_warn("{.val NA} values in {.arg x} are being dropped.")
-  x <- stats::na.omit(x)
+    if (any(is.na(x))) cli::cli_warn("{.val NA} values in {.arg x} are being dropped.")
+    x <- stats::na.omit(x)
 
-  up <- 10 ^ digits
-  x <- x * up
-  y <- floor(x)
-  indices <- utils::tail(order(x-y), round(sum(x)) - sum(y))
-  y[indices] <- y[indices] + 1
-  out <- y / up
-  if (verbose) {
-    out_sum <- sum(out)
-    if (out_sum == 100) {
-      cli::cli_alert_success("Sums to {out_sum}.")
-    } else {
-      cli::cli_alert_warning("Sums to {out_sum}, not 100.")
+    up <- 10^digits
+    x <- x * up
+    y <- floor(x)
+    indices <- utils::tail(order(x - y), round(sum(x)) - sum(y))
+    y[indices] <- y[indices] + 1
+    out <- y / up
+    if (verbose) {
+        out_sum <- sum(out)
+        if (out_sum == 100) {
+            cli::cli_alert_success("Sums to {out_sum}.")
+        } else {
+            cli::cli_alert_warning("Sums to {out_sum}, not 100.")
+        }
     }
-  }
-  out
+    out
 }

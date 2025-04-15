@@ -3,13 +3,15 @@
 #' @param top Numeric, giving the ratio by which to set the upper padding. Defaults 0.05, as is the case for the underlying `ggplot2::scale_x/y_continuous`.
 #' @param ... Additional arguments passed on to `ggplot2::scale_x/y_continuous`.
 #' @rdname scale_barcontinuous
+#' @keywords viz-utils
+#' @keywords ggplot
 #' @export
 scale_y_barcontinuous <- function(top = 0.05, ...) {
-  ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, top)), ...)
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, top)), ...)
 }
 
 #' @rdname scale_barcontinuous
-#' @export 
+#' @export
 scale_x_barcontinuous <- function(top = 0.05, ...) {
-  ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0, top)), ...)
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0, top)), ...)
 }

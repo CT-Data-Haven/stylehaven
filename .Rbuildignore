@@ -15,3 +15,11 @@
 ^doc$
 ^Meta$
 ^\.github$
+^.snakemake$
+.quarto
+^.cz.toml$
+^.flags
+migrate
+CHANGELOG.md.j2
+dag.png
+Snakefile

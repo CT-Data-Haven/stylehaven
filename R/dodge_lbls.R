@@ -25,64 +25,63 @@
 #' `x` and `group` columns.
 #' @examples
 #' if (requireNamespace("ggrepel", quietly = TRUE)) {
-#'   library(ggplot2)
-#'   cohesion_by_race <- community_cohesion |>
-#'     dplyr::filter(category %in% c("Greater New Haven", "Race/Ethnicity"))
+#'     library(ggplot2)
 #'
-#'   ggplot(cohesion_by_race, aes(x = question, y = value)) +
-#'     geom_point(aes(color = group), size = 8) +
-#'     geom_text(aes(label = percent100(value)), color = "white", size = 3) +
-#'     coord_flip()
+#'     cws24 <- cws_trend |>
+#'         dplyr::filter(year == 2024)
 #'
-#'   (to_dodge <- dodge_lbls(cohesion_by_race,
-#'                           x = question,
-#'                           value = value,
-#'                           group = group,
-#'                           thresh = 0.015))
+#'     # some labels are overlapped & hard to read
+#'     ggplot(cws24, aes(x = value, y = question)) +
+#'         geom_point(aes(color = group), size = 6, alpha = 0.8) +
+#'         geom_text(aes(label = percent100(value)), size = 3)
 #'
-#'   ggplot(cohesion_by_race, aes(x = question, y = value)) +
-#'     geom_point(aes(color = group), size = 8) +
-#'     geom_text(aes(label = percent100(value)),
-#'               data = ~dplyr::anti_join(., to_dodge, by = c("question", "group")),
-#'               color = "white", size = 3) +
-#'     ggrepel::geom_text_repel(aes(label = percent100(value), color = group),
-#'                              data = ~dplyr::semi_join(., to_dodge, by = c("question", "group")),
-#'                              size = 3, direction = "x", nudge_x = 0.2, seed = 1) +
-#'     coord_flip()
+#'     to_dodge <- dodge_lbls(cws24,
+#'         x = question, value = value, group = group,
+#'         thresh = 0.01
+#'     )
+#'
+#'     # the first text geom will be observations that don't need to be dodged (anti-join)
+#'     # the second will be ones that do need to be dodged (semi-join)
+#'     ggplot(cws24, aes(x = value, y = question)) +
+#'         geom_point(aes(color = group), size = 6, alpha = 0.8) +
+#'         geom_text(aes(label = percent100(value)),
+#'             size = 2.7,
+#'             data = ~ dplyr::anti_join(., to_dodge, by = c("question", "group"))
+#'         ) +
+#'         ggrepel::geom_text_repel(aes(label = percent100(value), color = group),
+#'             size = 2.7, seed = 1,
+#'             data = ~ dplyr::semi_join(., to_dodge, by = c("question", "group")),
+#'             direction = "x", nudge_y = 0.2
+#'         )
 #' }
 #' @export
-#' @rdname dodge_lbls
-#' @import rlang
-
+#' @keywords viz-utils
+#' @keywords plot-labels
 dodge_lbls <- function(data, x, value, group, thresh, digits = 2, verbose = FALSE) {
-  num_error(thresh)
-  if (thresh < 0) {
-    cli::cli_abort("{.arg thresh} should be a positive number")
-  }
-  id_str <- rlang::as_name(enquo(x))
-  df_left <-  dplyr::select(data, {{ x }}, x1 = {{ group }}, val1 = {{ value }})
-  df_right <- dplyr::select(data, {{ x }}, x2 = {{ group }}, val2 = {{ value }})
-  joined <- dplyr::inner_join(df_left, df_right, by = id_str, relationship = "many-to-many")
-  joined <- dplyr::filter(joined, x1 != x2)
-  # joined$val1 <- round(joined$val1, digits)
-  # joined$val2 <- round(joined$val2, digits)
-  # joined <- dplyr::mutate(joined, diff = abs(val1 - val2))
-  # joined <- dplyr::filter(joined, diff <= thresh)
-  joined <- dplyr::filter(joined, calc_thresh(val1, val2, digits, thresh))
-  joined <- dplyr::select(joined, {{ x }}, {{ group }} := x1)
-  joined <- dplyr::distinct(joined, {{ x }}, {{ group }})
-  
-  if (verbose) {
-    n <- nrow(joined)
-    cli::cli_inform("{.fn dodge_lbls} found {n} row{?s} to dodge.")
-  }
-  joined
+    num_error(thresh)
+    if (thresh < 0) {
+        cli::cli_abort("{.arg thresh} should be a positive number")
+    }
+    id_str <- rlang::as_name(rlang::enquo(x))
+    df_left <- dplyr::select(data, {{ x }}, x1 = {{ group }}, val1 = {{ value }})
+    df_right <- dplyr::select(data, {{ x }}, x2 = {{ group }}, val2 = {{ value }})
+    joined <- dplyr::inner_join(df_left, df_right, by = id_str, relationship = "many-to-many")
+    joined <- dplyr::filter(joined, x1 != x2)
+    joined <- dplyr::filter(joined, calc_thresh(val1, val2, digits, thresh))
+    joined <- dplyr::select(joined, {{ x }}, {{ group }} := x1)
+    joined <- dplyr::distinct(joined, {{ x }}, {{ group }})
+
+    if (verbose) {
+        n <- nrow(joined)
+        cli::cli_inform("{.fn dodge_lbls} found {n} row{?s} to dodge.")
+    }
+    joined
 }
 
 calc_thresh <- function(v1, v2, round_digits, thresh) {
-  v1 <- round(v1, round_digits)
-  v2 <- round(v2, round_digits)
-  # round to handle super small floats
-  diff <- round(abs(v1 - v2), 8)
-  diff <= thresh
+    v1 <- round(v1, round_digits)
+    v2 <- round(v2, round_digits)
+    # round to handle super small floats
+    diff <- round(abs(v1 - v2), 8)
+    diff <= thresh
 }

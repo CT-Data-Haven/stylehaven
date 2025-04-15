@@ -10,19 +10,20 @@
 #'
 #' `percent_lt1` takes an additional step, replacing any values below 1 percent with `"<1%"`, useful for suppressing small numbers.
 #' @examples
-#' paste("The value is", percent_txt(0.25)) # --> "The value is 25 percent"
+#' paste("The value is", percent_txt(0.25))
 #'
-#' percent100(c(0.25, 0.251, 0.008)) # --> "25%", "25%", "1%"
+#' percent100(c(0.25, 0.251, 0.008))
 #'
-#' percent_lt1(c(0.25, 0.251, 0.008)) # --> "25%", "25%", "<1%"
-#' 
-#' paste(percent_eng(0.1), "of adults say...") # --> "Ten percent of adults say..."
-#' 
-#' dollar1(c(81.1, 105.22)) # --> "$81", "$105"
-#' 
-#' dollark(c(12345, 89100)) # --> "$12k", "$89k"
-#' dollark(c(12345, 89100), accuracy = 0.1) # --> "$12.3k", "$89.1k"
+#' percent_lt1(c(0.25, 0.251, 0.008))
+#'
+#' paste(percent_eng(0.1), "of adults say...")
+#'
+#' dollar1(c(81.1, 105.22))
+#'
+#' dollark(c(12345, 89100))
+#' dollark(c(12345, 89100), accuracy = 0.1)
 #' @rdname number_formats
+#' @keywords string-formatting
 #' @export
 round100 <- function(x, ...) {
     num_error(x)

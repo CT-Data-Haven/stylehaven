@@ -9,54 +9,59 @@
 #' @return Returns nothing, but registers fonts with `sysfonts::font_add_google`. Call `sysfonts::font_families()` to confirm that the font family is loaded.
 #' @details Font weights are from CSS styling, where values are multiples of 100 between 100 and 900. The defaults used here are the norms used in web typography. Not all fonts will be available in all the weights you might like, but many of the fonts on Google that are well suited to data visualization come in many weights.
 #' @examples
-#' if (interactive()) {
 #' library(ggplot2)
 #' font_add_weights("Source Sans 3", black = 800)
-#' showtext::showtext_auto()
+#' showtext::showtext_begin()
+#' showtext::showtext_opts(dpi = 150)
 #' ggplot(iris, aes(x = Sepal.Width)) +
-#'   geom_histogram(binwidth = 0.25) +
-#'   facet_wrap(vars(Species), nrow = 1) +
-#'   labs(title = "Font weights in use are 400, 600, and 700",
-#'        subtitle = "Sepal width by species") +
-#'   theme_gray(base_family = "Source Sans 3") +
-#'   theme(plot.title = element_text(family = "Source Sans 3", face = "bold"), # 700
+#'     geom_histogram(binwidth = 0.25) +
+#'     facet_wrap(vars(Species), nrow = 1) +
+#'     labs(
+#'         title = "Font weights in use are 400, 600, and 700",
+#'         subtitle = "Sepal width by species"
+#'     ) +
+#'     theme_gray(base_family = "Source Sans 3") +
+#'     theme(
+#'         plot.title = element_text(family = "Source Sans 3", face = "bold"), # 700
 #'         plot.subtitle = element_text(family = "Source Sans 3 Semibold"), # 600
-#'         strip.text = element_text(family = "Source Sans 3 Semibold")) # 600
-#' }
+#'         strip.text = element_text(family = "Source Sans 3 Semibold")
+#'     ) # 600
+#' showtext::showtext_end()
 #' @export
-
-#' @seealso sysfonts::font_add_google
+#' @keywords fonts
+#' @keywords viz-utils
+#' @seealso [sysfonts::font_add_google()]
 font_add_weights <- function(name, regular = 400, semibold = 600, bold = 700, black = 900) {
-  wts <- stats::setNames(c(regular, semibold, bold, black), c("regular", "semibold", "bold", "black"))
-  defaults <- list(regular = 400, semibold = 600, bold = 700, black = 900)
+    wts <- stats::setNames(c(regular, semibold, bold, black), c("regular", "semibold", "bold", "black"))
+    defaults <- list(regular = 400, semibold = 600, bold = 700, black = 900)
 
-  avail <- sysfonts::font_info_google(db_cache = FALSE)
-  avail <- dplyr::mutate(avail, variants = gsub("regular", "400", variants))
-  avail <- tidyr::separate_rows(avail, variants, sep = ", ")
-  avail <- dplyr::filter(avail, family == name)
-  avail <- dplyr::filter(avail, !grepl("[a-z]", variants))
-  avail <- as.numeric(avail$variants)
+    avail <- sysfonts::font_info_google(db_cache = FALSE)
+    avail <- dplyr::mutate(avail, variants = gsub("regular", "400", variants))
+    avail <- tidyr::separate_rows(avail, variants, sep = ", ")
+    avail <- dplyr::filter(avail, family == name)
+    avail <- dplyr::filter(avail, !grepl("[a-z]", variants))
+    avail <- as.numeric(avail$variants)
 
-  if (length(avail) < 1) {
-    cli::cli_abort("{name} not found in the fonts database. Double check the name & spelling.")
-  }
+    if (length(avail) < 1) {
+        cli::cli_abort("{name} not found in the fonts database. Double check the name & spelling.")
+    }
 
-  is_unavail <- purrr::map_lgl(wts, function(x) !x %in% avail)
-  unavail <- wts[is_unavail]
-  if (sum(is_unavail) > 0) {
-    cli::cli_abort(c(
-      "The following weights are unavailable for this font: {.val {unavail}}.",
-      "i" = "This font comes in the following weights: {.val {avail}}."
+    is_unavail <- purrr::map_lgl(wts, function(x) !x %in% avail)
+    unavail <- wts[is_unavail]
+    if (sum(is_unavail) > 0) {
+        cli::cli_abort(c(
+            "The following weights are unavailable for this font: {.val {unavail}}.",
+            "i" = "This font comes in the following weights: {.val {avail}}."
+        ))
+    }
+
+    sb_name <- paste(name, "Semibold")
+    cli::cli_alert_info("Registering the following fonts:")
+    cli::cli_ul(c(
+        "{.strong {name}} with regular weight {regular} and bold weight {bold}",
+        "{.strong {sb_name}} with semibold weight {semibold} and black weight {black}"
     ))
-  }
 
-  sb_name <- paste(name, "Semibold")
-  cli::cli_alert_info("Registering the following fonts:")
-  cli::cli_ul(c(
-    "{.strong {name}} with regular weight {regular} and bold weight {bold}",
-    "{.strong {sb_name}} with semibold weight {semibold} and black weight {black}"
-  ))
-
-  sysfonts::font_add_google(name, family = name, regular.wt = regular, bold.wt = bold)
-  sysfonts::font_add_google(name, family = sb_name, regular.wt = semibold, bold.wt = black)
+    sysfonts::font_add_google(name, family = name, regular.wt = regular, bold.wt = bold)
+    sysfonts::font_add_google(name, family = sb_name, regular.wt = semibold, bold.wt = black)
 }
