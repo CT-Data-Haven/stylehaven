@@ -43,7 +43,7 @@ dollar_thresh(
 
 \item{less_than}{Boolean: if \code{TRUE}, values \emph{less than} the threshold will be
 lumped together. Otherwise, values \emph{greater than} the threshold will be
-lumped. Default: TRUE}
+lumped. Ignored if both bottom and top endpoints are given in \code{thresh}. Default: TRUE}
 
 \item{accuracy}{Number: accuracy of formatted numbers, passed to \code{scales::label_number}
 and related functions. Defaults to 1, meaning no decimal places are returned.}
@@ -118,5 +118,9 @@ characters for printing in tables.
 rate <- c(0.9, 0.95, 0.92, 0.991)
 percent_thresh(rate, thresh = 0.99, less_than = FALSE)
 percent_thresh(rate, thresh = 0.99, less_than = FALSE, txt = TRUE)
+
+# censor amounts under 100 dollars or above 1000 dollars
+money <- c(200, 99, 400, 1005, 999)
+dollar_thresh(money, thresh = c(100, 1000))
 }
-\concept{formatting}
+\keyword{string-formatting}

@@ -30,3 +30,5 @@ round_sum100(c(9.2124, 40.292, 50.2), 0) # yay
 round_sum100(c(0.24, 0.61, 0.15) * 100) # yay
 round_sum100(c(0.24, 0.6, 0.15) * 100) # sad
 }
+\keyword{calculations}
+\keyword{misc}

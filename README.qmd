@@ -2,7 +2,9 @@
 format: gfm
 engine: knitr
 knitr:
-  opts-chunk:
+  opts_chunk:
+    comment: '#>'
+    collapse: true
     fig-path: 'man/figures/README-'
 ---
 

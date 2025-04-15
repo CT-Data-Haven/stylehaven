@@ -19,3 +19,4 @@ This function does some tedious regex replacement to make common labels we use f
 a <- c("ages00_17", "ages18_64", "ages65plus", "under18", "ages18up")
 age_lbls(a)
 }
+\keyword{string-formatting}

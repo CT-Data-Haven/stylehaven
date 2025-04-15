@@ -21,11 +21,11 @@ stdev_brks(
 
 \item{value}{Bare name of the numeric value column, Default: value}
 
-\item{filters}{An optional named list of values to use for filtering. If given, the observation matching these values will be used as the midpoint. If NULL (the default), the midpoint will be calculated as the mean of values, grouped by \code{x}'s grouping columns (if any) and the arguments to \code{by} (also if any).}
+\item{filters}{An optional named list of values to use for filtering. If given, the observation matching these values will be used as the midpoint. If NULL (the default), the midpoint will be calculated as the mean of values, grouped by \code{x}'s grouping columns (if any) and the arguments to \code{by} (also if any). Each item in that list should be a vector of length 1.}
 
 \item{by}{Optional character vector. If given, this will be used as the group within which intervals are calculated. Default: NULL}
 
-\item{brks}{Numeric vector of break points for cutting z-scores. This vector, plus \code{-Inf} and \code{Inf}, will be passed to \code{base::cut}'s \code{breaks} argument. Default: c(-2, -1/2, 1/2, 2)}
+\item{brks}{Numeric vector of break points for cutting z-scores. This vector, plus \code{-Inf} and \code{Inf}, will be passed to \code{base::cut}'s \code{breaks} argument. Default: \code{c(-2, -1/2, 1/2, 2)}}
 
 \item{labels}{Character vector of labels for the resulting factor. If NULL, levels will be in \code{base::cut}'s interval notation. The length of this vector should be one more than the length of \code{brks}. Default: NULL}
 
@@ -43,18 +43,21 @@ Occasionally we make charts using standard deviations away from an average value
 }
 \examples{
 # Calculate intervals along the full dataset, based on calculated mean
-stdev_brks(life_exp, 
+stdev_brks(median_age, 
            labels = c("Lower", "Somewhat lower", "Average", "Somewhat higher", "Higher"))
            
+# That might be a little biased because there are also observations for state & counties.
 # Calculate intervals for each of the three indicators in the `question` column. 
 # Both examples have the same result:
-fin_insecurity |>
-  stdev_brks(filters = list(category = "Connecticut"), by = "question")
+median_age |>
+  stdev_brks(filters = list(level = "state"), by = "sex") # or list(name = "Connecticut")
 
-fin_insecurity |>
-  dplyr::group_by(question) |>
-  stdev_brks(filters = list(category = "Connecticut"))
+median_age |>
+  dplyr::group_by(sex) |>
+  stdev_brks(filters = list(level = "state"))
 }
 \seealso{
 \code{\link[base:cut]{base::cut()}}
 }
+\keyword{calculations}
+\keyword{misc}

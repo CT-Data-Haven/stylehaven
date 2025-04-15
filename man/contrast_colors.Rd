@@ -5,6 +5,8 @@
 \alias{mutate_contrast}
 \alias{plot.cc_df}
 \alias{plot.cc_vec}
+\alias{print.cc_df}
+\alias{print.cc_vec}
 \title{Choose label colors based on contrast}
 \source{
 \url{https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html}
@@ -18,6 +20,7 @@ contrast_colors(
   min_ratio = 4.5,
   verbose = TRUE,
   labels_only = TRUE,
+  reverse = FALSE,
   plot = FALSE
 )
 
@@ -28,12 +31,17 @@ mutate_contrast(
   dark = "black",
   light = "white",
   min_ratio = 4.5,
-  verbose = TRUE
+  verbose = TRUE,
+  reverse = FALSE
 )
 
 \method{plot}{cc_df}(x, ...)
 
 \method{plot}{cc_vec}(x, ...)
+
+\method{print}{cc_df}(x, ...)
+
+\method{print}{cc_vec}(x, ...)
 }
 \arguments{
 \item{pal}{String: either a vector of colors (either named R colors or hex codes), or the name of a palette from the \code{RColorBrewer}, \code{rcartocolor}, or \code{viridisLite} packages. If the name of a palette, the respective function will be called to fetch the vector of hex codes.}
@@ -49,6 +57,8 @@ mutate_contrast(
 \item{verbose}{Logical, whether to print diagnostic info if there are issues with your contrast ratios, Default: TRUE}
 
 \item{labels_only}{Logical, whether to return only labels, i.e. just a vector of the dark or light values, depending on which had the greatest contrast for each color in \code{pal}, or the full data frame used for calculations, including all ratios. Default: TRUE}
+
+\item{reverse}{Boolean: if \code{TRUE}, palette will be reversed. This mostly only matters for \code{mutate_contrast}, as it determines which colors are associated with which factor levels. Default: FALSE}
 
 \item{plot}{Logical, whether to print a \code{ggplot} swatch of tiles filled with \code{pal} and labels, using \code{plot} methods for the appropriate class. Doesn't change the return value. Default: FALSE}
 
@@ -93,47 +103,38 @@ contrast_colors("YlGnBu", plot = TRUE)
 # not enough contrast, carto palette
 contrast_colors("Vivid", n = 7, dark = "gray40", plot = TRUE)
 
+# Use mutate_contrast to get color information attached to your data frame
 library(ggplot2)
-# For a very small data frame, it's possible to assign label colors with 
-# `contrast_colors` directly back into the data frame, then use
-# `scale_color_identity`. 
-food <- dplyr::filter(fin_insecurity, question == "food_insecurity", 
-                      category \%in\% c("Greater New Haven", "Age"))
-food$lbl_color <- contrast_colors(qual_pal)
-ggplot(food, aes(x = group, y = value, fill = group)) +
-  geom_col() +
-  geom_text(aes(label = percent100(value), color = lbl_color), 
-            vjust = 1, nudge_y = -0.01, fontface = "bold") +
-  scale_fill_manual(values = qual_pal) +
+
+health <- self_rated_health |>
+  mutate_contrast(col = response, pal = "BuGn")
+
+# use same palette for fill scale
+# lbl_color column has colors to use, so can use identity scale
+ggplot(health, aes(x = group, y = value, fill = response)) +
+  geom_col(position = position_fill(reverse = TRUE)) +
+  geom_text(aes(label = percent100(value), group = group, color = lbl_color), 
+            position = position_fill(reverse = TRUE, vjust = 0.5)) +
+  scale_fill_brewer(palette = "BuGn") +
   scale_color_identity()
+  
+# could actually use scale_fill_identity as well, since fill colors are in data,
+# but it becomes messy when you want a legend
 
-# For a larger data frame, use `mutate_contrast` to get the contrast info
-# joined back to your data frame. Since this includes the fill colors, you
-# can use `scale_fill_identity`, but this requires putting your legend back in.
-health <- dplyr::filter(self_rated_health, category == "Age") |>
-  mutate_contrast(col = response, pal = "viridis", dark = "gray10")
-head(health)
+# now use a manual palette, and give the same set of colors to scale_fill_manual
+manual_pal <- c("#005CE7", "#9C45C7", "#CC6697", "#E69259", "#F2D25C")
+health_w_pal <- self_rated_health |>
+  mutate_contrast(col = response, pal = manual_pal)
 
-ggplot(health, aes(x = group, y = value, fill = fill, group = group)) +
-  geom_col(position = position_fill()) +
-  geom_text(aes(label = percent100(value), color = lbl_color), 
-            position = position_fill(vjust = 0.5), fontface = "bold") +
-  scale_color_identity() +
-  scale_fill_identity(guide = guide_legend(), labels = levels(health$response))
-
-# Alternatively, pull out the palette as a named list and pass that to
-# `scale_fill_manual`.
-resp_pal <- health |>
-  dplyr::distinct(response, fill) |>
-  tibble::deframe()
-
-ggplot(health, aes(x = group, y = value, fill = response, group = group)) +
-  geom_col(position = position_fill()) +
-  geom_text(aes(label = percent100(value), color = lbl_color), 
-            position = position_fill(vjust = 0.5), fontface = "bold") +
-  scale_color_identity() +
-  scale_fill_manual(values = resp_pal)
+ggplot(health_w_pal, aes(x = group, y = value, fill = response)) +
+  geom_col(position = position_fill(reverse = TRUE)) +
+  geom_text(aes(label = percent100(value), group = group, color = lbl_color), 
+            position = position_fill(reverse = TRUE, vjust = 0.5)) +
+  scale_fill_manual(values = manual_pal) +
+  scale_color_identity()
 }
 \seealso{
 \code{\link[colorspace:contrast_ratio]{colorspace::contrast_ratio()}}, \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}, \code{\link[rcartocolor:carto_pal]{rcartocolor::carto_pal()}}, \code{\link[viridisLite:viridis]{viridisLite::viridis()}}
 }
+\keyword{color}
+\keyword{viz-utils}

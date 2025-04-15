@@ -1,0 +1,394 @@
+---
+title: "stylehaven: Getting started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{getting-started}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+knitr:
+  opts_chunk:
+    comment: "#>"
+    collapse: true
+    fig_showtext: true
+execute:
+  warning: false
+  message: false
+  echo: true
+fig-dpi: 150
+---
+
+```{r}
+#| label: setup
+#| message: false
+library(stylehaven)
+library(ggplot2)
+library(dplyr)
+```
+
+This is a roundup of many of the functions in `stylehaven`, giving a simplified version of some of the charts we've published.
+
+
+## Color and styling
+
+Illustrates:
+
+* Creating multiple weights of a font to use across all charts with `font_add_weights`
+* Creating an array of color palettes based on a primary color
+
+```{r}
+#| label: style
+#| message: true
+#| fig-width: 5
+#| fig-height: 3
+font_add_weights("Barlow Semi Condensed", semibold = 500)
+
+base_col <- "#287FC8"
+palx_colors <- palx(base_col, n_shades = 6, plot = TRUE)
+qual_pal <- palx_colors[["shade04"]]
+# use with offset labels to make white labels inside bars, dark gray labels outside
+tf_pal <- c("TRUE" = palx_colors[["shade02"]][["gray"]], "FALSE" = "white")
+```
+
+This is a good time to check the contrast between the colors in this palette and the dark and light colors I might use for labels. `contrast_colors()` helps make sure your background and text colors have enough contrast to be legible for readers with low vision.
+
+```{r}
+#| label: contrast
+dark_gray <- unname(palx_colors[["shade01"]]["gray"]) # super dark tinted gray
+contrast_colors(qual_pal,
+    dark = dark_gray,
+    light = "white",
+    labels_only = FALSE, plot = TRUE
+)
+```
+
+After a bit of tweaking, all the colors in this palette have a label color that is sufficiently high-contrast.
+
+```{r}
+#| label: theme
+theme_bar <- function(x, ...) {
+    theme_gray(base_family = "Barlow Semi Condensed") +
+        theme(
+            plot.caption.position = "plot",
+            plot.title.position = "plot",
+            strip.text = element_text(
+                family = "Barlow Semi Condensed Semibold",
+                face = "plain", hjust = 0
+            ),
+            panel.background = element_rect(fill = "white", color = NULL),
+            axis.ticks = element_blank()
+        )
+}
+theme_set(theme_bar())
+update_geom_defaults("col", list(fill = base_col))
+update_geom_defaults("text", list(
+    size = 3.5, fontface = "bold",
+    family = "Barlow Semi Condensed", color = "white"
+))
+
+mini_pal <- unname(c(
+    palx_colors[["shade01"]]["gray"],
+    palx_colors[["shade03"]]["gray"],
+    qual_pal[c("orange", "red", "indigo", "blue", "teal")]
+))
+```
+
+I'll keep all the plots in one named list, and all their output parameters (width & height, could also include something like logo placement) in another named list. Then I'll map over these to save all the plots as PDF and PNG. Having a list of widths & heights also makes it easier to have the same dimensions within this document (as chunk `fig-width` and `fig-height`) as they have once they're exported. 
+
+```{r}
+#| label: plot-setup
+plots <- list()
+plot_params <- list(
+    health_split = list(w = 7, h = 3),
+    health_stack = list(w = 7, h = 4.5),
+    age_heatmap = list(w = 4.5, h = 5)
+)
+```
+
+## Facetted bar chart
+
+Illustrates:
+
+* Offsetting labels across multiple scales with `offset_lbls`
+* String formatting functions
+
+```{r}
+#| label: health-split
+#| fig-width: !expr plot_params$health_split$w
+#| fig-height: !expr plot_params$health_split$h
+# using just last 5 colors from mini_pal
+health_to_plot1 <- self_rated_health |>
+    group_by(response) |>
+    offset_lbls(value = value, thresh = 0.5, fun = percent100)
+
+head(health_to_plot1)
+
+plots[["health_split"]] <- ggplot(health_to_plot1, aes(x = value, y = forcats::fct_rev(group))) +
+    geom_col(width = 0.8) +
+    geom_text(aes(label = lbl, x = value_off, hjust = just, color = is_small)) +
+    scale_x_barcontinuous(breaks = NULL) +
+    scale_color_manual(values = tf_pal, guide = guide_none()) +
+    facet_grid(cols = vars(forcats::fct_rev(response)), scales = "free", space = "free_x") +
+    theme(panel.spacing.x = unit(0.8, "lines")) +
+    labs(
+        x = NULL, y = NULL,
+        title = "Nonbinary adults are much less likely to report being in very good or excellent health",
+        subtitle = "Share of adults by gender and response to self-rated health, Connecticut, 2024"
+    )
+
+plots[["health_split"]]
+```
+
+
+## Labeling endpoints
+
+`endpoint_lbls` adds columns for labels that are offset slightly to the left for the lower limit and to the right for the upper limit, a corresponding hjust value to align left-hand labels at the end of the string and right-hand labels at the start of the string, and labels to use that include the grouping variable on one or both sides. This encourages direct labeling to wean yourself away from legends. 
+
+One thing to deal with here is the margins of the plot: You can set padding with `expansion`, but that changes the limits of the scale as well, so you might need to adjust your breaks. That's easy enough for slopegraphs like this but could get annoying if you don't know exactly what the breaks will need to be.
+
+```{r}
+#| label: assets-trend
+police_trend_to_plot <- cws_trend |>
+    filter(question == "police_approval") |>
+    endpoint_lbls(
+        x = year, value = value, group = group,
+        fun = percent100, long_side = "left"
+    )
+
+head(police_trend_to_plot)
+
+if (require("ggrepel")) {
+    ggplot(police_trend_to_plot, aes(x = year, y = value, color = group, group = group)) +
+        geom_path(linewidth = 3) +
+        geom_point(size = 4) +
+        # set text positions with calculated offsets
+        # geom_text(aes(label = lbl, x = x, hjust = just)) +
+        # better to use ggrepel to not overlap labels
+        ggrepel::geom_text_repel(aes(label = lbl, x = x, hjust = just),
+            seed = 10,
+            size = 3.5, fontface = "bold", direction = "y",
+            family = "Barlow Semi Condensed", box.padding = 0.15
+        ) +
+        scale_x_continuous(expand = expansion(add = c(3.5, 1)), breaks = c(2015, 2024)) +
+        scale_y_continuous(breaks = NULL) +
+        scale_color_manual(values = mini_pal) +
+        theme(
+            legend.position = "none",
+            panel.grid.major.x = element_line(color = "gray90")
+        ) +
+        labs(
+            x = NULL, y = NULL,
+            title = "Approval of police has fallen among all but the oldest adults",
+            subtitle = "Share of Greater New Haven adults, 2015-2024"
+        )
+}
+```
+
+
+If I want to switch sides for the long label (`long_side` argument in `endpoint_lbls`), the only thing I need to change is the padding on the x-axis—everything else is in the data frame.
+
+For just a few lines, full labels on just the left or right is fine, but there's also the option to add labels on both sides, which can help make more lines easier to read
+
+## Separating squished labels 
+
+Dot plots with points directly labeled are great until the values are too close together, and then it's a pain to keep the labels from overlapping. One nice way to handle this is to calculate the distance between points on each line (whatever's the independent variable) and offset labels that are within some threshold of any other label. The data frame this returns can be used with `semi_join` and `anti_join` to make 2 calls to `geom_text`/`geom_text_repel`. The argument `thresh = 0.5` means values with a difference of 0.5 will be considered too close; this is an absolute value.
+
+```{r}
+#| label: hartford-age
+#| fig-width: 7
+#| fig-height: 3
+hartford_age <- median_age |>
+    mutate(name = forcats::as_factor(name)) |>
+    filter(name %in% c("Connecticut", "Capitol COG", "Hartford", "New Britain", "West Hartford"))
+
+age_to_dodge <- hartford_age |>
+    dodge_lbls(x = sex, value = value, group = name, thresh = 0.5)
+
+ggplot(hartford_age, aes(x = value, y = forcats::fct_rev(sex), color = name)) +
+    geom_point(size = 9, alpha = 0.9) +
+    # labels that don't need dodging
+    geom_text(aes(label = value),
+        data = ~ anti_join(., age_to_dodge, by = c("sex", "name")),
+        color = "white", size = 3.2
+    ) +
+    # labels that do need dodging
+    ggrepel::geom_text_repel(aes(label = value),
+        data = ~ semi_join(., age_to_dodge, by = c("sex", "name")),
+        seed = 1, direction = "x", nudge_y = 0.25,
+        family = "Barlow Semi Condensed", fontface = "bold",
+        size = 3.2, show.legend = FALSE
+    ) +
+    scale_color_manual(values = mini_pal) +
+    scale_x_continuous(breaks = NULL) +
+    scale_y_discrete(labels = title_case) +
+    theme(panel.grid.major.y = element_line(color = "gray90")) +
+    labs(
+        x = NULL, y = NULL, color = NULL,
+        title = "Median age by sex",
+        subtitle = "Median age in years, Hartford area, 2023"
+    )
+```
+
+## Stacking labels
+
+Positioning stacked labels is often simple enough with `position_stack` or `position_fill`, but sometimes you need more tailored placement. Some reasons are making labels alongside stacked bars to replace a legend, or for situations where some values are very small and need labels to be offset. `stack_lbls` calculates the placement for labels at some proportion within a bar. Because this is based on cumulative sums, take care of how the data are arranged.
+
+```{r}
+#| label: health-stack
+#| fig-width: !expr plot_params[["health_stack"]]$w
+#| fig-height: !expr plot_params[["health_stack"]]$h
+health_to_plot2 <- self_rated_health |>
+    mutate(response = forcats::fct_rev(response)) |>
+    arrange(group, response) |>
+    group_by(group) |>
+    mutate(stack = stack_lbls(value, fill = TRUE)) |>
+    ungroup()
+
+head(health_to_plot2)
+
+plots[["health_stack"]] <- ggplot(health_to_plot2, aes(x = group, y = value, fill = response, group = group)) +
+    geom_col(width = 0.8, position = position_fill()) +
+    geom_text(aes(label = percent100(value), y = stack),
+        color = dark_gray
+    ) +
+    scale_fill_manual(values = mini_pal[3:7], guide = guide_legend(reverse = TRUE)) +
+    scale_y_barcontinuous(breaks = NULL) +
+    labs(
+        x = NULL, y = NULL, fill = "Response",
+        title = "Self-rated health by gender",
+        subtitle = "Share of adults, Connecticut, 2024"
+    )
+
+plots[["health_stack"]]
+```
+
+Those bottom bars are really small; for smaller bars or larger labels, I might offset those small ones to the side.
+
+## Standard deviation breaks
+
+Sometimes for tables or dense grids of plots, we color things based on how many standard deviations away from a mean each value is. `stdev_brks` does this, either by calculating a mean or filtering for some other comparison value, like a statewide value in the data. In this case I'll compare towns' median ages by sex against the state's overall median age. It's not a very useful chart but it illustrates the function.
+
+```{r}
+#| label: age-heatmap
+#| fig-width: !expr plot_params$age_heatmap$w
+#| fig-height: !expr plot_params$age_heatmap$h
+div_pal <- c("#0060B8", "#649EE6", "#C9C9C9", "#D48A50", "#944800")
+age_std <- median_age |>
+    stdev_brks(
+        value = value,
+        filters = list(name = "Connecticut", sex = "total"),
+        labels = c("Much younger", "Younger", "Similar to COG", "Older", "Much older")
+    )
+
+head(age_std)
+
+# for simplicity, just plot Greater Bridgeport towns
+plots[["age_heatmap"]] <- age_std |>
+    filter(county == "Capitol COG") |>
+    mutate(name = forcats::as_factor(name) |>
+        forcats::fct_reorder2(desc(sex), value)) |>
+    ggplot(aes(x = sex, y = name, fill = brk)) +
+    geom_tile(color = dark_gray) +
+    # rcartocolor::scale_fill_carto_d(palette = "Geyser") +
+    scale_fill_manual(values = div_pal) +
+    labs(
+        x = NULL, y = NULL, fill = "Compared to CT...",
+        title = "Median age by town and sex",
+        subtitle = "Capitol COG towns compared to statewide, 2023"
+    )
+
+plots[["age_heatmap"]]
+```
+
+
+## Tables & more string formatting
+
+I've beefed up the string formatting functions and added a few that help with making tables, especially for HTML or narrative output. These functions plus `glue` are the secret behind the town equity reports' text.
+
+```{r}
+#| label: narrative
+#| results: asis
+govt_to_text <- cws_trend |>
+    filter(year == 2024, question == "local_govt_responsive") |>
+    select(group, value) |>
+    tibble::deframe()
+
+cat(
+    stringr::str_glue("> In 2024, {percent_txt(govt_to_text['Connecticut'])} of Connecticut
+                    adults felt their local police did a good job to keep
+                    residents safe, compared to
+                    {percent_txt(govt_to_text['Greater New Haven'])} of
+                    Greater New Haven adults.
+                    {percent_eng(govt_to_text['Ages 18-34'])} of Greater
+                    New Haven adults ages 18 to 34 reported the same.")
+)
+```
+
+This is an over-engineered example of dynamically aligning table columns based on the data, but it's helpful for bigger tables or where different versions of a table might have different sets of columns.
+
+```{r}
+#| label: table
+cws_to_tbl <- cws_trend |>
+    filter(year == 2024) |>
+    tidyr::pivot_wider(id_cols = c(category, group), names_from = question)
+
+head(cws_to_tbl)
+
+# imagine I'm not sure how many left-aligned (categorical) columns there will be,
+# but I can calculate the number of right-aligned (numeric) columns based on the
+# question levels
+cws_align <- align_cols(
+    r = length(levels(cws_trend$question)),
+    total = ncol(cws_to_tbl)
+)
+
+cws_to_tbl |>
+    rename(
+        local_govt_is_responsive = local_govt_responsive,
+        approve_of_police = police_approval,
+        parks_in_good_condition = good_parks
+    ) |>
+    rename_with(title_case) |>
+    mutate(across(where(is.numeric), percent100)) |>
+    knitr::kable(align = cws_align)
+```
+
+
+## Batch writing image files
+
+Batch image functions came about after exporting thousands of plots for the equity reports, as a way to go from the above lists of plots and plot parameters and not have to think about how to write all those plots out, adding & scaling logos.
+
+By default, this will add a logo (using `stylehaven::add_logo`) and adjust the height of the plot to fit so that the aspect ratio stays the same even after appending the logo to the bottom of the image.
+
+Writing out one plot (by default, both PNG & PDF):
+
+```{r}
+#| label: write-plots1
+out_dir <- file.path(tempdir(), "plots")
+if (!dir.exists(out_dir)) dir.create(out_dir)
+
+write_plot(plots[["health_split"]],
+    filename = "health_split", add_logo = FALSE,
+    dir = out_dir,
+    width = plot_params[["health_split"]]$w,
+    height = plot_params[["health_split"]]$h
+)
+
+list.files(out_dir, recursive = TRUE)
+```
+
+Even better, iterating over the plots and plot params to write all the plots. One thing to note here is to be careful that you're matching plots and params if they're in separate lists: you might get messed up if these lists are out of order, even if they're named. (This once bothered me enough to post a [question on Stack Overflow](https://stackoverflow.com/q/55798573/5325862).) You can map over one list and use its names to pull entries out of the other list.
+
+```{r}
+#| label: write-plots2
+purrr::iwalk(plots, function(pl, id) {
+    ps <- plot_params[[id]]
+    write_plot(pl,
+        filename = id, add_logo = FALSE,
+        dir = out_dir, width = ps$w, height = ps$h
+    )
+})
+
+list.files(out_dir, recursive = TRUE)
+```
+
+

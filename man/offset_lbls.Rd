@@ -51,19 +51,23 @@ The columns in the returned data frame are:
 \itemize{
 \item \code{is_small}: Logical: is this value considered small with respect to the maximum value and your threshold. This is useful if you have white labels \emph{inside} your bars, but need black or gray text for labels that fall \emph{outside} the bars.
 \item \code{off}: Numeric: the number by which y-positions are offset, positive for small values and negative for non-small values
-\item \code{y}: Numeric: y-positions at which to place labels. \code{NA} values are replaced with 0.
+\item \code{value_off}: Numeric: value positions at which to place labels. \code{NA} values are replaced with 0. Used to be called \code{y}, but I'm changing to match ggplot's move away from \code{coord_flip}.
 \item \code{just}: Numeric, either 0 or 1 to use as horizontal or vertical justification in e.g. \code{ggplot2::geom_text}.
 \item \code{lbl}: Character: values as formatted by the function in \code{fun}, with \code{NA} values replaced per the \code{na} argument.
 }
 }
 \examples{
 library(ggplot2)
-
-chronic_disease |>
-  dplyr::filter(question == "diabetes", category == "Age") |>
-  offset_lbls(value, fun = percent100) |>
-  ggplot(aes(x = group, y = value)) +
+# shares of people rating health as poor is too small for most groups to have
+# easily legible label, so offset them to the right of their bars
+self_rated_health |>
+  offset_lbls(value = value, fun = percent100) |>
+  ggplot(aes(x = value, y = forcats::fct_rev(group), fill = response)) +
   geom_col() +
-  geom_text(aes(y = y, label = lbl, color = is_small, vjust = just), show.legend = FALSE) +
-  scale_color_manual(values = c("TRUE" = "gray30", "FALSE" = "white"))
+  geom_text(aes(x = value_off, hjust = just, label = lbl, color = is_small)) +
+  facet_grid(cols = vars(response)) +
+  scale_x_barcontinuous(breaks = NULL) +
+  scale_color_manual(values = c("TRUE" = "gray30", "FALSE" = "white")) +
+  theme(legend.position = "none")
 }
+\keyword{viz-utils}

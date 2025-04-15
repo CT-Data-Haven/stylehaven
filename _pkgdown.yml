@@ -1,11 +1,31 @@
 url: https://ct-data-haven.github.io/stylehaven
 template:
   bootstrap: 5
-  bootswatch: lumen
+  bootswatch: "yeti"
   bslib:
-    base_font: { google: "Open Sans" }
-    code_font_size: "0.75em"
+    primary: "#990066"
+    pkgdown-nav-height: 60px
+    nav-link-font-weight: 500
+  development:
+    mode: auto
 
-home:
-  sidebar:
-    structure: [links, authors, dev]
+reference:
+  - title: Functions - plotting, colors, fonts, etc
+    contents:
+      - has_keyword("viz-utils")
+
+  - title: Functions - text formatting
+    contents:
+      - has_keyword("string-formatting")
+      
+  - title: Functions - exporting
+    contents:
+      - has_keyword("exporting")
+      
+  - title: Functions - misc utilities
+    contents:
+      - has_keyword("misc")
+      
+  - title: Datasets
+    contents:
+      - has_keyword("datasets")

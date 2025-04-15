@@ -50,28 +50,32 @@ function should be easy to build upon. Previously it used \code{cowplot}, but th
 package is a bit too buggy.
 }
 \examples{
-  p <- ggplot2::ggplot(iris, ggplot2::aes(x = Sepal.Length)) +
-     ggplot2::geom_density() +
-       ggplot2::labs(title = "Test chart", caption = "Source: 2019 ACS 5-year estimates")
+  library(ggplot2)
+  p <- ggplot(iris, ggplot2::aes(x = Sepal.Length)) +
+     geom_density() +
+       labs(title = "Test chart", caption = "Source: 2019 ACS 5-year estimates") +
+       theme(plot.caption = element_text(hjust = 0))
 
      add_logo(p)
+ # this one is too tall--place it outside so it doesn't block axis
      add_logo(p, 
           magick::image_read(system.file("extdata/25th_logo.png", package = "stylehaven")),
-          height = 0.1)
+          height = 0.1, place_inside = FALSE)
 
      # This example logo is not all that attractive, but shows how you might
      # attach a ggplot grob as a dynamically-created logo
      dummy_data <- data.frame(town = letters[1:4],
                               pop = c(21000, 40000, 81000, 36000))
 
-     gg_logo <- ggplot2::ggplot(dummy_data, ggplot2::aes(x = town, y = pop)) +
-       ggplot2::geom_col(width = 0.8, fill = "skyblue") +
-       ggplot2::annotate(geom = "text", label = "DataHaven", x = 0.6, y = 6e4, hjust = 0,
+     gg_logo <- ggplot(dummy_data, aes(x = town, y = pop)) +
+       geom_col(width = 0.8, fill = "skyblue") +
+       annotate(geom = "text", label = "DataHaven", x = 0.6, y = 6e4, hjust = 0,
                          family = "mono", size = 5) +
-       ggplot2::theme_void()
+       theme_void()
 
      add_logo(p, gg_logo, width = 0.2, height = 0.1)
 }
 \seealso{
 \code{\link[magick:editing]{magick::image_read()}}, \code{\link[patchwork:plot_layout]{patchwork::plot_layout()}}
 }
+\keyword{exporting}

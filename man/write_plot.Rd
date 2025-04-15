@@ -94,3 +94,4 @@ This is a formalized version of a function I often have in utils scripts for dif
 \seealso{
 \code{\link[=add_logo]{add_logo()}}, \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}
 }
+\keyword{exporting}

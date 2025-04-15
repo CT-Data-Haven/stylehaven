@@ -4,7 +4,7 @@
 \alias{glue_here}
 \title{Parameterized, project-based file paths}
 \usage{
-glue_here(x, ..., .snake = TRUE)
+glue_here(x, ..., .snake = TRUE, .envir = environment())
 }
 \arguments{
 \item{x}{Character vector of paths, relative to the project root, with glue-style encodings.}
@@ -12,6 +12,8 @@ glue_here(x, ..., .snake = TRUE)
 \item{...}{Additional named arguments to fill into glue brackets}
 
 \item{.snake}{Boolean, whether text should also be converted to snakecase. Default: TRUE}
+
+\item{.envir}{Environment to be passed down \code{stringr::str_glue}. Probably don't need to worry about it.}
 }
 \value{
 A character vector of absolute paths with glue strings filled in.
@@ -20,15 +22,18 @@ A character vector of absolute paths with glue strings filled in.
 Quick wrapper around \code{stringr::str_glue} and \code{here::here} to fill a small recurring need: filling in file paths based on some parameter, but building them relative to the project root.
 }
 \examples{
-year <- 2025
-loc <- "New Haven"
+glue_here("{year}_headings_{topic}.txt", year = 2025, topic = "education")
+
+# in a regular script you shouldn't need to worry about setting .envir
+# but scoping is weird for package examples
+# year <- 2025
+# loc <- "New Haven"
+env <- rlang::env(year = 2025, loc = "New Haven")
 glue_here(c("input_data/demo/{loc}_table_{year}.csv",
-            "{year}_headings.txt"))
-# --> projectdir/input_data/demo/new_haven_table_2025.csv,
-#       projectdir/2025_headings.txt
-glue_here("{year}_headings_{topic}.txt", topic = "education")
-# --> projectdir/2025_headings_education.txt
+            "{year}_headings.txt"), .envir = env)
+
 }
 \seealso{
 \code{\link[here:here]{here::here()}} \code{\link[stringr:str_glue]{stringr::str_glue()}}
 }
+\keyword{misc}

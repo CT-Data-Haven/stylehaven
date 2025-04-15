@@ -17,3 +17,5 @@ scale_x_barcontinuous(top = 0.05, ...)
 \description{
 This is a light wrapper around \code{ggplot2::scale_x_continuous} / \code{ggplot2::scale_y_continuous} that sets an \code{expand} argument of \code{mult = c(0, 0.05)}. The purpose of this is just to align the bases of bars with the x-axis (for \code{scale_y_continuous}) or y-axis (for \code{scale_x_continuous}), rather than the default that leaves a gap between bars and the x- or y-axis.
 }
+\keyword{ggplot}
+\keyword{viz-utils}

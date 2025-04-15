@@ -27,10 +27,10 @@ Sometimes in a longer document with lots of charts, it's good to limit how much 
 Font weights are from CSS styling, where values are multiples of 100 between 100 and 900. The defaults used here are the norms used in web typography. Not all fonts will be available in all the weights you might like, but many of the fonts on Google that are well suited to data visualization come in many weights.
 }
 \examples{
-if (interactive()) {
 library(ggplot2)
 font_add_weights("Source Sans 3", black = 800)
-showtext::showtext_auto()
+showtext::showtext_begin()
+showtext::showtext_opts(dpi = 150)
 ggplot(iris, aes(x = Sepal.Width)) +
   geom_histogram(binwidth = 0.25) +
   facet_wrap(vars(Species), nrow = 1) +
@@ -40,8 +40,10 @@ ggplot(iris, aes(x = Sepal.Width)) +
   theme(plot.title = element_text(family = "Source Sans 3", face = "bold"), # 700
         plot.subtitle = element_text(family = "Source Sans 3 Semibold"), # 600
         strip.text = element_text(family = "Source Sans 3 Semibold")) # 600
-}
+showtext::showtext_end()
 }
 \seealso{
-sysfonts::font_add_google
+\code{\link[sysfonts:font_add_google]{sysfonts::font_add_google()}}
 }
+\keyword{fonts}
+\keyword{viz-utils}

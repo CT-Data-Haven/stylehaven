@@ -83,3 +83,4 @@ scaffold_project(prep_scripts = TRUE,
                  dryrun = TRUE)
 
 }
+\keyword{misc}

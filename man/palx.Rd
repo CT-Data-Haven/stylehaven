@@ -20,7 +20,7 @@ palx(
   labels = FALSE
 )
 
-\method{as_tibble}{palx}(x, ...)
+as_tibble.palx(x, ...)
 
 plot_palx(x, ..., labels = FALSE)
 
@@ -79,3 +79,5 @@ palx("#0e91a7") # much better--high saturation, middle lightness
 \seealso{
 \code{\link[colorspace:lighten]{colorspace::lighten()}}
 }
+\keyword{color}
+\keyword{viz-utils}

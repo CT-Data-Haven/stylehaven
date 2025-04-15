@@ -2,7 +2,7 @@
 % Please edit documentation in R/endpoint_lbls.R
 \name{endpoint_lbls}
 \alias{endpoint_lbls}
-\title{endpoint_lbls}
+\title{Formatted labels for endpoints of trend charts}
 \usage{
 endpoint_lbls(
   data,
@@ -48,7 +48,7 @@ Easily put together labels for the endpoints of a chart, such as a line chart wi
    # note that it will still be up to your judgment to set scale expansion,
    # since that will depend on things outside the scope of just this function
    cws_trend |>
-     dplyr::filter(indicator == "local_govt_responsive", category == "Age") |>
+     dplyr::filter(question == "local_govt_responsive", category == "Age") |>
      endpoint_lbls(value = value, x = year, group = group,
                    fun = percent100) |>
      ggplot(aes(x = year, y = value, color = group)) +
@@ -56,10 +56,11 @@ Easily put together labels for the endpoints of a chart, such as a line chart wi
      geom_point(size = 3) +
      geom_text(aes(label = lbl, hjust = just, x = x)) +
      scale_x_continuous(expand = expansion(add = c(1, 3)),
-                        breaks = c(2015, 2021))
+                        breaks = c(2015, 2024)) +
+     theme(legend.position = "none")
 
    cws_trend |>
-     dplyr::filter(indicator == "local_govt_responsive", category == "Age") |>
+     dplyr::filter(question == "local_govt_responsive", category == "Age") |>
      endpoint_lbls(value = value, x = year, group = group, long_side = "both",
                    fun = percent100, add = 0.4, mult = NULL) |>
      ggplot(aes(x = year, y = value, color = group)) +
@@ -67,5 +68,8 @@ Easily put together labels for the endpoints of a chart, such as a line chart wi
      geom_point(size = 3) +
      geom_text(aes(label = lbl, hjust = just, x = x)) +
      scale_x_continuous(expand = expansion(add = 3.5),
-                        breaks = c(2015, 2021))
+                        breaks = c(2015, 2024)) +
+     theme(legend.position = "none")
 }
+\keyword{plot-labels}
+\keyword{viz-utils}
