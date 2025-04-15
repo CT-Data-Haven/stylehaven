@@ -13,5 +13,3 @@ test_that("align_cols checks arguments", {
     expect_equal(x4, "lrrr")
     expect_message(align_cols(l = 1, r = 3, total = 8), "priority")
 })
-
-
