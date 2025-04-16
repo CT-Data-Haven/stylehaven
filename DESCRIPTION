@@ -31,7 +31,6 @@ Imports:
     sysfonts,
     tibble,
     tidyr,
-    xfun,
     tidyselect,
     viridisLite,
     magick,
@@ -39,14 +38,10 @@ Imports:
     patchwork,
     here
 Suggests: 
-    cwi (>= 0.3.0),
     roxygen2,
     forcats,
     showtext,
-    janitor,
-    camiller,
     knitr,
-    rmarkdown,
     testthat (>= 3.0.0),
     ggrepel,
     ragg,
@@ -57,9 +52,6 @@ URL: https://github.com/CT-Data-Haven/stylehaven,
 BugReports: https://github.com/CT-Data-Haven/stylehaven/issues
 Depends: 
     R (>= 4.2.0)
-Remotes: 
-    ct-data-haven/cwi,
-    camille-s/camiller
 VignetteBuilder: 
     knitr,
     quarto

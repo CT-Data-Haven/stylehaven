@@ -1,6 +1,5 @@
 ---
 title: "stylehaven: Getting started"
-output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{getting-started}
   %\VignetteEngine{quarto::html}

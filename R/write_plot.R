@@ -97,7 +97,7 @@ write_plot <- function(plot,
     if (verbose) cli::cli_ul()
 
     purrr::iwalk(devs, function(dev, ext) {
-        fn <- xfun::with_ext(filename, ext)
+        fn <- paste(filename, ext, sep = ".")
         if (separate_dirs) {
             dir_out <- file.path(dir, ext)
             if (!dir.exists(dir_out)) {

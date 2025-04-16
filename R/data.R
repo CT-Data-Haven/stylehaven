@@ -4,10 +4,10 @@
 #'
 #' @format A data frame with `r nrow(life_exp)` rows and `r ncol(life_exp)` variables:
 #' \describe{
-#'   \item{tract}{Tract FIPS code}
+#'   \item{tract}{Tract FIPS code (note that these are 2010 vintage tracts)}
 #'   \item{value}{Life expectancy in years}
 #' }
-#' @source [CDC's USALEEP project](https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html), current as of Oct. 2021
+#' @source [CDC's USALEEP project](https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html)
 #' @examples
 #' head(life_exp)
 #'
