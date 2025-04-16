@@ -1,6 +1,6 @@
 Package: stylehaven
 Title: Quick style utilities and guides
-Version: 0.2.0
+Version: 1.0.0
 Authors@R: 
     person(given = "Camille",
            family = "Seaberry",
