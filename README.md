@@ -7,6 +7,8 @@
 <!-- badges: start -->
 
 [![pkgdown](https://github.com/CT-Data-Haven/stylehaven/workflows/pkgdown/badge.svg)](https://github.com/CT-Data-Haven/stylehaven/actions)
+[![R-CMD-check](https://github.com/CT-Data-Haven/stylehaven/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CT-Data-Haven/stylehaven/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/CT-Data-Haven/stylehaven/graph/badge.svg)](https://app.codecov.io/gh/CT-Data-Haven/stylehaven)
 <!-- badges: end -->
 
 This is a collection of style utilities mostly revolving around making
