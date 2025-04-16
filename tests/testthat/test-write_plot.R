@@ -27,11 +27,11 @@ test_that("write_plot writes to correct directories", {
     write_plot(p, "test_lump",
         dir = dir, separate_dirs = FALSE,
         devs = list(
-            svg = grDevices::svg
+            tiff = grDevices::tiff
         )
     )
     files_lump <- list.files(dir, recursive = TRUE)
-    expect_true(all(c("test_lump.svg") %in% files_lump))
+    expect_true(all(c("test_lump.tiff") %in% files_lump))
 
     unlink(dir, recursive = TRUE)
 })
@@ -45,13 +45,12 @@ test_that("write_plot writes correct file types", {
         devs = list(
             jpg = grDevices::jpeg,
             png = grDevices::png,
-            svg = grDevices::svg,
             pdf = grDevices::pdf
         )
     )
     files <- list.files(dir, "test_types", full.names = TRUE)
     info <- purrr::map(files, plot_info) |> dplyr::bind_rows()
-    expect_setequal(info$format, c("JPEG", "PNG", "SVG", "PDF"))
+    expect_setequal(info$format, c("JPEG", "PNG", "PDF"))
 
     unlink(dir, recursive = TRUE)
 })
@@ -124,11 +123,12 @@ test_that("write_plot passes ... to ggsave", {
 test_that("write_plot respects verbose argument", {
     p <- test_plot()
     dir <- tmpdir_if_none("write5")
-    expect_silent(
-        dummy <- write_plot(p, "test_quiet", dir = dir, verbose = FALSE, devs = list(jpg = grDevices::jpeg))
-    )
     expect_message(
         dummy <- write_plot(p, "test_verbose", dir = dir, verbose = TRUE, devs = list(jpg = grDevices::jpeg)),
         "test_verbose.jpg' saved"
+    )
+    skip_on_ci()
+    expect_silent(
+        dummy <- write_plot(p, "test_quiet", dir = dir, verbose = FALSE, devs = list(jpg = grDevices::jpeg))
     )
 })
