@@ -1,5 +1,5 @@
 #' @title Title casing
-#' @description This function is a wrapper around `stringr` functions, which corrects for the fact that not *all* words in a title should be capitalized (articles, prepositions, etc. not at the beginning of the title). It follows the APA style guide the best I could, but there may be exceptions to fix manually (see examples).
+#' @description This function is a wrapper around [clean_titles()] which corrects for the fact that not *all* words in a title should be capitalized (articles, prepositions, etc. not at the beginning of the title). It follows the APA style guide the best I could, but there may be exceptions to fix manually (see examples).
 #' @param x A character vector to alter
 #' @param lower Aside from a built-in list of articles and prepositions, any additional words that should be kept lowercase.
 #' @param clean Boolean: if `TRUE` (the default), strings will be passed to `clean_titles` as an intermediate step, mostly to break snakecased text into words before converting to title casing.
@@ -8,11 +8,10 @@
 #' @examples
 #' title_case(c("rates are rising in the area", "of all adults in the region"))
 #' title_case("rates are going up in the area")
-#' # This result is technically
-#' # incorrect--"up" is used as an adverb here, and under APA should be
-#' # capitalized. Write this one out manually.
+#' # This result is technically incorrect--"up" is used as an adverb here, and 
+#' # under APA should be capitalized. Write this one out manually.
 #' @keywords string-formatting
-#' @seealso [stringr::str_to_title()], [clean_titles()]
+#' @seealso [clean_titles()]
 #' @export
 title_case <- function(x, lower = NULL, clean = TRUE, ...) {
     # using APA style guide

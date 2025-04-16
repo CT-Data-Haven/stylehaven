@@ -21,7 +21,7 @@ A data frame with 141 rows and 5 variables:
 median_age
 }
 \description{
-This is a sample of data from the 2023 ACS, table B01002. Values are median age for Connecticut, the Capitol Region and Greater Bridgeport counties of government (COGs), and all towns in either COG, each for total population, males, and females.
+This is a sample of data from the 2023 ACS, table B01002. Values are median age for Connecticut, the Capitol Region and Greater Bridgeport councils of government (COGs), and all towns in either COG, each for total population, males, and females.
 }
 \examples{
 head(median_age)

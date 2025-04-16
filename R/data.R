@@ -51,7 +51,7 @@
 
 #' Median age by sex
 #'
-#' This is a sample of data from the 2023 ACS, table B01002. Values are median age for Connecticut, the Capitol Region and Greater Bridgeport counties of government (COGs), and all towns in either COG, each for total population, males, and females.
+#' This is a sample of data from the 2023 ACS, table B01002. Values are median age for Connecticut, the Capitol Region and Greater Bridgeport councils of government (COGs), and all towns in either COG, each for total population, males, and females.
 #' @format
 #' A data frame with `r nrow(median_age)` rows and `r ncol(median_age)` variables:
 #' \describe{

@@ -48,7 +48,7 @@ qual_pal <- palx_colors[["shade04"]]
 tf_pal <- c("TRUE" = palx_colors[["shade02"]][["gray"]], "FALSE" = "white")
 ```
 
-This is a good time to check the contrast between the colors in this palette and the dark and light colors I might use for labels. `contrast_colors()` helps make sure your background and text colors have enough contrast to be legible for readers with low vision.
+This is a good time to check the contrast between the colors in this palette and the dark and light colors I might use for labels. `contrast_colors()` helps make sure your background and text colors have enough contrast to be legible for readers with low vision. If none of the color combinations have enough contrast and `verbose = TRUE`, you'll get diagnostic messages pointing you to which contrast ratios you should work to increase (there's an example of this in the docs).
 
 ```{r}
 #| label: contrast
@@ -212,11 +212,12 @@ ggplot(hartford_age, aes(x = value, y = forcats::fct_rev(sex), color = name)) +
     # labels that do need dodging
     ggrepel::geom_text_repel(aes(label = value),
         data = ~ semi_join(., age_to_dodge, by = c("sex", "name")),
-        seed = 1, direction = "x", nudge_y = 0.25,
+        seed = 1, direction = "x", nudge_y = 0.35,
         family = "Barlow Semi Condensed", fontface = "bold",
         size = 3.2, show.legend = FALSE
     ) +
-    scale_color_manual(values = mini_pal) +
+    scale_color_manual(values = mini_pal,
+                       guide = guide_legend(override.aes = list(size = 4))) +
     scale_x_continuous(breaks = NULL) +
     scale_y_discrete(labels = title_case) +
     theme(panel.grid.major.y = element_line(color = "gray90")) +
@@ -289,6 +290,7 @@ plots[["age_heatmap"]] <- age_std |>
     geom_tile(color = dark_gray) +
     # rcartocolor::scale_fill_carto_d(palette = "Geyser") +
     scale_fill_manual(values = div_pal) +
+    scale_x_discrete(labels = title_case) +
     labs(
         x = NULL, y = NULL, fill = "Compared to CT...",
         title = "Median age by town and sex",

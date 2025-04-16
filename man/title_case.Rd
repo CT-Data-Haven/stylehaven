@@ -27,16 +27,15 @@ title_case(x, lower = NULL, clean = TRUE, ...)
 A character vector
 }
 \description{
-This function is a wrapper around \code{stringr} functions, which corrects for the fact that not \emph{all} words in a title should be capitalized (articles, prepositions, etc. not at the beginning of the title). It follows the APA style guide the best I could, but there may be exceptions to fix manually (see examples).
+This function is a wrapper around \code{\link[=clean_titles]{clean_titles()}} which corrects for the fact that not \emph{all} words in a title should be capitalized (articles, prepositions, etc. not at the beginning of the title). It follows the APA style guide the best I could, but there may be exceptions to fix manually (see examples).
 }
 \examples{
 title_case(c("rates are rising in the area", "of all adults in the region"))
 title_case("rates are going up in the area")
-# This result is technically
-# incorrect--"up" is used as an adverb here, and under APA should be
-# capitalized. Write this one out manually.
+# This result is technically incorrect--"up" is used as an adverb here, and 
+# under APA should be capitalized. Write this one out manually.
 }
 \seealso{
-\code{\link[stringr:case]{stringr::str_to_title()}}, \code{\link[=clean_titles]{clean_titles()}}
+\code{\link[=clean_titles]{clean_titles()}}
 }
 \keyword{string-formatting}
