@@ -113,7 +113,9 @@ test_that("write_plot passes ... to ggsave", {
         dpi = dpi
     )
     info <- plot_info(file.path(dir, "test_dots.jpg"))
-    expect_equal(info$density, sprintf("+%sx+%s", dpi, dpi))
+    # format seems to depend on platform
+    density_patt <- sprintf("^\\+?%sx\\+?%s", dpi, dpi)
+    expect_true(grepl(density_patt, info$density))
     expect_equal(info$width, w * dpi)
 
     unlink(dir, recursive = TRUE)
