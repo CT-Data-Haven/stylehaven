@@ -15,11 +15,13 @@
 #' @param labels_only Logical, whether to return only labels, i.e. just a vector of the dark or light values, depending on which had the greatest contrast for each color in `pal`, or the full data frame used for calculations, including all ratios. Default: TRUE
 #' @param reverse Boolean: if `TRUE`, palette will be reversed. This mostly only matters for `mutate_contrast`, as it determines which colors are associated with which factor levels. Default: FALSE
 #' @param plot Logical, whether to print a `ggplot` swatch of tiles filled with `pal` and labels, using `plot` methods for the appropriate class. Doesn't change the return value. Default: FALSE
+#' @param x For methods: An object returned by `contrast_colors`
+#' @param ... Not currently used
 #' @return
 #' * For `contrast_colors`: If `labels_only`, a named character vector of colors, either the value of `dark` or `light`, giving the highest contrast ratio for each value of `pal`. This will be the same length as `pal` (or `n`, if you gave `pal` as the name of a palette to retrieve), and the names will be the fill colors. Otherwise, a data frame with the same number of rows as colors in `pal` and 6 columns of info about them, including fill and label colors (see examples).
 #'   - If `labels_only = FALSE`, will also have the classes `contrast_colors` and `cc_df`
 #'   - If `labels_only = TRUE`, will also have the classes `contrast_colors` and `cc_vec`.
-#' * For `mutate_contrast`, the original data frame given as `x`, with columns added for fill (according to `palette`) and label color.
+#' * For `mutate_contrast`, the original data frame given as `data`, with columns added for fill (according to `palette`) and label color.
 #' @examples
 #' # using a pre-defined palette
 #' qual_pal <- c("#009B9E", "#DAA51B", "#C75DAB", "#898DA7", "#2A39A7")
@@ -97,7 +99,7 @@ contrast_colors <- function(pal,
             cli::cli_abort("If supplying {.arg pal} as a CARTO palette, {.arg n} must be numeric and >= 3")
         }
         bg_colors <- rcartocolor::carto_pal(n = n, name = pal)
-    } else if (pal %in% viridis_pals) {
+    } else if (pal %in% viridis_pals()) {
         if (is.null(n) || n < 1) {
             cli::cli_abort("If supplying {.arg pal} as a viridis palette, {.arg n} must be numeric and >= 1")
         }
@@ -199,6 +201,7 @@ mutate_contrast <- function(data, col, pal,
     dplyr::left_join(data, cpal, by = join)
 }
 
+######## HELPER FUNCTIONS ----
 
 color_info <- function(color_df, dark, light) {
     idx <- which(color_df$low_contrast)
@@ -230,7 +233,16 @@ is_cc_vec <- function(x) {
         !is.null(names(x))
 }
 
-plot_contrast_colors_df <- function(x, ...) {
+viridis_pals <- function() {
+    c("A", "magma", "B", "inferno", "C", "plasma", "D", "viridis", "E", "cividis", "F", "rocket", "G", "mako", "H", "turbo")
+}
+
+######## METHODS ----
+#### PLOT METHODS ----
+#' @rdname contrast_colors
+#' @exportS3Method base::plot
+#' @export
+plot.cc_df <- function(x, ...) {
     if (!is_cc_df(x)) {
         cli::cli_abort("{.arg x} should be of type {.cls cc_df}, as returned by {.fun contrast_colors} with {.arg labels_only = FALSE}")
     }
@@ -252,7 +264,10 @@ plot_contrast_colors_df <- function(x, ...) {
     p
 }
 
-plot_contrast_colors_vec <- function(x, ...) {
+#' @rdname contrast_colors
+#' @exportS3Method base::plot
+#' @export
+plot.cc_vec <- function(x, ...) {
     if (!is_cc_vec(x)) {
         cli::cli_abort("{.arg x} should be of type {.cls cc_vec}, as returned by {.fun contrast_colors} with {.arg labels_only = TRUE}")
     }
@@ -267,6 +282,7 @@ plot_contrast_colors_vec <- function(x, ...) {
     p
 }
 
+##### PLOT METHOD HELPERS ----
 contrast_colors_gg <- function(p) {
     p <- p + ggplot2::geom_tile(ggplot2::aes(fill = fill), linewidth = 1, color = "white")
     p <- p + ggplot2::scale_fill_identity()
@@ -278,24 +294,18 @@ contrast_colors_gg <- function(p) {
     p
 }
 
+#### PRINT METHODS ----
 #' @rdname contrast_colors
-#' @param x An object returned by `contrast_colors`
-#' @param ... Not currently used
+#' @exportS3Method base::print
 #' @export
-plot.cc_df <- plot_contrast_colors_df
-
-#' @rdname contrast_colors
-#' @param x An object returned by `contrast_colors`
-#' @param ... Not currently used
-#' @export
-plot.cc_vec <- plot_contrast_colors_vec
-
-
-print_contrast_colors_df <- function(x, ...) {
+print.cc_df <- function(x, ...) {
     print.data.frame(x)
     invisible(x)
 }
-print_contrast_colors_vec <- function(x, ...) {
+#' @rdname contrast_colors
+#' @exportS3Method base::print
+#' @export
+print.cc_vec <- function(x, ...) {
     # drop attributes
     x0 <- x
     attributes(x0) <- NULL
@@ -304,12 +314,3 @@ print_contrast_colors_vec <- function(x, ...) {
     invisible(x)
 }
 
-#' @rdname contrast_colors
-#' @export
-print.cc_df <- print_contrast_colors_df
-
-#' @rdname contrast_colors
-#' @export
-print.cc_vec <- print_contrast_colors_vec
-
-viridis_pals <- c("A", "magma", "B", "inferno", "C", "plasma", "D", "viridis", "E", "cividis", "F", "rocket", "G", "mako", "H", "turbo")

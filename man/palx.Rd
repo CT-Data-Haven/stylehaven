@@ -79,9 +79,9 @@ class(tibble::as_tibble(palette))
 plot(palette)
 
 # bad examples all with one hue that return weird / not very useful palettes
-palx("#ccf4fa") # saturated but too light
-palx("#6c888d") # not too light, but not saturated enough
-palx("#0e91a7") # much better--high saturation, middle lightness
+too_light <- palx("#ccf4fa", plot = TRUE) # saturated but too light
+low_sat <- palx("#6c888d", plot = TRUE) # not too light, but not saturated enough
+good <- palx("#0e91a7", plot = TRUE) # much better--high saturation, middle lightness
 }
 \seealso{
 \code{\link[colorspace:lighten]{colorspace::lighten()}}

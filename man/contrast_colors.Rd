@@ -66,7 +66,7 @@ mutate_contrast(
 
 \item{col}{Bare name of a column in \code{x} along which the palette will be mapped. If not already a factor, it will be coerced into one with levels in the same order in which they appear.}
 
-\item{x}{An object returned by \code{contrast_colors}}
+\item{x}{For methods: An object returned by \code{contrast_colors}}
 
 \item{...}{Not currently used}
 }
@@ -77,7 +77,7 @@ mutate_contrast(
 \item If \code{labels_only = FALSE}, will also have the classes \code{contrast_colors} and \code{cc_df}
 \item If \code{labels_only = TRUE}, will also have the classes \code{contrast_colors} and \code{cc_vec}.
 }
-\item For \code{mutate_contrast}, the original data frame given as \code{x}, with columns added for fill (according to \code{palette}) and label color.
+\item For \code{mutate_contrast}, the original data frame given as \code{data}, with columns added for fill (according to \code{palette}) and label color.
 }
 }
 \description{
