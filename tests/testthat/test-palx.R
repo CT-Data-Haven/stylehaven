@@ -1,7 +1,7 @@
 test_that("palx returns correct classes", {
     col <- "#9CCC0C"
-    expect_s3_class(palx(col, as_df = FALSE), c("palx", "list"))
-    expect_s3_class(palx(col, as_df = TRUE), c("palx", "data.frame"))
+    expect_s3_class(palx(col, return_df = FALSE), c("palx", "list"))
+    expect_s3_class(palx(col, return_df = TRUE), c("palx", "data.frame"))
 })
 
 test_that("palx checks for valid colors", {
@@ -26,11 +26,14 @@ test_that("palx checks for valid colors", {
 })
 
 test_that("as_tibble and plot generics run without error on palx objects", {
-    pal <- palx("#9CCC0C")
+    pal <- palx("#9CCC0C", return_df = FALSE)
     # expect_equal fails because the plots have
     # attributes in different environments
     expect_identical(as_tibble(pal), as_tibble.palx(pal))
     expect_s3_class(plot(pal), "gg")
+    expect_s3_class(as_tibble(pal), "palx")
+    # if as_tibble(pal) is still recognized as palx, plotting should yield a gg
+    expect_s3_class(plot(as_tibble(pal)), "gg")
 })
 
 test_that("palx colors always have names", {

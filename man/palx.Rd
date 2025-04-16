@@ -3,7 +3,6 @@
 \name{palx}
 \alias{palx}
 \alias{as_tibble.palx}
-\alias{plot_palx}
 \alias{plot.palx}
 \title{Make multi-hue, multi-shade qualitative color palettes}
 \source{
@@ -13,16 +12,14 @@
 palx(
   color,
   n_hues = 8,
-  n_shades = 9,
+  n_shades = 6,
   row = NULL,
-  as_df = FALSE,
+  return_df = FALSE,
   plot = FALSE,
   labels = FALSE
 )
 
-as_tibble.palx(x, ...)
-
-plot_palx(x, ..., labels = FALSE)
+\method{as_tibble}{palx}(x, ...)
 
 \method{plot}{palx}(x, ..., labels = FALSE)
 }
@@ -31,27 +28,29 @@ plot_palx(x, ..., labels = FALSE)
 
 \item{n_hues}{A number between 1 and 12. The number of hues returned will be this + 1, because a gray color will be added.}
 
-\item{n_shades}{A number, for the number of shades to return for each hue. Defaults 9; too many more than that will probably become hard to distinguish.}
+\item{n_shades}{A number, for the number of shades to return for each hue. Defaults 6; too many more than that will probably become hard to distinguish.}
 
 \item{row}{Numeric. If \code{NULL}, the default, all rows (shades) are returned. Otherwise, only the rows with these indices are returned. Just a shortcut for subsetting the list.}
 
-\item{as_df}{Logical, whether to return a data frame (\code{as_df = TRUE}) or a list of character vectors. Defaults \code{FALSE}.}
+\item{return_df}{Logical, whether to return a data frame (\code{return_df = TRUE}) or a list of character vectors. Defaults \code{FALSE}.}
 
 \item{plot}{Logical, whether to call \code{plot_palx} before returning. This doesn't change what the function returns, it just prints out a ggplot chart and returns the colors as normal. Defaults \code{FALSE}.}
 
 \item{labels}{Logical, whether to add labels on each tile giving colors' hex codes. Defaults \code{FALSE}.}
 
-\item{x}{The output of calling \code{palx}, as either a list or data frame}
+\item{x}{For \code{as_tibble} or \code{plot} methods: The output of calling \code{palx}, as either a list or data frame}
 
-\item{...}{Not used}
+\item{...}{Not currently implemented}
 }
 \value{
-If \code{as_df = TRUE}, a tibble with \code{n_shades} rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length \code{n_shades}) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run \code{plot(my_palx)} or \code{as_tibble(my_palx)}.
+If \code{return_df = TRUE}, a tibble with \code{n_shades} rows by one column per hue, plus a column giving the shade number. Otherwise, a named list (length \code{n_shades}) of character vectors, where each list item represents one shade. Both the tibble and named list are extended with the "palx" class, so that users can conveniently run \code{plot(my_palx)} or \code{as_tibble(my_palx)}.
 }
 \description{
 \code{palx} is based on the Palx javascript library, basically a port of its core functions using the \code{colorspace} package. Provided a base color, it pulls a set of hues from across the spectrum with the same lightness and saturation, plus a gray color. It then creates shades of those hues from nearly black to nearly white. You probably don't actually want every hue; it's just a good way to get a bunch of colors to choose from.
 
-You can view a palette graphically by running \code{plot(my_palx)}, by setting \code{plot = TRUE}, or by more directly calling \code{plot_palx}. This creates a grid of hue vs. shade tiles.
+You can view a palette graphically by running \code{plot(my_palx)}, or by setting \code{plot = TRUE}; the former returns a ggplot object that you can use again, while the latter just prints the plot once. This creates a grid of hue vs. shade tiles.
+
+For generating a palette I need to extract different hues at different shades from, such as to make a small palette for a set of charts, I find getting a list (\code{return_df = FALSE}) is most versatile.
 }
 \details{
 Some notes about color:
@@ -68,8 +67,16 @@ These palettes shouldn't be used for sequential palettes, even pulling multiple 
 You likely only want one or two shades worth of colors (use the \code{row} arguments), either adjacent for colors that appear "even", or one light and one dark for a paired palette. Saturated colors that aren't too dark or too light work best.
 }
 \examples{
-palx("#9CCC0C") # returns a list
-palx("#9CCC0C", as_df = TRUE) # returns a data frame
+palette <- palx("#9CCC0C") # returns a list
+palx("#9CCC0C", return_df = TRUE) # returns a data frame
+
+# convert `palette` to a tibble
+tibble::as_tibble(palette)
+# should yield a tibble with the additional class `palx`
+class(tibble::as_tibble(palette))
+
+# plot `palette` using ggplot
+plot(palette)
 
 # bad examples all with one hue that return weird / not very useful palettes
 palx("#ccf4fa") # saturated but too light
