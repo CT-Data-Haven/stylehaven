@@ -1,3 +1,9 @@
+# stylehaven v1.0.1 (2025-04-16)
+
+## Fix
+
+- bit more cleanup of palx, contrast_colors methods
+
 # stylehaven v1.0.0 (2025-04-16)
 
 ## Feat
