@@ -56,15 +56,15 @@ This is a collection of small utilities for formatting numbers, especially for u
 \code{percent_lt1} takes an additional step, replacing any values below 1 percent with \code{"<1\%"}, useful for suppressing small numbers.
 }
 \examples{
-paste("The value is", percent_txt(0.25)) 
+paste("The value is", percent_txt(0.25))
 
-percent100(c(0.25, 0.251, 0.008)) 
+percent100(c(0.25, 0.251, 0.008))
 
-percent_lt1(c(0.25, 0.251, 0.008)) 
+percent_lt1(c(0.25, 0.251, 0.008))
 
-paste(percent_eng(0.1), "of adults say...") 
+paste(percent_eng(0.1), "of adults say...")
 
-dollar1(c(81.1, 105.22)) 
+dollar1(c(81.1, 105.22))
 
 dollark(c(12345, 89100))
 dollark(c(12345, 89100), accuracy = 0.1)

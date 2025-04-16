@@ -7,12 +7,12 @@
 \format{
 A data frame with 180 rows and 2 variables:
 \describe{
-\item{tract}{Tract FIPS code}
+\item{tract}{Tract FIPS code (note that these are 2010 vintage tracts)}
 \item{value}{Life expectancy in years}
 }
 }
 \source{
-\href{https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html}{CDC's USALEEP project}, current as of Oct. 2021
+\href{https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html}{CDC's USALEEP project}
 }
 \usage{
 life_exp

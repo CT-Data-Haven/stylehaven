@@ -38,26 +38,27 @@ want to arrange and / or group data \emph{before} passing values to \code{stack_
 library(dplyr)
 library(ggplot2)
 df <- self_rated_health |>
-  arrange(category, group, desc(response)) |>
-  group_by(group)
+    arrange(category, group, desc(response)) |>
+    group_by(group)
 # place labels at centers of bars--should be the same as just using position_stack
 df_center <- df |>
-  mutate(centered = stack_lbls(value))
+    mutate(centered = stack_lbls(value))
 ggplot(df_center, aes(x = group, y = value, fill = response)) +
-  geom_col() +
-  geom_text(aes(label = percent100(value), y = centered))
+    geom_col() +
+    geom_text(aes(label = percent100(value), y = centered))
 
 # replace the legend with direct labels along the last stack of bars
 df_top <- df |>
-  mutate(top = stack_lbls(value, just = 1)) |>
-  ungroup()
+    mutate(top = stack_lbls(value, just = 1)) |>
+    ungroup()
 ggplot(df_top, aes(x = group, y = value, fill = response)) +
-  geom_col() +
-  geom_text(aes(label = response, color = response, y = top),
-            data = ~slice_max(., group),
-            hjust = 0, vjust = 1, nudge_x = 0.5) +
-  scale_x_discrete(expand = expansion(add = c(0.8, 1.5))) +
-  theme(legend.position = "none")
+    geom_col() +
+    geom_text(aes(label = response, color = response, y = top),
+        data = ~ slice_max(., group),
+        hjust = 0, vjust = 1, nudge_x = 0.5
+    ) +
+    scale_x_discrete(expand = expansion(add = c(0.8, 1.5))) +
+    theme(legend.position = "none")
 
 }
 \keyword{plot-labels}

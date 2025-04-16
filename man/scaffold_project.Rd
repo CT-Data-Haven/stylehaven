@@ -76,11 +76,13 @@ This sets up a typical (opinionated) project directory structure that we use for
 scaffold_project(dryrun = TRUE)
 
 # create all available folders--good for larger print projects
-scaffold_project(prep_scripts = TRUE, 
-                 plots = TRUE,
-                 format_tables = TRUE,
-                 drafts = TRUE,
-                 dryrun = TRUE)
+scaffold_project(
+    prep_scripts = TRUE,
+    plots = TRUE,
+    format_tables = TRUE,
+    drafts = TRUE,
+    dryrun = TRUE
+)
 
 }
 \keyword{misc}

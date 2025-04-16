@@ -32,14 +32,18 @@ font_add_weights("Source Sans 3", black = 800)
 showtext::showtext_begin()
 showtext::showtext_opts(dpi = 150)
 ggplot(iris, aes(x = Sepal.Width)) +
-  geom_histogram(binwidth = 0.25) +
-  facet_wrap(vars(Species), nrow = 1) +
-  labs(title = "Font weights in use are 400, 600, and 700",
-       subtitle = "Sepal width by species") +
-  theme_gray(base_family = "Source Sans 3") +
-  theme(plot.title = element_text(family = "Source Sans 3", face = "bold"), # 700
+    geom_histogram(binwidth = 0.25) +
+    facet_wrap(vars(Species), nrow = 1) +
+    labs(
+        title = "Font weights in use are 400, 600, and 700",
+        subtitle = "Sepal width by species"
+    ) +
+    theme_gray(base_family = "Source Sans 3") +
+    theme(
+        plot.title = element_text(family = "Source Sans 3", face = "bold"), # 700
         plot.subtitle = element_text(family = "Source Sans 3 Semibold"), # 600
-        strip.text = element_text(family = "Source Sans 3 Semibold")) # 600
+        strip.text = element_text(family = "Source Sans 3 Semibold")
+    ) # 600
 showtext::showtext_end()
 }
 \seealso{

@@ -44,30 +44,34 @@ original data to plot the points that \emph{do} need to be dodged, and
 }
 \examples{
 if (requireNamespace("ggrepel", quietly = TRUE)) {
-  library(ggplot2)
-  
-  cws24 <- cws_trend |>
-    dplyr::filter(year == 2024)
-  
-  # some labels are overlapped & hard to read
-  ggplot(cws24, aes(x = value, y = question)) +
-    geom_point(aes(color = group), size = 6, alpha = 0.8) +
-    geom_text(aes(label = percent100(value)), size = 3)
-  
-  to_dodge <- dodge_lbls(cws24, 
-                         x = question, value = value, group = group, 
-                         thresh = 0.01)
-  
-  # the first text geom will be observations that don't need to be dodged (anti-join)
-  # the second will be ones that do need to be dodged (semi-join)
-  ggplot(cws24, aes(x = value, y = question)) +
-    geom_point(aes(color = group), size = 6, alpha = 0.8) +
-    geom_text(aes(label = percent100(value)), size = 2.7,
-              data = ~dplyr::anti_join(., to_dodge, by = c("question", "group"))) +
-    ggrepel::geom_text_repel(aes(label = percent100(value), color = group), 
-                             size = 2.7, seed = 1,
-                             data = ~dplyr::semi_join(., to_dodge, by = c("question", "group")),
-                             direction = "x", nudge_y = 0.2)
+    library(ggplot2)
+
+    cws24 <- cws_trend |>
+        dplyr::filter(year == 2024)
+
+    # some labels are overlapped & hard to read
+    ggplot(cws24, aes(x = value, y = question)) +
+        geom_point(aes(color = group), size = 6, alpha = 0.8) +
+        geom_text(aes(label = percent100(value)), size = 3)
+
+    to_dodge <- dodge_lbls(cws24,
+        x = question, value = value, group = group,
+        thresh = 0.01
+    )
+
+    # the first text geom will be observations that don't need to be dodged (anti-join)
+    # the second will be ones that do need to be dodged (semi-join)
+    ggplot(cws24, aes(x = value, y = question)) +
+        geom_point(aes(color = group), size = 6, alpha = 0.8) +
+        geom_text(aes(label = percent100(value)),
+            size = 2.7,
+            data = ~ dplyr::anti_join(., to_dodge, by = c("question", "group"))
+        ) +
+        ggrepel::geom_text_repel(aes(label = percent100(value), color = group),
+            size = 2.7, seed = 1,
+            data = ~ dplyr::semi_join(., to_dodge, by = c("question", "group")),
+            direction = "x", nudge_y = 0.2
+        )
 }
 }
 \keyword{plot-labels}

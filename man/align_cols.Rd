@@ -42,8 +42,9 @@ align_cols(
 )
 # For programming this can be useful after reshaping
 n_responses <- length(levels(self_rated_health$response))
-health_wide <- tidyr::pivot_wider(self_rated_health, 
-                                  id_cols = group, names_from = response)
+health_wide <- tidyr::pivot_wider(self_rated_health,
+    id_cols = group, names_from = response
+)
 alignment <- align_cols(r = n_responses, total = ncol(health_wide))
 if (require("knitr")) {
     knitr::kable(health_wide, align = alignment)

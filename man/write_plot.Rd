@@ -64,31 +64,33 @@ This is a formalized version of a function I often have in utils scripts for dif
 }
 \examples{
 \dontrun{
-  library(ggplot2)
-  plot1 <- ggplot(mtcars, aes(x = hp)) +
+library(ggplot2)
+plot1 <- ggplot(mtcars, aes(x = hp)) +
     geom_density()
-  write_plot(plot1, "hp_density")
-  write_plot(plot1, "hp_density", devs = list(png = "png", svg = svg))
-  ggsave("svg/plot.svg", plot1, device = svglite::svglite)
+write_plot(plot1, "hp_density")
+write_plot(plot1, "hp_density", devs = list(png = "png", svg = svg))
+ggsave("svg/plot.svg", plot1, device = svglite::svglite)
 
-  # how I usually use this for a whole document of plots
-  plots <- list()
-  plots[["mpg_histogram"]] <- ggplot(mtcars, aes(x = mpg)) +
+# how I usually use this for a whole document of plots
+plots <- list()
+plots[["mpg_histogram"]] <- ggplot(mtcars, aes(x = mpg)) +
     geom_histogram()
-  plots[["hp_vs_mpg"]] <- ggplot(mtcars, aes(x = hp, y = mpg)) +
+plots[["hp_vs_mpg"]] <- ggplot(mtcars, aes(x = hp, y = mpg)) +
     geom_point()
-  plot_params <- list(
+plot_params <- list(
     mpg_histogram = list(w = 7, h = 4),
     hp_vs_mpg = list(w = 5, h = 5)
-  )
-  purrr::imap(plots, function(plt, id) {
+)
+purrr::imap(plots, function(plt, id) {
     # using plot ID as the filename
     params <- plot_params[[id]]
-    write_plot(plt, filename = id,
-               width = params$w,
-               height = params$h,
-               logo_abs = 0.2)
-  })
+    write_plot(plt,
+        filename = id,
+        width = params$w,
+        height = params$h,
+        logo_abs = 0.2
+    )
+})
 }
 }
 \seealso{

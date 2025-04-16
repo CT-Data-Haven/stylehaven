@@ -61,13 +61,13 @@ library(ggplot2)
 # shares of people rating health as poor is too small for most groups to have
 # easily legible label, so offset them to the right of their bars
 self_rated_health |>
-  offset_lbls(value = value, fun = percent100) |>
-  ggplot(aes(x = value, y = forcats::fct_rev(group), fill = response)) +
-  geom_col() +
-  geom_text(aes(x = value_off, hjust = just, label = lbl, color = is_small)) +
-  facet_grid(cols = vars(response)) +
-  scale_x_barcontinuous(breaks = NULL) +
-  scale_color_manual(values = c("TRUE" = "gray30", "FALSE" = "white")) +
-  theme(legend.position = "none")
+    offset_lbls(value = value, fun = percent100) |>
+    ggplot(aes(x = value, y = forcats::fct_rev(group), fill = response)) +
+    geom_col() +
+    geom_text(aes(x = value_off, hjust = just, label = lbl, color = is_small)) +
+    facet_grid(cols = vars(response)) +
+    scale_x_barcontinuous(breaks = NULL) +
+    scale_color_manual(values = c("TRUE" = "gray30", "FALSE" = "white")) +
+    theme(legend.position = "none")
 }
 \keyword{viz-utils}

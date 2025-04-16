@@ -29,8 +29,10 @@ glue_here("{year}_headings_{topic}.txt", year = 2025, topic = "education")
 # year <- 2025
 # loc <- "New Haven"
 env <- rlang::env(year = 2025, loc = "New Haven")
-glue_here(c("input_data/demo/{loc}_table_{year}.csv",
-            "{year}_headings.txt"), .envir = env)
+glue_here(c(
+    "input_data/demo/{loc}_table_{year}.csv",
+    "{year}_headings.txt"
+), .envir = env)
 
 }
 \seealso{

@@ -43,18 +43,19 @@ Occasionally we make charts using standard deviations away from an average value
 }
 \examples{
 # Calculate intervals along the full dataset, based on calculated mean
-stdev_brks(median_age, 
-           labels = c("Lower", "Somewhat lower", "Average", "Somewhat higher", "Higher"))
-           
+stdev_brks(median_age,
+    labels = c("Lower", "Somewhat lower", "Average", "Somewhat higher", "Higher")
+)
+
 # That might be a little biased because there are also observations for state & counties.
-# Calculate intervals for each of the three indicators in the `question` column. 
+# Calculate intervals for each of the three indicators in the `question` column.
 # Both examples have the same result:
 median_age |>
-  stdev_brks(filters = list(level = "state"), by = "sex") # or list(name = "Connecticut")
+    stdev_brks(filters = list(level = "state"), by = "sex") # or list(name = "Connecticut")
 
 median_age |>
-  dplyr::group_by(sex) |>
-  stdev_brks(filters = list(level = "state"))
+    dplyr::group_by(sex) |>
+    stdev_brks(filters = list(level = "state"))
 }
 \seealso{
 \code{\link[base:cut]{base::cut()}}

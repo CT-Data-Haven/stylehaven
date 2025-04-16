@@ -107,31 +107,33 @@ contrast_colors("Vivid", n = 7, dark = "gray40", plot = TRUE)
 library(ggplot2)
 
 health <- self_rated_health |>
-  mutate_contrast(col = response, pal = "BuGn")
+    mutate_contrast(col = response, pal = "BuGn")
 
 # use same palette for fill scale
 # lbl_color column has colors to use, so can use identity scale
 ggplot(health, aes(x = group, y = value, fill = response)) +
-  geom_col(position = position_fill(reverse = TRUE)) +
-  geom_text(aes(label = percent100(value), group = group, color = lbl_color), 
-            position = position_fill(reverse = TRUE, vjust = 0.5)) +
-  scale_fill_brewer(palette = "BuGn") +
-  scale_color_identity()
-  
+    geom_col(position = position_fill(reverse = TRUE)) +
+    geom_text(aes(label = percent100(value), group = group, color = lbl_color),
+        position = position_fill(reverse = TRUE, vjust = 0.5)
+    ) +
+    scale_fill_brewer(palette = "BuGn") +
+    scale_color_identity()
+
 # could actually use scale_fill_identity as well, since fill colors are in data,
 # but it becomes messy when you want a legend
 
 # now use a manual palette, and give the same set of colors to scale_fill_manual
 manual_pal <- c("#005CE7", "#9C45C7", "#CC6697", "#E69259", "#F2D25C")
 health_w_pal <- self_rated_health |>
-  mutate_contrast(col = response, pal = manual_pal)
+    mutate_contrast(col = response, pal = manual_pal)
 
 ggplot(health_w_pal, aes(x = group, y = value, fill = response)) +
-  geom_col(position = position_fill(reverse = TRUE)) +
-  geom_text(aes(label = percent100(value), group = group, color = lbl_color), 
-            position = position_fill(reverse = TRUE, vjust = 0.5)) +
-  scale_fill_manual(values = manual_pal) +
-  scale_color_identity()
+    geom_col(position = position_fill(reverse = TRUE)) +
+    geom_text(aes(label = percent100(value), group = group, color = lbl_color),
+        position = position_fill(reverse = TRUE, vjust = 0.5)
+    ) +
+    scale_fill_manual(values = manual_pal) +
+    scale_color_identity()
 }
 \seealso{
 \code{\link[colorspace:contrast_ratio]{colorspace::contrast_ratio()}}, \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}, \code{\link[rcartocolor:carto_pal]{rcartocolor::carto_pal()}}, \code{\link[viridisLite:viridis]{viridisLite::viridis()}}

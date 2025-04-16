@@ -44,32 +44,40 @@ A data frame: the original data frame passed in to \code{data}, with 3 additiona
 Easily put together labels for the endpoints of a chart, such as a line chart with outwardly-justified labels at each end. Labels with the formats \code{{name}: {fun(value)}} (long format) and \verb{\{fun(value\}} (short format) will be created, such as \code{"Connecticut: 12\%"} and \code{"16\%"} respectively. Often one format will be used on one end and the other format on the other end, but \code{long_side} gives you some options around this. The intention around combining labels like this is so you can put labels on both ends, aligned nicely, in a single \code{geom_text} call.
 }
 \examples{
-   library(ggplot2)
-   # note that it will still be up to your judgment to set scale expansion,
-   # since that will depend on things outside the scope of just this function
-   cws_trend |>
-     dplyr::filter(question == "local_govt_responsive", category == "Age") |>
-     endpoint_lbls(value = value, x = year, group = group,
-                   fun = percent100) |>
-     ggplot(aes(x = year, y = value, color = group)) +
-     geom_line() +
-     geom_point(size = 3) +
-     geom_text(aes(label = lbl, hjust = just, x = x)) +
-     scale_x_continuous(expand = expansion(add = c(1, 3)),
-                        breaks = c(2015, 2024)) +
-     theme(legend.position = "none")
+library(ggplot2)
+# note that it will still be up to your judgment to set scale expansion,
+# since that will depend on things outside the scope of just this function
+cws_trend |>
+    dplyr::filter(question == "local_govt_responsive", category == "Age") |>
+    endpoint_lbls(
+        value = value, x = year, group = group,
+        fun = percent100
+    ) |>
+    ggplot(aes(x = year, y = value, color = group)) +
+    geom_line() +
+    geom_point(size = 3) +
+    geom_text(aes(label = lbl, hjust = just, x = x)) +
+    scale_x_continuous(
+        expand = expansion(add = c(1, 3)),
+        breaks = c(2015, 2024)
+    ) +
+    theme(legend.position = "none")
 
-   cws_trend |>
-     dplyr::filter(question == "local_govt_responsive", category == "Age") |>
-     endpoint_lbls(value = value, x = year, group = group, long_side = "both",
-                   fun = percent100, add = 0.4, mult = NULL) |>
-     ggplot(aes(x = year, y = value, color = group)) +
-     geom_line() +
-     geom_point(size = 3) +
-     geom_text(aes(label = lbl, hjust = just, x = x)) +
-     scale_x_continuous(expand = expansion(add = 3.5),
-                        breaks = c(2015, 2024)) +
-     theme(legend.position = "none")
+cws_trend |>
+    dplyr::filter(question == "local_govt_responsive", category == "Age") |>
+    endpoint_lbls(
+        value = value, x = year, group = group, long_side = "both",
+        fun = percent100, add = 0.4, mult = NULL
+    ) |>
+    ggplot(aes(x = year, y = value, color = group)) +
+    geom_line() +
+    geom_point(size = 3) +
+    geom_text(aes(label = lbl, hjust = just, x = x)) +
+    scale_x_continuous(
+        expand = expansion(add = 3.5),
+        breaks = c(2015, 2024)
+    ) +
+    theme(legend.position = "none")
 }
 \keyword{plot-labels}
 \keyword{viz-utils}

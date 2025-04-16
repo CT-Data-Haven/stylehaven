@@ -31,7 +31,7 @@ This function is a wrapper around \code{stringr} functions, which corrects for t
 }
 \examples{
 title_case(c("rates are rising in the area", "of all adults in the region"))
-title_case("rates are going up in the area") 
+title_case("rates are going up in the area")
 # This result is technically
 # incorrect--"up" is used as an adverb here, and under APA should be
 # capitalized. Write this one out manually.
