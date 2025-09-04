@@ -216,8 +216,10 @@ ggplot(hartford_age, aes(x = value, y = forcats::fct_rev(sex), color = name)) +
         family = "Barlow Semi Condensed", fontface = "bold",
         size = 3.2, show.legend = FALSE
     ) +
-    scale_color_manual(values = mini_pal,
-                       guide = guide_legend(override.aes = list(size = 4))) +
+    scale_color_manual(
+        values = mini_pal,
+        guide = guide_legend(override.aes = list(size = 4))
+    ) +
     scale_x_continuous(breaks = NULL) +
     scale_y_discrete(labels = title_case) +
     theme(panel.grid.major.y = element_line(color = "gray90")) +

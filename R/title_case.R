@@ -8,7 +8,7 @@
 #' @examples
 #' title_case(c("rates are rising in the area", "of all adults in the region"))
 #' title_case("rates are going up in the area")
-#' # This result is technically incorrect--"up" is used as an adverb here, and 
+#' # This result is technically incorrect--"up" is used as an adverb here, and
 #' # under APA should be capitalized. Write this one out manually.
 #' @keywords string-formatting
 #' @seealso [clean_titles()]

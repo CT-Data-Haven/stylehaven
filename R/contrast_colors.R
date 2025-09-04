@@ -313,4 +313,3 @@ print.cc_vec <- function(x, ...) {
     print(x0)
     invisible(x)
 }
-

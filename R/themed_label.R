@@ -9,7 +9,7 @@
 #' @param ... Any other arguments to pass to `cowplot::draw_label()`.
 #' @return A `ggplot` object.
 #' @examples
-#' #TODO
+#' # TODO
 #' @keywords viz-utils
 #' @export
 themed_label <- function(
@@ -18,8 +18,7 @@ themed_label <- function(
     element = "text",
     x = 0.01,
     hjust = 0,
-    ...
-) {
+    ...) {
     if (is.null(theme)) {
         theme <- ggplot2::theme_get()
     }

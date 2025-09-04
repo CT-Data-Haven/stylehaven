@@ -15,8 +15,7 @@ theme_din <- function(
     base_family = "roboto",
     xgrid = FALSE,
     ygrid = TRUE,
-    fallback_google = TRUE
-) {
+    fallback_google = TRUE) {
     showtext::showtext_auto(enable = TRUE)
     loaded_fonts <- sysfonts::font_families()
     if (!base_family %in% loaded_fonts) {

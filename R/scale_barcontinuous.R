@@ -4,21 +4,21 @@
 #' @param ... Additional arguments passed on to `ggplot2::scale_x/y_continuous`.
 #' @examples
 #' library(ggplot2)
-#' 
-#' local_govt <- cws_trend |> 
-#'   dplyr::filter(year == 2024, question == "local_govt_responsive")
-#' 
+#'
+#' local_govt <- cws_trend |>
+#'     dplyr::filter(year == 2024, question == "local_govt_responsive")
+#'
 #' # default expansion leaves an awkward gap below 0-aligned bars
 #' p <- ggplot(local_govt, aes(x = group, y = value)) +
-#'   geom_col() +
-#'   scale_x_discrete(labels = scales::label_wrap(10))
-#' 
+#'     geom_col() +
+#'     scale_x_discrete(labels = scales::label_wrap(10))
+#'
 #' p
-#' 
+#'
 #' # scale_y_barcontinuous changes expansion to remove it
 #' p +
-#'   scale_y_barcontinuous()
-#' 
+#'     scale_y_barcontinuous()
+#'
 #' @rdname scale_barcontinuous
 #' @keywords viz-utils
 #' @keywords ggplot
