@@ -3,7 +3,7 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   stylehaven: stylehaven.html
-last_built: 2025-09-04T18:52Z
+last_built: 2025-09-04T18:53Z
 urls:
   reference: https://ct-data-haven.github.io/stylehaven/reference
   article: https://ct-data-haven.github.io/stylehaven/articles
