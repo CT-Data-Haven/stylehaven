@@ -13,7 +13,7 @@ characters for printing in tables."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">stylehaven</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,11 +130,14 @@ processed so that <code>prefix = "$"</code> will yield (e.g.) <code>-$1</code> a
 <dd><p>Additional text to display after the number.</p></dd>
 
     <dt><code>big.mark</code></dt>
-<dd><p>Character used between every 3 digits to separate thousands.</p></dd>
+<dd><p>Character used between every 3 digits to separate thousands.
+The default (<code>NULL</code>) retrieves the setting from the
+<a href="https://scales.r-lib.org/reference/number_options.html" class="external-link">number options</a>.</p></dd>
 
     <dt><code>decimal.mark</code></dt>
 <dd><p>The character to be used to indicate the numeric
-decimal point.</p></dd>
+decimal point.  The default (<code>NULL</code>) retrieves the setting from the
+<a href="https://scales.r-lib.org/reference/number_options.html" class="external-link">number options</a>.</p></dd>
 
     <dt><code>style_positive</code></dt>
 <dd><p>A string that determines the style of positive numbers:</p><ul><li><p><code>"none"</code> (the default): no change, e.g. <code>1</code>.</p></li>
@@ -143,15 +146,17 @@ decimal point.</p></dd>
 as wide as a number or <code>+</code>. Compared to <code>"none"</code>, adding a figure space
 can ensure numbers remain properly aligned when they are left- or
 right-justified.</p></li>
-</ul></dd>
+</ul><p>The default (<code>NULL</code>) retrieves the setting from the
+<a href="https://scales.r-lib.org/reference/number_options.html" class="external-link">number options</a>.</p></dd>
 
     <dt><code>style_negative</code></dt>
-<dd><p>A string that determines the style of negative numbers:</p><ul><li><p><code>"hyphen"</code> (the default): preceded by a standard hypen <code>-</code>, e.g. <code>-1</code>.</p></li>
+<dd><p>A string that determines the style of negative numbers:</p><ul><li><p><code>"hyphen"</code> (the default): preceded by a standard hyphen <code>-</code>, e.g. <code>-1</code>.</p></li>
 <li><p><code>"minus"</code>, uses a proper Unicode minus symbol. This is a typographical
 nicety that ensures <code>-</code> aligns with the horizontal bar of the
 the horizontal bar of <code>+</code>.</p></li>
 <li><p><code>"parens"</code>, wrapped in parentheses, e.g. <code>(1)</code>.</p></li>
-</ul></dd>
+</ul><p>The default (<code>NULL</code>) retrieves the setting from the
+<a href="https://scales.r-lib.org/reference/number_options.html" class="external-link">number options</a>.</p></dd>
 
     <dt><code>scale_cut</code></dt>
 <dd><p>Named numeric vector that allows you to rescale large
@@ -203,7 +208,7 @@ width (see <code><a href="https://rdrr.io/r/base/format.html" class="external-li
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

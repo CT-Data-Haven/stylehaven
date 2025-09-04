@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">stylehaven</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Quick wrapper around <code><a href="https://stringr.tidyverse.org/reference/str_glue.html" class="external-link">stringr::str_glue</a></code> and <code><a href="https://here.r-lib.org//reference/here.html" class="external-link">here::here</a></code> to fill a small recurring need: filling in file paths based on some parameter, but building them relative to the project root.</p>
+    <p>Quick wrapper around <code><a href="https://stringr.tidyverse.org/reference/str_glue.html" class="external-link">stringr::str_glue</a></code> and <code><a href="https://here.r-lib.org/reference/here.html" class="external-link">here::here</a></code> to fill a small recurring need: filling in file paths based on some parameter, but building them relative to the project root.</p>
     </div>
 
     <div class="section level2">
@@ -69,13 +69,13 @@
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="https://here.r-lib.org//reference/here.html" class="external-link">here::here()</a></code> <code><a href="https://stringr.tidyverse.org/reference/str_glue.html" class="external-link">stringr::str_glue()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="https://here.r-lib.org/reference/here.html" class="external-link">here::here()</a></code> <code><a href="https://stringr.tidyverse.org/reference/str_glue.html" class="external-link">stringr::str_glue()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">glue_here</span><span class="op">(</span><span class="st">"{year}_headings_{topic}.txt"</span>, year <span class="op">=</span> <span class="fl">2025</span>, topic <span class="op">=</span> <span class="st">"education"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmppBoLkc/file1e9f3a8215d7/2025_headings_education.txt"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmpw5AzRQ/file203b666979de/2025_headings_education.txt"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># in a regular script you shouldn't need to worry about setting .envir</span></span></span>
 <span class="r-in"><span><span class="co"># but scoping is weird for package examples</span></span></span>
@@ -86,8 +86,8 @@
 <span class="r-in"><span>    <span class="st">"input_data/demo/{loc}_table_{year}.csv"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"{year}_headings.txt"</span></span></span>
 <span class="r-in"><span><span class="op">)</span>, .envir <span class="op">=</span> <span class="va">env</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmppBoLkc/file1e9f3a8215d7/input_data/demo/new_haven_table_2025.csv"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "/tmp/RtmppBoLkc/file1e9f3a8215d7/2025_headings.txt"                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmpw5AzRQ/file203b666979de/input_data/demo/new_haven_table_2025.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "/tmp/Rtmpw5AzRQ/file203b666979de/2025_headings.txt"                       </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -100,7 +100,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
