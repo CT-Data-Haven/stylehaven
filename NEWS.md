@@ -1,3 +1,9 @@
+# stylehaven v1.1.0 (2025-09-04)
+
+## Feat
+
+- copy over theme_din, themed_label from camiller
+
 # stylehaven v1.0.1 (2025-04-16)
 
 ## Fix
