@@ -1,3 +1,9 @@
+# stylehaven v1.2.0 (2025-09-15)
+
+## Feat
+
+- copy brk_labels over from camiller
+
 # stylehaven v1.1.0 (2025-09-04)
 
 ## Feat
