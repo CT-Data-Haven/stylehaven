@@ -26,6 +26,6 @@ A \code{ggplot} object.
 This is a wrapper around \code{cowplot::draw_label()} that creates a \code{ggplot}-based label that inherits formatting from a given theme element. It's more or less been superceded by \code{ggplot}'s new \code{plot.title.position} theme argument.
 }
 \examples{
-#TODO
+# TODO
 }
 \keyword{viz-utils}

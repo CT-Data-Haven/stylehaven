@@ -171,6 +171,9 @@ rule dag:
 
 ## coverage: Generate test coverage report with codecov
 rule coverage:
+    input:
+        r=expand("R/{func}.R", func=funcs),
+        test=expand("tests/testthat/test-{func}.R", func=funcs),
     output:
         report="coverage.html",
     shell:

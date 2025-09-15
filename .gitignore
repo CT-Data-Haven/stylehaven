@@ -15,3 +15,5 @@ TODO.md
 .env
 .flags/
 dag.png
+coverage.html
+lib/*
